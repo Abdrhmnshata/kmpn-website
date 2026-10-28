@@ -5,6 +5,7 @@ import { KpiPanel } from "@/components/tawheed/KpiPanel";
 import { Timeline } from "@/components/tawheed/Timeline";
 import { BrandCarousel } from "@/components/tawheed/BrandCarousel";
 import { AdResults } from "@/components/tawheed/AdResults";
+import { BOOKING_URL } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "التوحيد والنور · قصة نجاح · كامبين",
@@ -507,7 +508,7 @@ export default function TawheedCaseStudy() {
               نراجع فيها متجرك ونضع خطة تنفيذية تناسب أهدافك.
             </p>
             <a
-              href="https://calendar.google.com/calendar/appointments"
+              href={BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="cta-btn"

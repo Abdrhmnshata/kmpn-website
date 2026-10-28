@@ -44,7 +44,9 @@ export const FOOTER_BLURB =
 
 export const COPYRIGHT = "جميع الحقوق محفوظة لكامبين 2026";
 
-export const BOOKING_URL = "https://www.kmpn.agency/digital/main";
+/** Google Appointment Schedule. Replaced the old kmpn.agency/digital/main
+ *  page, which goes away with the previous site. */
+export const BOOKING_URL = "https://calendar.app.google/ozU87NdKP7GD22z7A";
 
 /* ------------------------------------------------------------ clients ---- */
 

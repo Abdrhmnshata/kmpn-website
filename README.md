@@ -70,7 +70,6 @@ Root directory is `kmpn-web` if the repo contains the whole working folder.
 
 ## Known gaps (from the handoff's "Open items")
 
-- Booking CTA on the case study points at a generic Google Calendar URL.
 - Ottroja card content is placeholder; Kandil Tires and Cairo Insulation have
   no cover images.
 - The 6M EGP/month hero figure is unverified (Shopify peak was 3.14M, Jan 2026).

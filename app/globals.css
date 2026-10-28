@@ -104,6 +104,33 @@ body[data-theme="dark"] {
   color: var(--accent);
 }
 
+/* `.page a` (0,1,1) outranks a bare component class (0,1,0), so a link
+   styled as a button would take `inherit` instead of its own colour — and
+   `var(--accent)` on hover, which is the same red as the button fill. These
+   re-assert the component colours at a specificity that wins. */
+.page .btn-primary,
+.page .btn-primary:hover {
+  color: #fff;
+}
+
+.page .btn-outline,
+.page .btn-outline:hover {
+  color: var(--fg);
+}
+
+.page .nav-link {
+  color: var(--fg2);
+}
+
+.page .nav-link:hover {
+  color: var(--fg);
+}
+
+.page .social,
+.page .social:hover {
+  color: #faf7f2;
+}
+
 .page ::selection {
   background: var(--accent);
   color: #fff;
