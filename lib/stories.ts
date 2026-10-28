@@ -168,9 +168,25 @@ export function tagColors(tag: string): [string, string] {
   return ["rgba(11,11,11,.72)", "#FAF7F2"];
 }
 
+/**
+ * Slugs that have a cover file in `public/assets/slots/`. The handoff shipped
+ * no artwork for Kandil Tires or Cairo Insulation, so those fall back to a
+ * placeholder rather than a broken image.
+ */
+const SLOT_COVERS = new Set([
+  "halley",
+  "oq",
+  "s2",
+  "s3",
+  "s4",
+  "smartlaptop",
+  "xzone",
+]);
+
 /** Cover image for a story — explicit `cover`, else the design's slot file. */
-export function storyCover(s: Story) {
-  return s.cover ?? `/assets/slots/story-cover-${s.slug}.webp`;
+export function storyCover(s: Story): string | null {
+  if (s.cover) return s.cover;
+  return SLOT_COVERS.has(s.slug) ? `/assets/slots/story-cover-${s.slug}.webp` : null;
 }
 
 /**

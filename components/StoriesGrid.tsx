@@ -55,6 +55,8 @@ const metaPill: React.CSSProperties = {
 };
 
 function Card({ s }: { s: Story }) {
+  const cover = storyCover(s);
+
   const inner = (
     <>
       <div
@@ -65,18 +67,47 @@ function Card({ s }: { s: Story }) {
           overflow: "hidden",
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={storyCover(s)}
-          alt={s.title}
-          loading="lazy"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            display: "block",
-          }}
-        />
+        {cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cover}
+            alt={s.title}
+            loading="lazy"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            style={{
+              display: "flex",
+              width: "100%",
+              height: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--line2)",
+            }}
+          >
+            <svg
+              width="44"
+              height="44"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <circle cx="8.5" cy="9.5" r="1.6" />
+              <path d="M21 16l-5-5-5.5 5.5L8 14l-5 5" />
+            </svg>
+          </span>
+        )}
         <div
           style={{
             position: "absolute",
