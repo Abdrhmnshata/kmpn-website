@@ -1,0 +1,450 @@
+@import "tailwindcss";
+
+/* =========================================================
+   KMPN — design tokens
+   Values copied verbatim from design/colors_and_type.css and
+   the [data-tw] blocks in the design .dc.html files.
+   ========================================================= */
+
+[data-tw="light"] {
+  --bg: #faf7f2;
+  --sunk: #efede8;
+  --line: #dedad2;
+  --line2: #c4beb1;
+  --fg: #0b0b0b;
+  --fg2: #4a463e;
+  --muted: #6e685c;
+  --accent: #ee4037;
+  --accent2: #d62e25;
+  --tint: #fce7e5;
+  --logo-filter: none;
+  --img-blend: multiply;
+  --icon-blend: multiply;
+  --img-filter: none;
+  --ok-bg: #e6f5ec;
+  --ok-fg: #0e5a2e;
+  --bar: #c4beb1;
+  color-scheme: light;
+}
+
+[data-tw="dark"] {
+  --bg: #0b0b0b;
+  --sunk: #1a1917;
+  --line: #2e2c27;
+  --line2: #4a463e;
+  --fg: #faf7f2;
+  --fg2: #c4beb1;
+  --muted: #9c9587;
+  --accent: #ff5b4f;
+  --accent2: #ff7266;
+  --tint: rgba(238, 64, 55, 0.18);
+  --logo-filter: invert(1) grayscale(1) brightness(1.6);
+  --img-blend: normal;
+  --icon-blend: screen;
+  --img-filter: grayscale(1) invert(1) brightness(1.35) contrast(1.1);
+  --ok-bg: rgba(50, 172, 99, 0.16);
+  --ok-fg: #7fd9a2;
+  --bar: #4a463e;
+  color-scheme: dark;
+}
+
+/* ---------- base ---------------------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #faf7f2;
+}
+
+body[data-theme="dark"] {
+  background: #0b0b0b;
+}
+
+.page {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-arabic), system-ui, sans-serif;
+  font-size: 15.5px;
+  line-height: 1.75;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background 0.22s,
+    color 0.22s;
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page p {
+  font-family: var(--font-arabic), system-ui, sans-serif;
+  color: inherit;
+  letter-spacing: normal;
+  margin: 0;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page a:hover {
+  color: var(--accent);
+}
+
+.page ::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+.num {
+  font-family: var(--font-sora), sans-serif;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+/* ---------- layout -------------------------------------- */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: clamp(16px, 4vw, 40px);
+}
+
+.sec-line-t {
+  border-top: 1px solid var(--line);
+}
+
+.sec-line-b {
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- header -------------------------------------- */
+
+.hdr {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 10px clamp(12px, 3vw, 24px) 0;
+  pointer-events: none;
+}
+
+.hdr-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  pointer-events: auto;
+  position: relative;
+}
+
+.hdr-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--sunk);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px;
+  padding-inline-start: 22px;
+  box-shadow: 0 8px 24px -12px rgba(11, 11, 11, 0.25);
+}
+
+.logo-mask {
+  display: block;
+  aspect-ratio: 3192.5 / 1200;
+  background: var(--fg);
+  -webkit-mask: url(/assets/kmpn-logo-ar.svg) center / contain no-repeat;
+  mask: url(/assets/kmpn-logo-ar.svg) center / contain no-repeat;
+}
+
+.nav-link {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--fg2);
+}
+
+.nav-link:hover {
+  background: var(--bg);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--fg2);
+  border: 1px solid var(--line2);
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.burger {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mob-menu-wrap {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline: 0;
+  margin-inline-start: auto;
+  width: min(100%, 420px);
+  display: grid;
+  transition:
+    grid-template-rows 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s;
+}
+
+.mob-menu {
+  background: var(--sunk);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 12px 20px 20px;
+  display: grid;
+  gap: 4px;
+  box-shadow: 0 24px 48px -16px rgba(11, 11, 11, 0.3);
+}
+
+.mob-menu a {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 8px;
+  font-size: 17px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- buttons ------------------------------------- */
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-primary:hover {
+  background: var(--accent2);
+  color: #fff;
+  text-decoration: none;
+}
+
+.btn-outline {
+  border: 1.5px solid var(--fg);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  background: transparent;
+  color: var(--fg);
+}
+
+.btn-outline:hover {
+  text-decoration: none;
+}
+
+/* ---------- accordion ----------------------------------- */
+
+.acc-rows {
+  display: grid;
+  transition: grid-template-rows 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.acc-clip {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.acc-chev {
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- cards --------------------------------------- */
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--bg);
+}
+
+.dark-panel {
+  background: linear-gradient(135deg, #3a1210 0%, #1a0b0a 45%, #0b0b0b 100%);
+  color: #faf7f2;
+  border: 1px solid rgba(238, 64, 55, 0.28);
+  border-radius: 24px;
+}
+
+/* ---------- carousel (mobile scroll-snap) --------------- */
+
+.rail {
+  display: grid;
+  gap: 12px;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .rail {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    margin-inline: calc(-1 * clamp(16px, 4vw, 40px));
+    padding-inline: clamp(16px, 4vw, 40px);
+    scrollbar-width: none;
+  }
+
+  .rail > * {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
+}
+
+/* ---------- footer -------------------------------------- */
+
+.ftr {
+  background: #0b0b0b;
+  color: #faf7f2;
+}
+
+.ftr-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(48px, 6vw, 80px) clamp(16px, 4vw, 40px) 28px;
+  display: grid;
+  gap: clamp(32px, 4vw, 48px);
+}
+
+.social {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #faf7f2;
+  color: #faf7f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social:hover {
+  background: #ee4037;
+  border-color: #ee4037;
+  color: #faf7f2;
+}
+
+.ftr-nav a {
+  font-size: clamp(16px, 1.6vw, 19px);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+/* ---------- forms --------------------------------------- */
+
+.field {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field::placeholder {
+  color: var(--muted);
+}
+
+.field:focus {
+  border-color: var(--fg);
+}
+
+/* ---------- misc ---------------------------------------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.themed-img {
+  mix-blend-mode: var(--img-blend);
+  filter: var(--img-filter);
+}
+
+.themed-logo {
+  filter: var(--logo-filter);
+  mix-blend-mode: var(--icon-blend);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
