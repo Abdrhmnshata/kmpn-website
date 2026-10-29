@@ -33,8 +33,17 @@ export const metadata: Metadata = {
     title: "كامبين · حلول التحول الرقمي للمتاجر",
     description:
       "نقود رحلة التحول الرقمي لنشاطك التجاري عبر استراتيجية علامة تجارية قوية، ومتجر إلكتروني جاهز للبيع، وتسويق مبني على البيانات.",
+    url: "https://kmpn.agency",
+    siteName: "كامبين",
     locale: "ar_EG",
     type: "website",
+  },
+  // The card images come from app/opengraph-image.png and app/twitter-image.png.
+  twitter: {
+    card: "summary_large_image",
+    title: "كامبين · حلول التحول الرقمي للمتاجر",
+    description:
+      "نقود رحلة التحول الرقمي لنشاطك التجاري عبر استراتيجية علامة تجارية قوية، ومتجر إلكتروني جاهز للبيع، وتسويق مبني على البيانات.",
   },
 };
 
