@@ -270,6 +270,27 @@ body {
   padding: 0;
 }
 
+/* Sits under the header bar (it comes first inside .hdr) and over the page. */
+.hdr-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 11, 11, 0.4);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.hdr-backdrop[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-tw="dark"] .hdr-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
 .mob-menu-wrap {
   position: absolute;
   top: calc(100% + 8px);

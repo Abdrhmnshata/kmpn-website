@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import { NAV } from "@/lib/content";
 
@@ -11,8 +11,23 @@ export function Header({ ctaHref = "#contact" }: { ctaHref?: string }) {
 
   const themeLabel = theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن";
 
+  // Escape closes the phone menu, like tapping the dimmed page behind it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
     <header className="hdr">
+      {/* Dims the page while the phone menu is open; tapping it closes the menu. */}
+      <div
+        className="hdr-backdrop"
+        data-open={menuOpen}
+        aria-hidden="true"
+        onClick={() => setMenuOpen(false)}
+      />
       <div className="hdr-inner">
         <div className="hdr-bar">
           <Link href="/" aria-label="كامبين" className="logo-mask" style={{ height: 26 }} />

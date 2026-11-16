@@ -19,11 +19,15 @@ const opt = (file: string) => CDN_OPT + encodeURIComponent(file);
 
 /* ---------------------------------------------------------------- nav ---- */
 
+/** The blog is its own site (repo kmpn-blog) and links back to this one. */
+export const BLOG_URL = "https://blog.kmpn.agency/";
+
 export const NAV = [
   { label: "قصص النجاح", href: "/success-stories" },
   { label: "أعمالنا", href: "/portfolio" },
   { label: "الخدمات", href: "/services" },
   { label: "الشركة", href: "/company" },
+  { label: "المدونة", href: BLOG_URL },
 ];
 
 export const FOOTER_NAV = [
@@ -31,6 +35,7 @@ export const FOOTER_NAV = [
   { label: "القيم", href: "/values" },
   { label: "الخدمات", href: "/services" },
   { label: "أعمالنا", href: "/portfolio" },
+  { label: "المدونة", href: BLOG_URL },
   { label: "التواصل", href: "/contact" },
 ];
 
