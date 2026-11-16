@@ -1,0 +1,156 @@
+{
+  "source": "notion data source 2dac45aa-cc37-8139-9be2-000b01961f46 (Publish Status = Published)",
+  "syncedAt": "2026-11-16T02:52:24.835Z",
+  "projects": [
+    {
+      "id": "2dac45aa-cc37-8126-bcee-efe5a1643a32",
+      "slug": "halley-international-schools",
+      "name": "Halley International Schools",
+      "services": [
+        "Re-branding",
+        "Webdesign",
+        "Logo Design"
+      ],
+      "year": "2023",
+      "country": "Saudi Arabia",
+      "behance": "https://www.behance.net/gallery/210702339/Halley-International-School-Rebranding",
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/halley-international-schools.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#066058"
+      },
+      "concept": {
+        "src": "/portfolio/halley-international-schools-concept.webp",
+        "width": 1600,
+        "height": 2053
+      }
+    },
+    {
+      "id": "3c7c45aa-cc37-80cc-9553-cd6f38722e12",
+      "slug": "mzian",
+      "name": "Mzian",
+      "services": [
+        "Brand Strategy",
+        "Re-branding",
+        "Logo Design"
+      ],
+      "year": null,
+      "country": null,
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/mzian.webp",
+        "width": 1366,
+        "height": 768,
+        "color": "#092b2b"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-8108-9837-d6c266444b2b",
+      "slug": "flocks",
+      "name": "Flocks",
+      "services": [
+        "Logo Design",
+        "Brand Strategy"
+      ],
+      "year": null,
+      "country": null,
+      "behance": "https://www.behance.net/gallery/212158977/Flocks-Brand-Identity",
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/flocks.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#0a2d73"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-8180-bd1d-cef95c586b01",
+      "slug": "miral-branding",
+      "name": "MIRAL - Branding",
+      "services": [
+        "Brand Strategy",
+        "Logo Design"
+      ],
+      "year": null,
+      "country": null,
+      "behance": "https://www.behance.net/gallery/234184403/MIRAL-Brand-Identity-Design",
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/miral-branding.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#333333"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-8128-9589-ccee33f85577",
+      "slug": "oq-originals",
+      "name": "OQ Originals",
+      "services": [
+        "Re-branding",
+        "Brand Strategy",
+        "Logo Design"
+      ],
+      "year": null,
+      "country": null,
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/oq-originals.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#000000"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-8095-b566-fd4b171a555a",
+      "slug": "gbn",
+      "name": "GBN",
+      "services": [
+        "Company profle",
+        "Brochure",
+        "Webdesign",
+        "Branding",
+        "Logo Design"
+      ],
+      "year": null,
+      "country": null,
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/gbn.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#05142d"
+      },
+      "concept": null
+    },
+    {
+      "id": "360c45aa-cc37-8044-bcf5-e2cd7bf5d4b7",
+      "slug": "kmpn",
+      "name": "KMPN",
+      "services": [
+        "Logo Design",
+        "Branding"
+      ],
+      "year": null,
+      "country": null,
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/kmpn.webp",
+        "width": 1366,
+        "height": 768,
+        "color": "#f2f4f5"
+      },
+      "concept": null
+    }
+  ]
+}

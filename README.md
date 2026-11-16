@@ -16,6 +16,7 @@ Next.js 15 (App Router) · TypeScript · Tailwind v4 · Supabase · Vercel.
 | `/contact` | `Kmpn Contact.dc.html` |
 | `/success-stories` | `Success Stories.dc.html` |
 | `/success-stories/tawheed` | `Tawheed Case Study v3.dc.html` |
+| `/portfolio`, `/portfolio/[slug]` | No design file; built on the site's tokens, data from Notion (see below) |
 
 ## Local development
 
@@ -46,6 +47,30 @@ Client logos, icons and the large artwork are still served from the KMPN
 LightFunnels CDN exactly as the design referenced them; `next.config.ts`
 allow-lists that host. Everything under `public/assets/` came from the
 handoff's `assets/` folder.
+
+## Portfolio (Notion)
+
+`/portfolio` lists the rows of the Notion database
+**KMPN Studio - Branding Case Studies - [Public]** whose *Publish Status* is
+*Published*, and each gets a page at `/portfolio/<slug>`. A project is its
+cover plus its properties: *Type* (shown as Arabic service labels, mapped in
+`lib/portfolio.ts`), *Market* or *Date - Client name - country* (year and
+country), *Behance Link*, *Brand Book* and *Logo concept (anatomy)*. The
+internal fields (*Status*, *Company Status*) are not shown.
+
+`scripts/sync-portfolio.mjs` writes `lib/portfolio.json` and the images in
+`public/portfolio/`. Notion's file links expire within the hour, so images
+are copied and converted to WebP. It runs as `prebuild` when `NOTION_TOKEN`
+is set, so every Vercel build picks up the latest Notion data; without a
+token, or if Notion fails, the committed files are used. To refresh locally:
+
+```bash
+NOTION_TOKEN=ntn_xxx npm run sync:portfolio
+```
+
+The token's integration must be connected to the database (••• →
+Connections). Projects keep the order they have in `lib/portfolio.json`;
+newly published ones are added at the top.
 
 ## Supabase
 

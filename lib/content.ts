@@ -21,6 +21,7 @@ const opt = (file: string) => CDN_OPT + encodeURIComponent(file);
 
 export const NAV = [
   { label: "قصص النجاح", href: "/success-stories" },
+  { label: "أعمالنا", href: "/portfolio" },
   { label: "الخدمات", href: "/services" },
   { label: "الشركة", href: "/company" },
 ];
@@ -29,6 +30,7 @@ export const FOOTER_NAV = [
   { label: "الشركة", href: "/company" },
   { label: "القيم", href: "/values" },
   { label: "الخدمات", href: "/services" },
+  { label: "أعمالنا", href: "/portfolio" },
   { label: "التواصل", href: "/contact" },
 ];
 

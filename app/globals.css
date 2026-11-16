@@ -616,6 +616,136 @@ a.story-card:hover {
   color: var(--fg);
 }
 
+/* ---------- portfolio ----------------------------------- */
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 16px;
+  padding-bottom: clamp(32px, 4vw, 56px);
+}
+
+.work-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s;
+}
+
+/* Covers are a logo on a flat colour; the box takes that colour so a crop
+   to 16:10 never shows an edge. */
+.work-media {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.work-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+a.work-card:hover .work-media img {
+  transform: scale(1.04);
+}
+
+.work-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg2);
+  line-height: 1.6;
+}
+
+.work-tag-lg {
+  padding: 6px 14px;
+  font-size: 13.5px;
+}
+
+.work-chip {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line2);
+  background: transparent;
+  color: var(--fg2);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.work-chip[aria-pressed="true"] {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.work-hero {
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.work-hero img {
+  width: 100%;
+  max-width: 1500px;
+  height: auto;
+  display: block;
+}
+
+.work-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px 32px;
+  padding: clamp(20px, 3vw, 28px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.work-dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px clamp(24px, 4vw, 48px);
+  margin: 0;
+}
+
+.work-dl dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.work-dl dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.work-concept {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+}
+
 /* ---------- forms --------------------------------------- */
 
 .field {
