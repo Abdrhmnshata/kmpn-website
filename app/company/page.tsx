@@ -241,7 +241,7 @@ export default function CompanyPage() {
                   display: "grid",
                   gap: 10,
                   alignContent: "start",
-                  background: "var(--sunk)",
+                  background: "var(--bg)",
                   color: "var(--fg)",
                 }}
               >
@@ -392,7 +392,7 @@ export default function CompanyPage() {
           >
             <article
               style={{
-                background: "var(--sunk)",
+                background: "var(--bg)",
                 borderRadius: 24,
                 padding: "clamp(22px, 3vw, 32px)",
                 display: "grid",

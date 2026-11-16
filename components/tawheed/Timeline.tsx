@@ -406,7 +406,7 @@ export function Timeline() {
         <div
           style={{
             borderTop: "1px solid var(--line)",
-            background: "var(--sunk)",
+            background: "var(--bg)",
             padding: "clamp(20px, 3vw, 32px)",
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",

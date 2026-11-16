@@ -80,7 +80,7 @@ export default function ContactPage() {
 
           <div
             style={{
-              background: "var(--sunk)",
+              background: "var(--bg)",
               borderRadius: 24,
               padding: "clamp(20px, 3vw, 32px)",
             }}
