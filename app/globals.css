@@ -16,7 +16,7 @@
     radial-gradient(72% 100% at 100% 0%, #fbd4c7 0%, rgba(251, 212, 199, 0) 64%),
     radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
     linear-gradient(180deg, #f9efe4 0%, #faf7f2 60%, #fdfcfa 100%);
-  --bg: #faf7f2;
+  --bg: #fcfbf8;
   --sunk: #efede8;
   --line: #dedad2;
   --line2: #c4beb1;
