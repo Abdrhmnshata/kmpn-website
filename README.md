@@ -69,14 +69,19 @@ Arabic labels for Notion's options live in `lib/portfolio.ts`.
 
 `scripts/sync-portfolio.mjs` writes `lib/portfolio.json` and the images in
 `public/portfolio/<vertical>/`. Notion's file links expire within the hour,
-so images are copied and converted to WebP. It runs as `prebuild` when
-`NOTION_TOKEN` is set, so every Vercel build picks up the latest Notion data;
-without a token, or if Notion fails, the committed files are used. To refresh
-locally (with `NOTION_TOKEN` in `.env.local`):
+so images are copied and converted to WebP.
+
+**Updates are manual, by agreement.** The build never talks to Notion; the
+site shows whatever is committed. To update "أعمالنا", with `NOTION_TOKEN`
+in `.env.local`:
 
 ```bash
-node --env-file=.env.local scripts/sync-portfolio.mjs
+npm run sync:portfolio
 ```
+
+It prints what each vertical gained or lost. Review that and the git diff,
+then commit and deploy once the change is approved. Do not add
+`NOTION_TOKEN` to Vercel; nothing there uses it.
 
 The token's integration must be connected to the **Kampaign Portfolio** page
 (••• → Connections). Order: studio keeps the order in `lib/portfolio.json`

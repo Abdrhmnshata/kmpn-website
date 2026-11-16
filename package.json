@@ -4,11 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "node scripts/sync-portfolio.mjs --if-token",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "sync:portfolio": "node scripts/sync-portfolio.mjs"
+    "sync:portfolio": "node --env-file-if-exists=.env.local scripts/sync-portfolio.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",

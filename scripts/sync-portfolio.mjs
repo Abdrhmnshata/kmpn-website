@@ -21,12 +21,12 @@
  * hand if needed) with newly added projects first; commerce is newest
  * delivery year first; digital follows the "Priority" column.
  *
- * Usage:
- *   NOTION_TOKEN=ntn_xxx node scripts/sync-portfolio.mjs
- *   node --env-file=.env.local scripts/sync-portfolio.mjs
- *   node scripts/sync-portfolio.mjs --if-token
- *       Used by `prebuild`: without a token it does nothing, and if Notion
- *       fails it keeps the committed files, so a build never breaks on it.
+ * The site never runs this on its own: the build uses the committed files.
+ * Updating "أعمالنا" is a deliberate step: run this, review what it prints
+ * and the git diff, then commit and deploy once the change is agreed.
+ *
+ * Usage (NOTION_TOKEN in .env.local, which git ignores):
+ *   npm run sync:portfolio
  *
  * The token's integration must be connected to the "Kampaign Portfolio" page
  * (••• → Connections), or every query returns 404.
@@ -49,7 +49,6 @@ const DATA_SOURCES = {
   digital: process.env.NOTION_DIGITAL_DATA_SOURCE ?? "2dac45aa-cc37-807c-aa15-000b2a1d8216",
 };
 
-const ifToken = process.argv.includes("--if-token");
 const token = process.env.NOTION_TOKEN?.trim();
 
 /* ------------------------------------------------------------ Notion ---- */
@@ -355,13 +354,28 @@ async function listFiles(dir) {
   return out;
 }
 
+/** What a sync adds to or removes from each vertical, for review before committing. */
+function describeChanges(previous, next) {
+  const title = (item) => item.name ?? item.brand ?? item.id;
+  const lines = [];
+  for (const key of ["studio", "commerce", "digital"]) {
+    const before = new Map((previous[key] ?? []).map((i) => [i.id, i]));
+    const after = new Map(next[key].map((i) => [i.id, i]));
+    const added = next[key].filter((i) => !before.has(i.id)).map(title);
+    const removed = [...before.values()].filter((i) => !after.has(i.id)).map(title);
+    lines.push(
+      `  ${key}: ${next[key].length}` +
+        (added.length ? `\n    + ${added.join("\n    + ")}` : "") +
+        (removed.length ? `\n    - ${removed.join("\n    - ")}` : "") +
+        (added.length || removed.length ? "" : " (no projects added or removed)"),
+    );
+  }
+  return lines.join("\n");
+}
+
 async function main() {
   if (!token) {
-    if (ifToken) {
-      console.log("[portfolio] NOTION_TOKEN not set; using the committed lib/portfolio.json.");
-      return;
-    }
-    throw new Error("NOTION_TOKEN is not set.");
+    throw new Error("NOTION_TOKEN is not set. Put it in .env.local and run `npm run sync:portfolio`.");
   }
 
   // Build everything in memory first, so a failure leaves the repo untouched.
@@ -403,17 +417,12 @@ async function main() {
   await writeFile(JSON_PATH, JSON.stringify(out, null, 2) + "\n");
 
   const rel = relative(ROOT, IMG_DIR).split(sep).join("/");
-  console.log(
-    `[portfolio] studio ${out.studio.length}, commerce ${out.commerce.length}, ` +
-      `digital ${out.digital.length}; ${files.length} files in ${rel}/`,
-  );
+  console.log(`[portfolio] Synced from Notion; ${files.length} files in ${rel}/`);
+  console.log(describeChanges(previous, out));
+  console.log("Review with `git status` and `git diff lib/portfolio.json`, then commit to publish.");
 }
 
 main().catch((err) => {
-  if (ifToken) {
-    console.warn(`[portfolio] Sync skipped, keeping committed files: ${err.message}`);
-    return;
-  }
   console.error(err);
   process.exit(1);
 });
