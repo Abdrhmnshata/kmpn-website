@@ -28,6 +28,8 @@
   --accent: #ee4037;
   --accent2: #d62e25;
   --tint: #fce7e5;
+  /* A lighter pink for larger tinted areas (the home pain-point items). */
+  --tint-soft: #fdf1ef;
   --logo-filter: none;
   --img-blend: multiply;
   --icon-blend: multiply;
@@ -56,6 +58,7 @@
   --accent: #ff5b4f;
   --accent2: #ff7266;
   --tint: rgba(238, 64, 55, 0.18);
+  --tint-soft: rgba(238, 64, 55, 0.11);
   --logo-filter: invert(1) grayscale(1) brightness(1.6);
   --img-blend: normal;
   --icon-blend: screen;
