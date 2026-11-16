@@ -488,7 +488,7 @@ body {
   /* --logo-size is the side of the square every logo's area equals; at
      phone width it puts about three and a half logos in view. */
   --logo-size: clamp(46px, 12.5vw, 80px);
-  --marquee-gap: clamp(12px, 2vw, 28px);
+  --marquee-gap: clamp(20px, 3vw, 36px);
   /* Logos have no reading order, so the strip runs left-to-right even on
      this RTL page; that keeps the -50% loop below seamless. */
   direction: ltr;
