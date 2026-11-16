@@ -44,7 +44,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!adopted) return;
     document.documentElement.setAttribute("data-tw", theme);
     document.documentElement.style.background =
-      theme === "dark" ? "#0B0B0B" : "#FAF7F2";
+      theme === "dark" ? "#0B0B0B" : "#FFFFFF";
     document.body.dataset.theme = theme;
   }, [theme, adopted]);
 

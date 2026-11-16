@@ -6,7 +6,16 @@
    the [data-tw] blocks in the design .dc.html files.
    ========================================================= */
 
+/* --page is the canvas; --bg is the surface of cards and panels on it;
+   --hdr is the floating header; --hero-zone paints the block behind the
+   hero (and behind the header at the top of the page). */
 [data-tw="light"] {
+  --page: #ffffff;
+  --hdr: #ffffff;
+  --hero-zone:
+    radial-gradient(72% 100% at 100% 0%, #fbd4c7 0%, rgba(251, 212, 199, 0) 64%),
+    radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #f9efe4 0%, #faf7f2 60%, #fdfcfa 100%);
   --bg: #faf7f2;
   --sunk: #efede8;
   --line: #dedad2;
@@ -28,6 +37,11 @@
 }
 
 [data-tw="dark"] {
+  --page: #0b0b0b;
+  --hdr: #161513;
+  --hero-zone:
+    radial-gradient(70% 95% at 100% 0%, rgba(238, 64, 55, 0.24) 0%, rgba(238, 64, 55, 0) 62%),
+    linear-gradient(180deg, #1a100e 0%, #120d0c 60%, #0e0c0b 100%);
   --bg: #0b0b0b;
   --sunk: #1a1917;
   --line: #2e2c27;
@@ -64,16 +78,13 @@ body {
   padding: 0;
 }
 
+html,
 body {
-  background: #faf7f2;
-}
-
-body[data-theme="dark"] {
-  background: #0b0b0b;
+  background: var(--page);
 }
 
 .page {
-  background: var(--bg);
+  background: var(--page);
   color: var(--fg);
   font-family: var(--font-arabic), system-ui, sans-serif;
   font-size: 15.5px;
@@ -166,8 +177,27 @@ body[data-theme="dark"] {
   position: sticky;
   top: 0;
   z-index: 30;
-  padding: 10px clamp(12px, 3vw, 24px) 0;
+  padding: 18px clamp(12px, 3vw, 24px) 0;
   pointer-events: none;
+}
+
+/* The hero sits in a rounded, gradient block that also runs up behind the
+   sticky header, so the white header floats on it. --hdr-h is the header's
+   height (its top padding + the bar). */
+.hero-zone {
+  --hdr-h: 77px;
+  --zone-top: 8px;
+  --zone-inset: clamp(8px, 1.4vw, 20px);
+  margin: calc(var(--zone-top) - var(--hdr-h)) var(--zone-inset) 0;
+  padding-top: calc(var(--hdr-h) - var(--zone-top));
+  border-radius: clamp(22px, 2.6vw, 34px);
+  background: var(--hero-zone);
+}
+
+/* On the gradient the usual tinted pill would disappear. */
+.hero-zone .pill {
+  background: var(--hdr);
+  box-shadow: 0 1px 0 var(--line);
 }
 
 .hdr-inner {
@@ -182,7 +212,7 @@ body[data-theme="dark"] {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: var(--sunk);
+  background: var(--hdr);
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 8px;
@@ -253,7 +283,7 @@ body[data-theme="dark"] {
 }
 
 .mob-menu {
-  background: var(--sunk);
+  background: var(--hdr);
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: 12px 20px 20px;

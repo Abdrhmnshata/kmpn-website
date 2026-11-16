@@ -54,7 +54,7 @@ const themeBootstrap = `
     var t = localStorage.getItem('tw-theme');
     if (t !== 'dark' && t !== 'light') t = 'light';
     document.documentElement.setAttribute('data-tw', t);
-    document.documentElement.style.background = t === 'dark' ? '#0B0B0B' : '#FAF7F2';
+    document.documentElement.style.background = t === 'dark' ? '#0B0B0B' : '#FFFFFF';
   } catch (e) {
     document.documentElement.setAttribute('data-tw', 'light');
   }
