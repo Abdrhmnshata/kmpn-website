@@ -24,6 +24,8 @@ export type StudioProject = {
   services: string[];
   year: string | null;
   country: string | null;
+  /** Notion "Company Status": how the client's business is doing now. */
+  companyStatus: string | null;
   behance: string | null;
   brandBook: string | null;
   cover: Img | null;
@@ -180,6 +182,16 @@ const COUNTRIES: Record<string, string> = {
 const label = (map: Record<string, string | null>, s: string) => (s in map ? map[s] : s);
 const labels = (map: Record<string, string | null>, list: string[]) =>
   list.map((s) => label(map, s)).filter((l): l is string => Boolean(l));
+
+/** Notion "Company Status" → label and dot colour on the site. */
+const COMPANY_STATUS: Record<string, { label: string; tone: "live" | "soon" | "off" }> = {
+  "Active & Running": { label: "تعمل الآن", tone: "live" },
+  "In preperation": { label: "قيد الإطلاق", tone: "soon" },
+  "Not started": { label: "لم تُطلق بعد", tone: "soon" },
+  Closed: { label: "توقفت", tone: "off" },
+};
+
+export const companyStatus = (s: string | null) => (s ? COMPANY_STATUS[s] ?? null : null);
 
 export const studioServiceLabel = (s: string) => label(STUDIO_SERVICES, s);
 export const studioServiceLabels = (p: StudioProject) => labels(STUDIO_SERVICES, p.services);

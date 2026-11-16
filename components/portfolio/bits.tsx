@@ -1,5 +1,19 @@
 import Image from "next/image";
-import { logoBackground, type Img } from "@/lib/portfolio";
+import { logoBackground, type companyStatus, type Img } from "@/lib/portfolio";
+
+/** "● تعمل الآن": the client company's current status, as a coloured dot. */
+export function CompanyStatus({
+  status,
+}: {
+  status: NonNullable<ReturnType<typeof companyStatus>>;
+}) {
+  return (
+    <span className={`work-status work-status-${status.tone}`}>
+      <span className="work-status-dot" aria-hidden="true" />
+      {status.label}
+    </span>
+  );
+}
 
 const MAX_TAGS = 3;
 

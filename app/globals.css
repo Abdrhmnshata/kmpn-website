@@ -655,6 +655,30 @@ a.story-card:hover {
   padding-bottom: clamp(32px, 4vw, 56px);
 }
 
+/* On phones the hub's three-card previews become a swipeable row: one card
+   and about a quarter of the next in view, so it is clear there is more. */
+@media (max-width: 639px) {
+  .work-rail {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(-1 * clamp(16px, 4vw, 40px));
+    padding-inline: clamp(16px, 4vw, 40px);
+    scroll-padding-inline: clamp(16px, 4vw, 40px);
+    scrollbar-width: none;
+  }
+
+  .work-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .work-rail > * {
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+  }
+}
+
 .work-card {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -796,6 +820,40 @@ a.work-card:hover .work-media img {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+}
+
+.work-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.work-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.work-status-live {
+  color: #23864b;
+}
+
+.work-status-soon {
+  color: #b7791f;
+}
+
+.work-status-off {
+  color: var(--muted);
+}
+
+[data-tw="dark"] .work-status-live {
+  color: #6fd39a;
+}
+
+[data-tw="dark"] .work-status-soon {
+  color: #f0b45a;
 }
 
 .work-tag-accent {

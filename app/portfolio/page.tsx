@@ -67,7 +67,7 @@ export default function PortfolioPage() {
                 </Link>
               </div>
             </div>
-            <div className="work-grid">{previews[v.key]}</div>
+            <div className="work-grid work-rail">{previews[v.key]}</div>
           </section>
         ))}
 

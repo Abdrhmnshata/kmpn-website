@@ -6,8 +6,10 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CtaSection } from "@/components/CtaSection";
 import { StudioCard } from "@/components/portfolio/StudioCard";
+import { CompanyStatus } from "@/components/portfolio/bits";
 import {
   STUDIO,
+  companyStatus,
   countryLabel,
   getStudioProject,
   otherStudioProjects,
@@ -62,9 +64,10 @@ export default async function ProjectPage({ params }: Params) {
 
   const services = studioServiceLabels(p);
   const country = countryLabel(p.country);
+  const status = companyStatus(p.companyStatus);
   const facts: [string, string][] = [];
+  if (country) facts.push(["الدولة", country]);
   if (p.year) facts.push(["السنة", p.year]);
-  if (country) facts.push(["السوق", country]);
 
   return (
     <div className="page">
@@ -143,6 +146,14 @@ export default async function ProjectPage({ params }: Params) {
                 <dd>{v}</dd>
               </div>
             ))}
+            {status && (
+              <div>
+                <dt>حالة الشركة</dt>
+                <dd>
+                  <CompanyStatus status={status} />
+                </dd>
+              </div>
+            )}
           </dl>
 
           {(p.behance || p.brandBook) && (

@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-11-16T03:35:16.515Z",
+  "syncedAt": "2026-11-16T05:08:13.408Z",
   "studio": [
     {
       "id": "2dac45aa-cc37-8126-bcee-efe5a1643a32",
@@ -12,6 +12,7 @@
       ],
       "year": "2023",
       "country": "Saudi Arabia",
+      "companyStatus": "Active & Running",
       "behance": "https://www.behance.net/gallery/210702339/Halley-International-School-Rebranding",
       "brandBook": null,
       "cover": {
@@ -37,6 +38,7 @@
       ],
       "year": "2023",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": "https://www.behance.net/gallery/235633057/Altawheed-Welnour-Rebranding?lo=48406cd48912312b9af74ee0deabdb38ff1aa46860f2bbe3b61f122ed3d707a7",
       "brandBook": "https://drive.google.com/file/d/1J3RLfJi4XY-BiXhsASKQoDtP5TDjMSWt/view?usp=sharing",
       "cover": {
@@ -58,6 +60,7 @@
       ],
       "year": "2026",
       "country": "Egypt",
+      "companyStatus": "In preperation",
       "behance": null,
       "brandBook": "https://drive.google.com/file/d/1lD0rUE714-Z109PH9JS3Z2ba9c-uyJNZ/view?usp=sharing",
       "cover": {
@@ -77,6 +80,7 @@
       ],
       "year": "2025",
       "country": "Saudi Arabia",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": "https://drive.google.com/file/d/1VUCpnUpQBwVfWTGefjvz_ElQIYzDFznM/view?usp=sharing",
       "cover": {
@@ -97,6 +101,7 @@
       ],
       "year": "2024",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": "https://drive.google.com/file/d/12hSchvjp-pLxzFYzdCSwXQzRlwJk7efx/view?usp=sharing",
       "cover": {
@@ -118,6 +123,7 @@
       ],
       "year": "2026",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -139,6 +145,7 @@
       ],
       "year": "2025",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -159,6 +166,7 @@
       ],
       "year": "2023",
       "country": "United Arab Emirates",
+      "companyStatus": "Closed",
       "behance": "https://www.behance.net/gallery/212158977/Flocks-Brand-Identity",
       "brandBook": null,
       "cover": {
@@ -179,6 +187,7 @@
       ],
       "year": "2025",
       "country": "Saudi Arabia",
+      "companyStatus": "Not started",
       "behance": "https://www.behance.net/gallery/234184403/MIRAL-Brand-Identity-Design",
       "brandBook": null,
       "cover": {
@@ -200,6 +209,7 @@
       ],
       "year": "2024",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": "https://drive.google.com/file/d/1MFTUeszN4AZPeZsM8P9QwrL-yd3MBQFg/view?usp=drive_link",
       "cover": {
@@ -221,6 +231,7 @@
       ],
       "year": "2024",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -241,6 +252,7 @@
       ],
       "year": "2025",
       "country": "Saudi Arabia",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -260,6 +272,7 @@
       ],
       "year": "2022",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -279,6 +292,7 @@
       ],
       "year": "2022",
       "country": "Saudi Arabia",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -300,6 +314,7 @@
       ],
       "year": "2019",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -319,6 +334,7 @@
       ],
       "year": "2019",
       "country": "Egypt",
+      "companyStatus": "Closed",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -338,6 +354,7 @@
       ],
       "year": "2020",
       "country": "Egypt",
+      "companyStatus": "Closed",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -361,6 +378,7 @@
       ],
       "year": "2021",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -378,6 +396,7 @@
       "services": [],
       "year": "2025",
       "country": "Egypt",
+      "companyStatus": "In preperation",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -398,6 +417,7 @@
       ],
       "year": "2025",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -418,6 +438,7 @@
       ],
       "year": "2026",
       "country": "Saudi Arabia",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -438,6 +459,7 @@
       ],
       "year": "2022",
       "country": "Egypt",
+      "companyStatus": "Active & Running",
       "behance": null,
       "brandBook": null,
       "cover": {
@@ -457,6 +479,7 @@
       ],
       "year": "2026",
       "country": "Egypt",
+      "companyStatus": "In preperation",
       "behance": null,
       "brandBook": null,
       "cover": {

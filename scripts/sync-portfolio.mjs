@@ -247,6 +247,7 @@ async function mapStudio(page, files, used) {
     services: names(prop(p, "Type")),
     year,
     country: placeName(prop(p, "Market")) ?? country,
+    companyStatus: selectName(prop(p, "Company Status")),
     behance: firstFile(prop(p, "Behance Link"))?.url ?? null,
     brandBook,
     cover: await image(files, cover.url, `studio/${slug}.webp`, 1600),
