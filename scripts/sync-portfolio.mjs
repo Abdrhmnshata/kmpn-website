@@ -1,34 +1,39 @@
 #!/usr/bin/env node
 /**
- * Pulls the portfolio from the Notion database
- * "KMPN Studio - Branding Case Studies - [Public]" into the repo:
+ * Pulls the "أعمالنا" portfolio from Notion into the repo. One database per
+ * Kampaign vertical, all under the Notion page "Kampaign Portfolio":
  *
- *   lib/portfolio.json        project data, in display order
- *   public/portfolio/*.webp   covers and logo-concept images
+ *   studio    "KMPN Studio - Branding Case Studies - [Public]"
+ *             rows with Status = Done & Delivered that have a cover
+ *   commerce  "Kampaign Commerce Shopify Portfolio"
+ *             Project Status = Delivered and Status = Active & Running
+ *   digital   "Digital Transformation Case Studies"
+ *             every row whose Company Status is not Closed
  *
- * Only rows whose "Publish Status" is "Published" are taken. Notion's file
- * URLs expire within the hour, so every image is downloaded and re-encoded
- * here instead of being linked.
+ * Output:
+ *   lib/portfolio.json                  data for all three, in display order
+ *   public/portfolio/<vertical>/*.webp  covers, logos, logo concepts
  *
- * Display order: projects already in lib/portfolio.json keep their place
- * (reorder that file by hand if needed); newly published ones go first,
- * newest first.
+ * Notion's file URLs expire within the hour, so every image is downloaded
+ * and re-encoded here instead of being linked.
+ *
+ * Order: studio keeps the order already in lib/portfolio.json (reorder it by
+ * hand if needed) with newly added projects first; commerce is newest
+ * delivery year first; digital follows the "Priority" column.
  *
  * Usage:
  *   NOTION_TOKEN=ntn_xxx node scripts/sync-portfolio.mjs
+ *   node --env-file=.env.local scripts/sync-portfolio.mjs
  *   node scripts/sync-portfolio.mjs --if-token
  *       Used by `prebuild`: without a token it does nothing, and if Notion
  *       fails it keeps the committed files, so a build never breaks on it.
- *   node scripts/sync-portfolio.mjs --raw records.json
- *       Builds from records exported by hand (same fields as toRecord()
- *       returns; image fields may be local paths).
  *
- * The integration behind NOTION_TOKEN must be added to the database
- * (••• → Connections) or the query returns 404.
+ * The token's integration must be connected to the "Kampaign Portfolio" page
+ * (••• → Connections), or every query returns 404.
  */
 
 import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import { dirname, extname, join, resolve } from "node:path";
+import { dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
@@ -36,18 +41,16 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const JSON_PATH = join(ROOT, "lib", "portfolio.json");
 const IMG_DIR = join(ROOT, "public", "portfolio");
 const IMG_URL = "/portfolio";
-
-const DATA_SOURCE_ID =
-  process.env.NOTION_PORTFOLIO_DATA_SOURCE ?? "2dac45aa-cc37-8139-9be2-000b01961f46";
 const NOTION_VERSION = "2025-09-03";
 
-const COVER_WIDTH = 1600;
-const CONCEPT_WIDTH = 1600;
+const DATA_SOURCES = {
+  studio: process.env.NOTION_STUDIO_DATA_SOURCE ?? "2dac45aa-cc37-8139-9be2-000b01961f46",
+  commerce: process.env.NOTION_COMMERCE_DATA_SOURCE ?? "2c5c45aa-cc37-81f1-b755-000b4f9898bb",
+  digital: process.env.NOTION_DIGITAL_DATA_SOURCE ?? "2dac45aa-cc37-807c-aa15-000b2a1d8216",
+};
 
-const args = process.argv.slice(2);
-const ifToken = args.includes("--if-token");
-const rawIndex = args.indexOf("--raw");
-const rawFile = rawIndex >= 0 ? args[rawIndex + 1] : null;
+const ifToken = process.argv.includes("--if-token");
+const token = process.env.NOTION_TOKEN?.trim();
 
 /* ------------------------------------------------------------ Notion ---- */
 
@@ -55,7 +58,7 @@ async function notion(path, body) {
   const res = await fetch(`https://api.notion.com/v1/${path}`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+      Authorization: `Bearer ${token}`,
       "Notion-Version": NOTION_VERSION,
       "Content-Type": "application/json",
     },
@@ -67,12 +70,12 @@ async function notion(path, body) {
   return res.json();
 }
 
-async function fetchPublishedPages() {
+async function queryAll(dataSourceId, filter) {
   const pages = [];
   let cursor;
   do {
-    const data = await notion(`data_sources/${DATA_SOURCE_ID}/query`, {
-      filter: { property: "Publish Status", status: { equals: "Published" } },
+    const data = await notion(`data_sources/${dataSourceId}/query`, {
+      filter,
       sorts: [{ timestamp: "created_time", direction: "descending" }],
       start_cursor: cursor,
       page_size: 100,
@@ -83,7 +86,7 @@ async function fetchPublishedPages() {
   return pages;
 }
 
-/** Some property names in the database end in a space; match on trimmed names. */
+/** Some property names in these databases end in a space; match on trimmed names. */
 function prop(props, name) {
   const key = Object.keys(props).find((k) => k.trim() === name);
   return key ? props[key] : undefined;
@@ -95,46 +98,46 @@ const plain = (p) =>
     .join("")
     .trim();
 
+const names = (p) => p?.multi_select?.map((o) => o.name) ?? [];
+const selectName = (p) => p?.select?.name ?? p?.status?.name ?? null;
+
 const fileOf = (f) =>
-  f ? { url: f.external?.url ?? f.file?.url, uploaded: f.type === "file", name: f.name } : null;
+  f ? { url: f.external?.url ?? f.file?.url, uploaded: f.type === "file" } : null;
 
 const firstFile = (p) => fileOf(p?.files?.[0]);
 
-/** "Market" is a place property; read whatever label it carries. */
 function placeName(p) {
   const v = p?.[p?.type];
-  if (!v) return "";
-  if (typeof v === "string") return v.trim();
-  return String(v.name ?? v.address ?? "").trim();
+  if (!v) return null;
+  if (typeof v === "string") return v.trim() || null;
+  return String(v.name ?? v.address ?? "").trim() || null;
 }
 
-function toRecord(page) {
-  const p = page.properties;
-  return {
-    id: page.id,
-    name: plain(prop(p, "Name")),
-    types: prop(p, "Type")?.multi_select?.map((o) => o.name) ?? [],
-    dateText: plain(prop(p, "Date - Client name - country")),
-    market: placeName(prop(p, "Market")),
-    behance: firstFile(prop(p, "Behance Link")),
-    brandBook: firstFile(prop(p, "Brand Book")),
-    concept: firstFile(prop(p, "Logo concept (anatomy)")),
-    cover: fileOf(page.cover),
-  };
+/** Image URL of a page icon: uploaded file, external link or custom emoji. */
+function iconUrl(icon) {
+  if (!icon) return null;
+  return icon.file?.url ?? icon.external?.url ?? icon.custom_emoji?.url ?? null;
 }
+
+const toUrl = (s) => (!s ? null : /^https?:\/\//i.test(s) ? s : `https://${s.replace(/^\/+/, "")}`);
 
 /* ------------------------------------------------------------ images ---- */
 
 async function load(src) {
-  if (/^https?:\/\//.test(src)) {
-    const res = await fetch(src);
-    if (!res.ok) throw new Error(`Download failed (${res.status}): ${src.split("?")[0]}`);
-    return Buffer.from(await res.arrayBuffer());
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(src);
+      if (!res.ok) throw new Error(`Download failed (${res.status}): ${src.split("?")[0]}`);
+      return Buffer.from(await res.arrayBuffer());
+    } catch (err) {
+      lastError = err;
+    }
   }
-  return readFile(src);
+  throw lastError;
 }
 
-/** Colour of the top-left corner, so the page can extend the cover's background. */
+/** Colour of the top-left corner, so a page can extend the image's background. */
 async function cornerColor(buf) {
   const { data, info } = await sharp(buf)
     .extract({ left: 2, top: 2, width: 1, height: 1 })
@@ -144,18 +147,45 @@ async function cornerColor(buf) {
   return "#" + [data[0], data[1], data[2]].map((n) => n.toString(16).padStart(2, "0")).join("");
 }
 
-async function encode(src, maxWidth, withColor) {
-  const buf = await load(src);
+/**
+ * For an image on a transparent background: whether what is drawn is light
+ * or dark, so the page can put it on a background it shows up against.
+ */
+async function inkTone(buf) {
+  const { data } = await sharp(buf)
+    .ensureAlpha()
+    .resize(48, 48, { fit: "inside" })
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let sum = 0;
+  let n = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] < 128) continue;
+    sum += 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+    n++;
+  }
+  return n && sum / n > 190 ? "light" : "dark";
+}
+
+/**
+ * Downloads `url`, writes it as WebP at `public/portfolio/<path>` (queued in
+ * `files`) and returns the entry the pages use.
+ */
+async function image(files, url, path, maxWidth) {
+  const buf = await load(url);
   const { data, info } = await sharp(buf)
     .rotate()
     .resize({ width: maxWidth, withoutEnlargement: true })
     .webp({ quality: 82 })
     .toBuffer({ resolveWithObject: true });
+  files.push({ path, data });
+  const color = await cornerColor(buf);
   return {
-    data,
+    src: `${IMG_URL}/${path}`,
     width: info.width,
     height: info.height,
-    color: withColor ? await cornerColor(buf) : undefined,
+    color,
+    ...(color ? {} : { ink: await inkTone(buf) }),
   };
 }
 
@@ -170,6 +200,13 @@ function slugify(name) {
     .replace(/^-+|-+$/g, "");
 }
 
+function uniqueSlug(name, id, used) {
+  let slug = slugify(name) || id.replace(/-/g, "").slice(0, 8);
+  if (used.has(slug)) slug = `${slug}-${id.replace(/-/g, "").slice(0, 4)}`;
+  used.add(slug);
+  return slug;
+}
+
 /** "2023 - Halley International Schools - Saudi Arabia" → year + country. */
 function parseDateText(text) {
   const parts = text.split(/\s+-\s+/).map((s) => s.trim()).filter(Boolean);
@@ -178,68 +215,125 @@ function parseDateText(text) {
   return { year, country };
 }
 
-const asFile = (v) => (typeof v === "string" ? { url: v, uploaded: true } : v ?? null);
+async function mapStudio(page, files, used) {
+  const p = page.properties;
+  const name = plain(prop(p, "Name"));
+  const cover = fileOf(page.cover);
+  if (!name || !cover?.url) return null; // a project without a cover has nothing to show
 
-/** Returns the project entry plus the files it needs written. */
-async function build(rec, usedSlugs) {
-  let slug = slugify(rec.name) || rec.id.replace(/-/g, "").slice(0, 8);
-  if (usedSlugs.has(slug)) slug = `${slug}-${rec.id.replace(/-/g, "").slice(0, 4)}`;
-  usedSlugs.add(slug);
+  const slug = uniqueSlug(name, page.id, used);
+  const { year, country } = parseDateText(plain(prop(p, "Date")));
 
-  const files = [];
-  const { year, country } = parseDateText(rec.dateText ?? "");
-
-  let cover = null;
-  const coverSrc = asFile(rec.cover);
-  if (coverSrc?.url) {
-    const img = await encode(coverSrc.url, COVER_WIDTH, true);
-    const file = `${slug}.webp`;
-    files.push({ file, data: img.data });
-    cover = { src: `${IMG_URL}/${file}`, width: img.width, height: img.height, color: img.color };
-  }
-
-  let concept = null;
-  const conceptSrc = asFile(rec.concept);
-  if (conceptSrc?.url) {
-    const img = await encode(conceptSrc.url, CONCEPT_WIDTH, false);
-    const file = `${slug}-concept.webp`;
-    files.push({ file, data: img.data });
-    concept = { src: `${IMG_URL}/${file}`, width: img.width, height: img.height };
-  }
+  const concept = firstFile(prop(p, "Logo concept (anatomy)"));
 
   // An uploaded brand book expires like any Notion file, so keep a copy;
   // a link (Drive, Behance…) is used as it is.
   let brandBook = null;
-  const book = asFile(rec.brandBook);
+  const book = firstFile(prop(p, "Brand Book"));
   if (book?.url) {
     if (book.uploaded) {
-      const ext = extname(new URL(book.url, "file:///").pathname) || ".pdf";
-      const file = `${slug}-brand-book${ext}`;
-      files.push({ file, data: await load(book.url) });
-      brandBook = `${IMG_URL}/${file}`;
+      const ext = extname(new URL(book.url).pathname) || ".pdf";
+      const path = `studio/${slug}-brand-book${ext}`;
+      files.push({ path, data: await load(book.url) });
+      brandBook = `${IMG_URL}/${path}`;
     } else {
       brandBook = book.url;
     }
   }
 
-  const behance = asFile(rec.behance)?.url ?? null;
-
   return {
-    project: {
-      id: rec.id,
-      slug,
-      name: rec.name,
-      services: rec.types ?? [],
-      year,
-      country: rec.market || country || null,
-      behance,
-      brandBook,
-      cover,
-      concept,
-    },
-    files,
+    id: page.id,
+    slug,
+    name,
+    services: names(prop(p, "Type")),
+    year,
+    country: placeName(prop(p, "Market")) ?? country,
+    behance: firstFile(prop(p, "Behance Link"))?.url ?? null,
+    brandBook,
+    cover: await image(files, cover.url, `studio/${slug}.webp`, 1600),
+    concept: concept?.url ? await image(files, concept.url, `studio/${slug}-concept.webp`, 1600) : null,
   };
 }
+
+async function mapCommerce(page, files, used) {
+  const p = page.properties;
+  const name = plain(prop(p, "Project name"));
+  if (!name) return null;
+  const slug = uniqueSlug(name, page.id, used);
+
+  const shot = fileOf(page.cover) ?? firstFile(prop(p, "Files & media"));
+  const logo = iconUrl(page.icon);
+
+  return {
+    id: page.id,
+    slug,
+    name,
+    url: toUrl(prop(p, "Store Link")?.url),
+    year: selectName(prop(p, "Delivery year")),
+    country: placeName(prop(p, "Place")),
+    migratedFrom: selectName(prop(p, "Migration Source")),
+    image: shot?.url ? await image(files, shot.url, `commerce/${slug}.webp`, 1200) : null,
+    logo: logo ? await image(files, logo, `commerce/${slug}-logo.webp`, 400) : null,
+  };
+}
+
+async function mapDigital(page, files, used) {
+  const p = page.properties;
+  const brand = plain(prop(p, "Brand"));
+  if (!brand) return null;
+  const slug = uniqueSlug(brand, page.id, used);
+  const logo = iconUrl(page.icon);
+
+  return {
+    id: page.id,
+    slug,
+    brand,
+    solution: selectName(prop(p, "Solution")),
+    services: names(prop(p, "Services")),
+    industries: names(prop(p, "Industry")),
+    country: placeName(prop(p, "Market")),
+    performance: plain(prop(p, "Performance")) || null,
+    monthly: plain(prop(p, "Monthly record")) || null,
+    roi: plain(prop(p, "ROI (90% accuracy)")) || null,
+    store: toUrl(plain(prop(p, "Shopify"))),
+    priority: prop(p, "Priority")?.number ?? null,
+    logo: logo ? await image(files, logo, `digital/${slug}-logo.webp`, 400) : null,
+  };
+}
+
+const VERTICALS = {
+  studio: {
+    filter: { property: "Status", status: { equals: "Done & Delivered" } },
+    map: mapStudio,
+  },
+  commerce: {
+    filter: {
+      and: [
+        { property: "Project Status", status: { equals: "Delivered" } },
+        { property: "Status", select: { equals: "Active & Running" } },
+      ],
+    },
+    map: mapCommerce,
+  },
+  digital: {
+    filter: { property: "Company Status", status: { does_not_equal: "Closed" } },
+    map: mapDigital,
+  },
+};
+
+/* ------------------------------------------------------------- order ---- */
+
+/** Keep the previous order for known ids; new ones go first. */
+function keepOrder(items, previous = []) {
+  const index = new Map(previous.map((p, i) => [p.id, i]));
+  const fresh = items.filter((i) => !index.has(i.id));
+  const known = items.filter((i) => index.has(i.id)).sort((a, b) => index.get(a.id) - index.get(b.id));
+  return [...fresh, ...known];
+}
+
+const byYearDesc = (a, b) => (b.year ?? "0").localeCompare(a.year ?? "0") || a.name.localeCompare(b.name);
+const byPriority = (a, b) =>
+  (a.priority ?? Infinity) - (b.priority ?? Infinity) || a.brand.localeCompare(b.brand);
 
 /* -------------------------------------------------------------- main ---- */
 
@@ -247,62 +341,71 @@ async function readPrevious() {
   try {
     return JSON.parse(await readFile(JSON_PATH, "utf8"));
   } catch {
-    return { projects: [] };
+    return {};
   }
 }
 
+async function listFiles(dir) {
+  const out = [];
+  for (const entry of await readdir(dir, { withFileTypes: true }).catch(() => [])) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await listFiles(full)));
+    else out.push(full);
+  }
+  return out;
+}
+
 async function main() {
-  let records;
-  if (rawFile) {
-    records = JSON.parse(await readFile(resolve(rawFile), "utf8"));
-  } else {
-    if (!process.env.NOTION_TOKEN) {
-      if (ifToken) {
-        console.log("[portfolio] NOTION_TOKEN not set; using the committed lib/portfolio.json.");
-        return;
-      }
-      throw new Error("NOTION_TOKEN is not set.");
+  if (!token) {
+    if (ifToken) {
+      console.log("[portfolio] NOTION_TOKEN not set; using the committed lib/portfolio.json.");
+      return;
     }
-    records = (await fetchPublishedPages()).map(toRecord);
+    throw new Error("NOTION_TOKEN is not set.");
   }
 
   // Build everything in memory first, so a failure leaves the repo untouched.
-  const usedSlugs = new Set();
-  const built = [];
-  for (const rec of records) {
-    if (!rec.name) continue;
-    built.push(await build(rec, usedSlugs));
+  const files = [];
+  const result = {};
+  for (const [key, { filter, map }] of Object.entries(VERTICALS)) {
+    const pages = await queryAll(DATA_SOURCES[key], filter);
+    const used = new Set();
+    const items = [];
+    for (const page of pages) {
+      const item = await map(page, files, used);
+      if (item) items.push(item);
+    }
+    result[key] = items;
   }
 
   const previous = await readPrevious();
-  const prevIndex = new Map(previous.projects.map((p, i) => [p.id, i]));
-  const fresh = built.filter((b) => !prevIndex.has(b.project.id));
-  const known = built
-    .filter((b) => prevIndex.has(b.project.id))
-    .sort((a, b) => prevIndex.get(a.project.id) - prevIndex.get(b.project.id));
-  const ordered = [...fresh, ...known];
+  result.studio = keepOrder(result.studio, previous.studio ?? previous.projects);
+  result.commerce.sort(byYearDesc);
+  result.digital.sort(byPriority);
 
-  await mkdir(IMG_DIR, { recursive: true });
   const keep = new Set();
-  for (const { files } of ordered) {
-    for (const f of files) {
-      await writeFile(join(IMG_DIR, f.file), f.data);
-      keep.add(f.file);
-    }
+  for (const f of files) {
+    const full = join(IMG_DIR, ...f.path.split("/"));
+    await mkdir(dirname(full), { recursive: true });
+    await writeFile(full, f.data);
+    keep.add(full);
   }
-  for (const name of await readdir(IMG_DIR)) {
-    if (!keep.has(name)) await rm(join(IMG_DIR, name));
+  for (const full of await listFiles(IMG_DIR)) {
+    if (!keep.has(full)) await rm(full);
   }
 
   const out = {
-    source: `notion data source ${DATA_SOURCE_ID} (Publish Status = Published)`,
     syncedAt: new Date().toISOString(),
-    projects: ordered.map((b) => b.project),
+    studio: result.studio,
+    commerce: result.commerce,
+    digital: result.digital,
   };
   await writeFile(JSON_PATH, JSON.stringify(out, null, 2) + "\n");
 
+  const rel = relative(ROOT, IMG_DIR).split(sep).join("/");
   console.log(
-    `[portfolio] ${out.projects.length} projects: ${out.projects.map((p) => p.slug).join(", ")}`,
+    `[portfolio] studio ${out.studio.length}, commerce ${out.commerce.length}, ` +
+      `digital ${out.digital.length}; ${files.length} files in ${rel}/`,
   );
 }
 

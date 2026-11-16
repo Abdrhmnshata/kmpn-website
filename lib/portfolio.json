@@ -1,7 +1,6 @@
 {
-  "source": "notion data source 2dac45aa-cc37-8139-9be2-000b01961f46 (Publish Status = Published)",
-  "syncedAt": "2026-11-16T02:52:24.835Z",
-  "projects": [
+  "syncedAt": "2026-11-16T03:35:16.515Z",
+  "studio": [
     {
       "id": "2dac45aa-cc37-8126-bcee-efe5a1643a32",
       "slug": "halley-international-schools",
@@ -16,16 +15,97 @@
       "behance": "https://www.behance.net/gallery/210702339/Halley-International-School-Rebranding",
       "brandBook": null,
       "cover": {
-        "src": "/portfolio/halley-international-schools.webp",
+        "src": "/portfolio/studio/halley-international-schools.webp",
         "width": 1500,
         "height": 900,
         "color": "#066058"
       },
       "concept": {
-        "src": "/portfolio/halley-international-schools-concept.webp",
+        "src": "/portfolio/studio/halley-international-schools-concept.webp",
         "width": 1600,
-        "height": 2053
+        "height": 2053,
+        "color": "#ffffff"
       }
+    },
+    {
+      "id": "2dac45aa-cc37-8140-a172-c0d2b24e104d",
+      "slug": "t-and-n-guideline",
+      "name": "T&N + Guideline",
+      "services": [
+        "Re-branding",
+        "Logo Design"
+      ],
+      "year": "2023",
+      "country": "Egypt",
+      "behance": "https://www.behance.net/gallery/235633057/Altawheed-Welnour-Rebranding?lo=48406cd48912312b9af74ee0deabdb38ff1aa46860f2bbe3b61f122ed3d707a7",
+      "brandBook": "https://drive.google.com/file/d/1J3RLfJi4XY-BiXhsASKQoDtP5TDjMSWt/view?usp=sharing",
+      "cover": {
+        "src": "/portfolio/studio/t-and-n-guideline.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#e81c3f"
+      },
+      "concept": null
+    },
+    {
+      "id": "360c45aa-cc37-80a5-943c-cd75fda735f2",
+      "slug": "melura",
+      "name": "Melura",
+      "services": [
+        "Logo Design",
+        "Branding",
+        "Brand Strategy"
+      ],
+      "year": "2026",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": "https://drive.google.com/file/d/1lD0rUE714-Z109PH9JS3Z2ba9c-uyJNZ/view?usp=sharing",
+      "cover": {
+        "src": "/portfolio/studio/melura.webp",
+        "width": 1366,
+        "height": 768,
+        "color": "#f5efe0"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-81af-9e4c-eb8f1a5e6ec7",
+      "slug": "jawa-uplifting-project",
+      "name": "Jawa - Uplifting project",
+      "services": [
+        "Logo Design"
+      ],
+      "year": "2025",
+      "country": "Saudi Arabia",
+      "behance": null,
+      "brandBook": "https://drive.google.com/file/d/1VUCpnUpQBwVfWTGefjvz_ElQIYzDFznM/view?usp=sharing",
+      "cover": {
+        "src": "/portfolio/studio/jawa-uplifting-project.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#d95d30"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-81da-87f8-d623e5742d81",
+      "slug": "jadeer",
+      "name": "Jadeer",
+      "services": [
+        "Brand Strategy",
+        "Logo Design"
+      ],
+      "year": "2024",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": "https://drive.google.com/file/d/12hSchvjp-pLxzFYzdCSwXQzRlwJk7efx/view?usp=sharing",
+      "cover": {
+        "src": "/portfolio/studio/jadeer.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#0e1627"
+      },
+      "concept": null
     },
     {
       "id": "3c7c45aa-cc37-80cc-9553-cd6f38722e12",
@@ -36,15 +116,36 @@
         "Re-branding",
         "Logo Design"
       ],
-      "year": null,
-      "country": null,
+      "year": "2026",
+      "country": "Egypt",
       "behance": null,
       "brandBook": null,
       "cover": {
-        "src": "/portfolio/mzian.webp",
+        "src": "/portfolio/studio/mzian.webp",
         "width": 1366,
         "height": 768,
         "color": "#092b2b"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-813a-91f2-e19acc82664d",
+      "slug": "koay",
+      "name": "KOAY",
+      "services": [
+        "Brand Strategy",
+        "Shopify",
+        "Re-branding"
+      ],
+      "year": "2025",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/koay.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#1e1e1e"
       },
       "concept": null
     },
@@ -56,12 +157,12 @@
         "Logo Design",
         "Brand Strategy"
       ],
-      "year": null,
-      "country": null,
+      "year": "2023",
+      "country": "United Arab Emirates",
       "behance": "https://www.behance.net/gallery/212158977/Flocks-Brand-Identity",
       "brandBook": null,
       "cover": {
-        "src": "/portfolio/flocks.webp",
+        "src": "/portfolio/studio/flocks.webp",
         "width": 1500,
         "height": 900,
         "color": "#0a2d73"
@@ -76,15 +177,115 @@
         "Brand Strategy",
         "Logo Design"
       ],
-      "year": null,
-      "country": null,
+      "year": "2025",
+      "country": "Saudi Arabia",
       "behance": "https://www.behance.net/gallery/234184403/MIRAL-Brand-Identity-Design",
       "brandBook": null,
       "cover": {
-        "src": "/portfolio/miral-branding.webp",
+        "src": "/portfolio/studio/miral-branding.webp",
         "width": 1500,
         "height": 900,
         "color": "#333333"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-8136-8c0f-f87215c2c8b8",
+      "slug": "dukanty",
+      "name": "Dukanty",
+      "services": [
+        "Re-branding",
+        "Brand Strategy",
+        "Logo Design"
+      ],
+      "year": "2024",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": "https://drive.google.com/file/d/1MFTUeszN4AZPeZsM8P9QwrL-yd3MBQFg/view?usp=drive_link",
+      "cover": {
+        "src": "/portfolio/studio/dukanty.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#2f392b"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-813c-bbf4-d0af9485d724",
+      "slug": "cig",
+      "name": "CIG",
+      "services": [
+        "Re-branding",
+        "Brand Strategy",
+        "Logo Design"
+      ],
+      "year": "2024",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/cig.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#d9411e"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-81f3-a819-de942eea461b",
+      "slug": "surveying-services",
+      "name": "Surveying Services",
+      "services": [
+        "Brand Strategy",
+        "Logo Design"
+      ],
+      "year": "2025",
+      "country": "Saudi Arabia",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/surveying-services.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#593528"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-8112-87b7-e50227693f42",
+      "slug": "della",
+      "name": "Della",
+      "services": [
+        "Logo Design"
+      ],
+      "year": "2022",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/della.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#d9043d"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-81b0-9739-fc45dd510bc3",
+      "slug": "diet-time",
+      "name": "Diet time",
+      "services": [
+        "Logo Design"
+      ],
+      "year": "2022",
+      "country": "Saudi Arabia",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/diet-time.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#f0fafa"
       },
       "concept": null
     },
@@ -97,15 +298,53 @@
         "Brand Strategy",
         "Logo Design"
       ],
-      "year": null,
-      "country": null,
+      "year": "2019",
+      "country": "Egypt",
       "behance": null,
       "brandBook": null,
       "cover": {
-        "src": "/portfolio/oq-originals.webp",
+        "src": "/portfolio/studio/oq-originals.webp",
         "width": 1500,
         "height": 900,
         "color": "#000000"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-81c5-81cd-c96ef87aa605",
+      "slug": "doolab",
+      "name": "Doolab",
+      "services": [
+        "Logo Design"
+      ],
+      "year": "2019",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/doolab.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#8e4a28"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-8158-aafb-e1d8a56fcc50",
+      "slug": "celia",
+      "name": "CELIA",
+      "services": [
+        "Logo Design"
+      ],
+      "year": "2020",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/celia.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#2c3c9c"
       },
       "concept": null
     },
@@ -120,15 +359,32 @@
         "Branding",
         "Logo Design"
       ],
-      "year": null,
-      "country": null,
+      "year": "2021",
+      "country": "Egypt",
       "behance": null,
       "brandBook": null,
       "cover": {
-        "src": "/portfolio/gbn.webp",
+        "src": "/portfolio/studio/gbn.webp",
         "width": 1500,
         "height": 900,
         "color": "#05142d"
+      },
+      "concept": null
+    },
+    {
+      "id": "2dac45aa-cc37-80a7-b18b-caebafea9469",
+      "slug": "thomor",
+      "name": "Thomor",
+      "services": [],
+      "year": "2025",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/thomor.webp",
+        "width": 1500,
+        "height": 900,
+        "color": "#182526"
       },
       "concept": null
     },
@@ -140,17 +396,937 @@
         "Logo Design",
         "Branding"
       ],
-      "year": null,
-      "country": null,
+      "year": "2025",
+      "country": "Egypt",
       "behance": null,
       "brandBook": null,
       "cover": {
-        "src": "/portfolio/kmpn.webp",
+        "src": "/portfolio/studio/kmpn.webp",
         "width": 1366,
         "height": 768,
         "color": "#f2f4f5"
       },
       "concept": null
+    },
+    {
+      "id": "380c45aa-cc37-80b2-a662-f686bddaba14",
+      "slug": "makin",
+      "name": "Makin",
+      "services": [
+        "Branding",
+        "Logo Design"
+      ],
+      "year": "2026",
+      "country": "Saudi Arabia",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/makin.webp",
+        "width": 1366,
+        "height": 768,
+        "color": "#eee4cd"
+      },
+      "concept": null
+    },
+    {
+      "id": "380c45aa-cc37-8089-88f4-c82c78bacf99",
+      "slug": "liora",
+      "name": "Liora",
+      "services": [
+        "Branding",
+        "Logo Design"
+      ],
+      "year": "2022",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/liora.webp",
+        "width": 1366,
+        "height": 768,
+        "color": "#f0807f"
+      },
+      "concept": null
+    },
+    {
+      "id": "3f6c45aa-cc37-8036-95ab-c91e91217632",
+      "slug": "amad",
+      "name": "Amad",
+      "services": [
+        "Logo Design"
+      ],
+      "year": "2026",
+      "country": "Egypt",
+      "behance": null,
+      "brandBook": null,
+      "cover": {
+        "src": "/portfolio/studio/amad.webp",
+        "width": 1366,
+        "height": 768,
+        "color": "#45191f"
+      },
+      "concept": null
+    }
+  ],
+  "commerce": [
+    {
+      "id": "3e1c45aa-cc37-80a7-81c5-c5282345e902",
+      "slug": "corner-watches",
+      "name": "Corner Watches",
+      "url": "https://cornerwatcesstore.com/",
+      "year": "2026",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/corner-watches.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#171717"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/corner-watches-logo.webp",
+        "width": 100,
+        "height": 100,
+        "color": null,
+        "ink": "light"
+      }
+    },
+    {
+      "id": "385c45aa-cc37-808d-9f5d-fb7a3a980bd1",
+      "slug": "icon-puffs",
+      "name": "Icon Puffs",
+      "url": "https://store.iconic.com.eg/",
+      "year": "2026",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/icon-puffs.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#171717"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/icon-puffs-logo.webp",
+        "width": 400,
+        "height": 302,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "3e1c45aa-cc37-800b-a96b-e6f2e64f2faa",
+      "slug": "mzian",
+      "name": "Mzian",
+      "url": "https://mzian-eg.com/",
+      "year": "2026",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/mzian.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#171717"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/mzian-logo.webp",
+        "width": 400,
+        "height": 225,
+        "color": "#092b2b"
+      }
+    },
+    {
+      "id": "3bfc45aa-cc37-80aa-bbc0-c82f1b8ed178",
+      "slug": "ottroja",
+      "name": "Ottroja",
+      "url": "https://ottroja.com/",
+      "year": "2026",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/ottroja.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#171717"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/ottroja-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#fbf8e9"
+      }
+    },
+    {
+      "id": "3b9c45aa-cc37-801c-8a64-ec1a54191f1a",
+      "slug": "so-silky",
+      "name": "So Silky",
+      "url": "https://sosilky.shop/",
+      "year": "2026",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/so-silky.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#171717"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/so-silky-logo.webp",
+        "width": 330,
+        "height": 119,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-817d-accb-ca4b78b8d937",
+      "slug": "ip-masr",
+      "name": "IP Masr",
+      "url": "https://ipmasr.com/",
+      "year": "2025",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/ip-masr.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#171717"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/ip-masr-logo.webp",
+        "width": 400,
+        "height": 312,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-818c-9ad7-caeffb54a53a",
+      "slug": "kandil",
+      "name": "Kandil",
+      "url": "https://kandiltires.com/",
+      "year": "2025",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/kandil.webp",
+        "width": 1200,
+        "height": 758,
+        "color": "#e51f27"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/kandil-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-81be-88c7-d67d911fa304",
+      "slug": "surveying-experts",
+      "name": "Surveying Experts",
+      "url": "https://store.surveyingexperts-sa.com/",
+      "year": "2025",
+      "country": "Saudi Arabia",
+      "migratedFrom": "WooCommerce",
+      "image": {
+        "src": "/portfolio/commerce/surveying-experts.webp",
+        "width": 1200,
+        "height": 717,
+        "color": "#355061"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/surveying-experts-logo.webp",
+        "width": 300,
+        "height": 300,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8152-9f8d-de08a2736f21",
+      "slug": "dokhun",
+      "name": "Dokhun",
+      "url": "https://dokhon.myshopify.com/",
+      "year": "2024",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": null,
+      "logo": {
+        "src": "/portfolio/commerce/dokhun-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-81ac-a889-c000bbb1b52c",
+      "slug": "montag-store",
+      "name": "Montag Store",
+      "url": "https://montagstore.com/",
+      "year": "2024",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/montag-store.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/montag-store-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#591d97"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8119-bfae-ed5944a96fee",
+      "slug": "rugmorph",
+      "name": "RugMorph",
+      "url": "https://rugmorph.com/",
+      "year": "2024",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/rugmorph.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#171717"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/rugmorph-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#169ed8"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-810e-8a93-dfe41311db90",
+      "slug": "t-and-n",
+      "name": "T&N",
+      "url": "http://tawheedwnour.com/",
+      "year": "2024",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/t-and-n.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/t-and-n-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#f2f2f2"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8135-b61e-e8d3b1704198",
+      "slug": "zan",
+      "name": "Zan",
+      "url": "https://zan-eg.store/",
+      "year": "2024",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/zan.webp",
+        "width": 1200,
+        "height": 528,
+        "color": "#faf6ea"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/zan-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#faf6ea"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-81b2-a516-f99f8a4cd8ab",
+      "slug": "smart-laptop",
+      "name": "Smart Laptop",
+      "url": "https://smart-laptop.com/",
+      "year": "2023",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/smart-laptop.webp",
+        "width": 986,
+        "height": 930,
+        "color": "#0f90d4"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/smart-laptop-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#3cc7f0"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-81dc-9b73-ec32750f7c61",
+      "slug": "sevilla-fragrances",
+      "name": "Sevilla Fragrances",
+      "url": "https://www.sevillafragrances.com/",
+      "year": "2022",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/sevilla-fragrances.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/sevilla-fragrances-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8133-b372-f26e96276660",
+      "slug": "oq-originals",
+      "name": "OQ Originals",
+      "url": "https://oqoriginals.com/",
+      "year": "2020",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/oq-originals.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/oq-originals-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-81c5-8dec-d933e6613fe3",
+      "slug": "koay-silver",
+      "name": "KOAY Silver",
+      "url": "https://koaysilver.com/",
+      "year": "2019",
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/koay-silver.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/koay-silver-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8154-8603-ec9ab5205557",
+      "slug": "40-dash",
+      "name": "40 Dash",
+      "url": "https://40dash.net/",
+      "year": null,
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/40-dash.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": null
+    },
+    {
+      "id": "2c5c45aa-cc37-8136-9af4-e9b4a649a2b3",
+      "slug": "achilles-stores",
+      "name": "Achilles Stores",
+      "url": "https://achilleseg.com/",
+      "year": null,
+      "country": "Egypt",
+      "migratedFrom": "WooCommerce",
+      "image": {
+        "src": "/portfolio/commerce/achilles-stores.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/achilles-stores-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8180-a4f9-f73ed38da09b",
+      "slug": "dr-rose",
+      "name": "Dr Rose",
+      "url": "https://drrose.shop/",
+      "year": null,
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/dr-rose.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/dr-rose-logo.webp",
+        "width": 400,
+        "height": 381,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8140-a694-c42659b39e5b",
+      "slug": "sutra",
+      "name": "Sutra",
+      "url": "https://sutrastores.com/",
+      "year": null,
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/sutra.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/sutra-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-8134-9376-c86c221c1a46",
+      "slug": "xzone-stores",
+      "name": "XZone Stores",
+      "url": null,
+      "year": null,
+      "country": "Egypt",
+      "migratedFrom": null,
+      "image": {
+        "src": "/portfolio/commerce/xzone-stores.webp",
+        "width": 1200,
+        "height": 800,
+        "color": "#011925"
+      },
+      "logo": {
+        "src": "/portfolio/commerce/xzone-stores-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#f25c05"
+      }
+    }
+  ],
+  "digital": [
+    {
+      "id": "2a0c45aa-cc37-808f-8b90-e3154cfc4938",
+      "slug": "tawheed-wel-nour",
+      "brand": "Tawheed Wel Nour",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Shopify",
+        "Performance Marketing",
+        "Copywrite Strategy",
+        "Social Content",
+        "Media production"
+      ],
+      "industries": [
+        "Retail"
+      ],
+      "country": "Egypt",
+      "performance": "GMV: 46M EGP sales in 24 months",
+      "monthly": "From 0 to 5.1M EGP monthly",
+      "roi": "15x",
+      "store": "https://tawheedwelnour.com",
+      "priority": 1,
+      "logo": {
+        "src": "/portfolio/digital/tawheed-wel-nour-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#f2f2f2"
+      }
+    },
+    {
+      "id": "2dac45aa-cc37-808a-a754-d4577e6f806b",
+      "slug": "rugmorph",
+      "brand": "RugMorph",
+      "solution": "Growth Marketing",
+      "services": [
+        "Shopify",
+        "Performance Marketing",
+        "Copywrite Strategy",
+        "Social Content",
+        "Media production"
+      ],
+      "industries": [
+        "Home Services"
+      ],
+      "country": "Egypt",
+      "performance": "GMV: 98M EGP sales in 46 months",
+      "monthly": "From daily 35 orders to 250 orders",
+      "roi": null,
+      "store": "https://rugmorph.com/",
+      "priority": 2,
+      "logo": {
+        "src": "/portfolio/digital/rugmorph-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#169ed8"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-804a-941a-ff6cc18deddb",
+      "slug": "surveying-experts",
+      "brand": "Surveying Experts",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Shopify",
+        "Performance Marketing",
+        "Copywrite Strategy",
+        "Social Content"
+      ],
+      "industries": [
+        "Hardware"
+      ],
+      "country": "Saudi Arabia",
+      "performance": "Paid sales: 740K USD sales in 9 months",
+      "monthly": "From 14K USD to 90K USD monthly",
+      "roi": "27x",
+      "store": "https://surveyingexperts-sa.com/",
+      "priority": 3,
+      "logo": {
+        "src": "/portfolio/digital/surveying-experts-logo.webp",
+        "width": 300,
+        "height": 300,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-80dd-9e48-db4745eab613",
+      "slug": "smart-laptop",
+      "brand": "Smart Laptop",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Shopify",
+        "Performance Marketing",
+        "Copywrite Strategy",
+        "Social Content",
+        "Media production"
+      ],
+      "industries": [
+        "Consumer Electronics"
+      ],
+      "country": "Egypt",
+      "performance": "Paid sales: 9.3M EGP in 16 months",
+      "monthly": "From 0 to 1.7M EGP",
+      "roi": null,
+      "store": "https://smart-laptop.com/",
+      "priority": 4,
+      "logo": {
+        "src": "/portfolio/digital/smart-laptop-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#3cc7f0"
+      }
+    },
+    {
+      "id": "2a0c45aa-cc37-8077-a330-df21416d2501",
+      "slug": "oq-originals",
+      "brand": "OQ Originals",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Shopify",
+        "Performance Marketing",
+        "Copywrite Strategy",
+        "Social Content",
+        "Media production"
+      ],
+      "industries": [
+        "Consumer Electronics"
+      ],
+      "country": "Egypt",
+      "performance": "1.1M EGP Sales in 10 months",
+      "monthly": "From 0 to 280K EGP sales monthly",
+      "roi": "10x",
+      "store": "https://OQoriginals.com",
+      "priority": 5,
+      "logo": {
+        "src": "/portfolio/digital/oq-originals-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2a0c45aa-cc37-802d-811e-dbce0f581819",
+      "slug": "kandil-tiers",
+      "brand": "Kandil tiers",
+      "solution": "Digital transformation",
+      "services": [
+        "Shopify",
+        "Performance Marketing",
+        "Copywrite Strategy"
+      ],
+      "industries": [
+        "Automotive"
+      ],
+      "country": "Egypt",
+      "performance": "385K Sales in first two months",
+      "monthly": null,
+      "roi": "4x",
+      "store": "https://kandiltires.com/",
+      "priority": 6,
+      "logo": {
+        "src": "/portfolio/digital/kandil-tiers-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "2a0c45aa-cc37-80bf-ae41-cd0f7ddc898e",
+      "slug": "cairo-insulation",
+      "brand": "Cairo Insulation",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Performance Marketing",
+        "Copywrite Strategy",
+        "Social Content",
+        "Media production"
+      ],
+      "industries": [
+        "Construction / Industrial"
+      ],
+      "country": "Egypt",
+      "performance": "Increase in qualified leads",
+      "monthly": null,
+      "roi": "12x",
+      "store": null,
+      "priority": 7,
+      "logo": {
+        "src": "/portfolio/digital/cairo-insulation-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2a0c45aa-cc37-803f-a7fe-efbf0727e2db",
+      "slug": "xzone",
+      "brand": "XZone",
+      "solution": "Go to market",
+      "services": [
+        "Brand Strategy",
+        "Shopify",
+        "Performance Marketing",
+        "Copywrite Strategy",
+        "Social Content"
+      ],
+      "industries": [
+        "Consumer Electronics"
+      ],
+      "country": "Egypt",
+      "performance": "GMV: 2M EGP in first 6 month",
+      "monthly": null,
+      "roi": null,
+      "store": null,
+      "priority": 8,
+      "logo": {
+        "src": "/portfolio/digital/xzone-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": null,
+        "ink": "dark"
+      }
+    },
+    {
+      "id": "2a0c45aa-cc37-8015-9e6c-d5098217f959",
+      "slug": "halley",
+      "brand": "Halley",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Performance Marketing"
+      ],
+      "industries": [
+        "Education"
+      ],
+      "country": "Saudi Arabia",
+      "performance": "30% increase in bookings in new registrations for new students",
+      "monthly": null,
+      "roi": "25x",
+      "store": "https://New website",
+      "priority": 9,
+      "logo": {
+        "src": "/portfolio/digital/halley-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2a0c45aa-cc37-8076-b5d2-c2a1d81151e5",
+      "slug": "aroma",
+      "brand": "Aroma",
+      "solution": "New market launching",
+      "services": [
+        "Shopify"
+      ],
+      "industries": [
+        "Food & Beverage"
+      ],
+      "country": "United Arab Emirates",
+      "performance": null,
+      "monthly": null,
+      "roi": null,
+      "store": null,
+      "priority": null,
+      "logo": {
+        "src": "/portfolio/digital/aroma-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#fffef9"
+      }
+    },
+    {
+      "id": "2a0c45aa-cc37-8092-a005-daf7fc84f7b7",
+      "slug": "diet-time",
+      "brand": "Diet time",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Shopify"
+      ],
+      "industries": [
+        "Food & Beverage"
+      ],
+      "country": "Saudi Arabia",
+      "performance": null,
+      "monthly": null,
+      "roi": null,
+      "store": null,
+      "priority": null,
+      "logo": {
+        "src": "/portfolio/digital/diet-time-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#00415d"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-80ea-bdd7-f230ba28ae34",
+      "slug": "dukanty",
+      "brand": "Dukanty",
+      "solution": "Rebranding",
+      "services": [
+        "Brand Strategy"
+      ],
+      "industries": [
+        "Jewelry & Fashion Accessories"
+      ],
+      "country": "Egypt",
+      "performance": null,
+      "monthly": null,
+      "roi": "5x",
+      "store": "https://-",
+      "priority": null,
+      "logo": {
+        "src": "/portfolio/digital/dukanty-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2dac45aa-cc37-80ce-a59a-e3c75a8272ff",
+      "slug": "edara-erp",
+      "brand": "Edara ERP",
+      "solution": "Go to market",
+      "services": [],
+      "industries": [
+        "Software / SaaS"
+      ],
+      "country": "Egypt",
+      "performance": "Two deals in first 28 days",
+      "monthly": null,
+      "roi": null,
+      "store": null,
+      "priority": null,
+      "logo": {
+        "src": "/portfolio/digital/edara-erp-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": "#2d98d5"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-80af-be1c-c965d310d297",
+      "slug": "ip-masr",
+      "brand": "IP Masr",
+      "solution": "Digital transformation",
+      "services": [
+        "Shopify",
+        "Copywrite Strategy"
+      ],
+      "industries": [
+        "Information Technology"
+      ],
+      "country": "Egypt",
+      "performance": null,
+      "monthly": null,
+      "roi": null,
+      "store": "https://ipmasr.com/",
+      "priority": null,
+      "logo": {
+        "src": "/portfolio/digital/ip-masr-logo.webp",
+        "width": 200,
+        "height": 200,
+        "color": "#ffffff"
+      }
+    },
+    {
+      "id": "2c5c45aa-cc37-808a-8144-e2ab27d9a849",
+      "slug": "koay",
+      "brand": "KOAY",
+      "solution": "Digital transformation",
+      "services": [
+        "Brand Strategy",
+        "Shopify"
+      ],
+      "industries": [
+        "Jewelry & Fashion Accessories"
+      ],
+      "country": "Egypt",
+      "performance": null,
+      "monthly": null,
+      "roi": "2000x",
+      "store": "https://Koaysilver.com",
+      "priority": null,
+      "logo": {
+        "src": "/portfolio/digital/koay-logo.webp",
+        "width": 400,
+        "height": 400,
+        "color": null,
+        "ink": "dark"
+      }
     }
   ]
 }

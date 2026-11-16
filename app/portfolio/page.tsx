@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CtaSection } from "@/components/CtaSection";
-import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
-import { PROJECTS, portfolioFilters } from "@/lib/portfolio";
+import { Accent, PageIntro } from "@/components/portfolio/PageIntro";
+import { VerticalTabs } from "@/components/portfolio/VerticalTabs";
+import { StudioCard } from "@/components/portfolio/StudioCard";
+import { StoreCard } from "@/components/portfolio/StoreCard";
+import { CaseCard } from "@/components/portfolio/CaseCard";
+import { COMMERCE, DIGITAL, STUDIO, VERTICALS, type VerticalKey } from "@/lib/portfolio";
 
 const DESCRIPTION =
-  "مختارات من مشاريع الهوية البصرية واستراتيجية العلامة التجارية التي صمّمها استوديو كامبين لعلامات تجارية في مصر والخليج.";
+  "كل أعمال كامبين في مكان واحد: هويات من كامبين استوديو، ومتاجر شوبيفاي من كامبين كومرس، وقصص تحول رقمي كاملة من كامبين ديجيتال.";
 
 export const metadata: Metadata = {
   title: "أعمالنا · كامبين",
@@ -15,48 +20,56 @@ export const metadata: Metadata = {
   openGraph: { title: "أعمالنا · كامبين", description: DESCRIPTION, url: "/portfolio" },
 };
 
+const PREVIEW = 3;
+
+const previews: Record<VerticalKey, React.ReactNode[]> = {
+  studio: STUDIO.slice(0, PREVIEW).map((p) => <StudioCard key={p.id} project={p} />),
+  commerce: COMMERCE.slice(0, PREVIEW).map((s) => <StoreCard key={s.id} store={s} />),
+  digital: DIGITAL.slice(0, PREVIEW).map((c) => <CaseCard key={c.id} item={c} />),
+};
+
 export default function PortfolioPage() {
   return (
     <div className="page">
       <Header ctaHref="/contact" />
 
       <main id="top" className="container">
-        <section
-          style={{
-            padding: "clamp(40px, 6vw, 80px) 0 clamp(24px, 3vw, 36px)",
-            display: "grid",
-            gap: 14,
-            maxWidth: "64ch",
-          }}
-        >
-          <span className="pill" style={{ justifySelf: "start" }}>
-            <span className="dot" />
-            استوديو كامبين
-          </span>
-          <h1
-            style={{
-              fontSize: "clamp(34px, 5vw, 60px)",
-              lineHeight: 1.3,
-              fontWeight: 700,
-              textWrap: "balance",
-            }}
-          >
-            هويات تُعرَف من <span style={{ color: "var(--accent)" }}>أول نظرة</span>.
-          </h1>
-          <p
-            style={{
-              fontSize: 16.5,
-              lineHeight: 1.9,
-              color: "var(--fg2)",
-              textWrap: "pretty",
-            }}
-          >
-            {DESCRIPTION} كل مشروع يبدأ باستراتيجية واضحة للعلامة، وينتهي بهوية
-            جاهزة للظهور في كل مكان.
-          </p>
-        </section>
+        <PageIntro
+          pill="أعمالنا"
+          title={
+            <>
+              ثلاث وحدات متخصصة، <Accent>وشريك واحد</Accent>.
+            </>
+          }
+          text={DESCRIPTION}
+        />
 
-        <PortfolioGrid projects={PROJECTS} filters={portfolioFilters()} />
+        <VerticalTabs current="all" />
+
+        {VERTICALS.map((v) => (
+          <section key={v.key} className="vert-section" aria-labelledby={`v-${v.key}`}>
+            <div className="vert-head">
+              <div style={{ display: "grid", gap: 6, maxWidth: "52ch" }}>
+                <h2 id={`v-${v.key}`} className="vert-title">
+                  {v.name}
+                </h2>
+                <p style={{ color: "var(--fg2)", lineHeight: 1.8 }}>{v.tagline}</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                <span className="vert-stat">
+                  <bdi dir="ltr" className="num">
+                    +{v.count}
+                  </bdi>{" "}
+                  {v.unit}
+                </span>
+                <Link href={v.href} className="vert-link">
+                  كل أعمال {v.name} ←
+                </Link>
+              </div>
+            </div>
+            <div className="work-grid">{previews[v.key]}</div>
+          </section>
+        ))}
 
         <CtaSection />
       </main>

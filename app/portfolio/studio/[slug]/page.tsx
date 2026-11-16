@@ -5,13 +5,13 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CtaSection } from "@/components/CtaSection";
-import { ProjectCard } from "@/components/portfolio/ProjectCard";
+import { StudioCard } from "@/components/portfolio/StudioCard";
 import {
-  PROJECTS,
+  STUDIO,
   countryLabel,
-  getProject,
-  otherProjects,
-  serviceLabels,
+  getStudioProject,
+  otherStudioProjects,
+  studioServiceLabels,
 } from "@/lib/portfolio";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -20,20 +20,20 @@ type Params = { params: Promise<{ slug: string }> };
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return PROJECTS.map((p) => ({ slug: p.slug }));
+  return STUDIO.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const p = getProject((await params).slug);
+  const p = getStudioProject((await params).slug);
   if (!p) return {};
-  const title = `${p.name} · أعمالنا · كامبين`;
-  const description = `${serviceLabels(p).join("، ")} لعلامة ${p.name}، من تصميم استوديو كامبين.`;
+  const title = `${p.name} · كامبين استوديو`;
+  const description = `${studioServiceLabels(p).join("، ")} لعلامة ${p.name}، من تصميم كامبين استوديو.`;
   const images = p.cover ? [{ url: p.cover.src, width: p.cover.width, height: p.cover.height }] : undefined;
   return {
     title,
     description,
-    alternates: { canonical: `/portfolio/${p.slug}` },
-    openGraph: { title, description, url: `/portfolio/${p.slug}`, images },
+    alternates: { canonical: `/portfolio/studio/${p.slug}` },
+    openGraph: { title, description, url: `/portfolio/studio/${p.slug}`, images },
     twitter: { title, description, images: images?.map((i) => i.url) },
   };
 }
@@ -57,10 +57,10 @@ function ExternalIcon() {
 }
 
 export default async function ProjectPage({ params }: Params) {
-  const p = getProject((await params).slug);
+  const p = getStudioProject((await params).slug);
   if (!p) notFound();
 
-  const services = serviceLabels(p);
+  const services = studioServiceLabels(p);
   const country = countryLabel(p.country);
   const facts: [string, string][] = [];
   if (p.year) facts.push(["السنة", p.year]);
@@ -83,6 +83,8 @@ export default async function ProjectPage({ params }: Params) {
           }}
         >
           <Link href="/portfolio">أعمالنا</Link>
+          <span aria-hidden="true">←</span>
+          <Link href="/portfolio/studio">كامبين استوديو</Link>
           <span aria-hidden="true">←</span>
           <span dir="auto" style={{ color: "var(--fg2)" }}>
             {p.name}
@@ -203,15 +205,15 @@ export default async function ProjectPage({ params }: Params) {
             }}
           >
             <h2 style={{ fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, lineHeight: 1.4 }}>
-              مشاريع أخرى
+              مشاريع أخرى من الاستوديو
             </h2>
-            <Link href="/portfolio" style={{ fontSize: 15, fontWeight: 700, color: "var(--accent)" }}>
-              كل الأعمال ←
+            <Link href="/portfolio/studio" className="vert-link">
+              كل أعمال كامبين استوديو ←
             </Link>
           </div>
           <div className="work-grid" style={{ paddingBottom: 0 }}>
-            {otherProjects(p.slug).map((o) => (
-              <ProjectCard key={o.slug} project={o} />
+            {otherStudioProjects(p.slug).map((o) => (
+              <StudioCard key={o.slug} project={o} />
             ))}
           </div>
         </section>

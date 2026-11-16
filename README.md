@@ -16,7 +16,7 @@ Next.js 15 (App Router) · TypeScript · Tailwind v4 · Supabase · Vercel.
 | `/contact` | `Kmpn Contact.dc.html` |
 | `/success-stories` | `Success Stories.dc.html` |
 | `/success-stories/tawheed` | `Tawheed Case Study v3.dc.html` |
-| `/portfolio`, `/portfolio/[slug]` | No design file; built on the site's tokens, data from Notion (see below) |
+| `/portfolio` (أعمالنا) and `/portfolio/studio`, `/portfolio/studio/[slug]`, `/portfolio/commerce`, `/portfolio/digital` | No design file; built on the site's tokens, data from Notion (see below) |
 
 ## Local development
 
@@ -50,27 +50,38 @@ handoff's `assets/` folder.
 
 ## Portfolio (Notion)
 
-`/portfolio` lists the rows of the Notion database
-**KMPN Studio - Branding Case Studies - [Public]** whose *Publish Status* is
-*Published*, and each gets a page at `/portfolio/<slug>`. A project is its
-cover plus its properties: *Type* (shown as Arabic service labels, mapped in
-`lib/portfolio.ts`), *Market* or *Date - Client name - country* (year and
-country), *Behance Link*, *Brand Book* and *Logo concept (anatomy)*. The
-internal fields (*Status*, *Company Status*) are not shown.
+`/portfolio` (أعمالنا) is the work of Kampaign's three verticals, with a
+page each. Every vertical reads its own database under the Notion page
+**Kampaign Portfolio**:
+
+| Vertical | Route | Notion database | Shown |
+| --- | --- | --- | --- |
+| كامبين استوديو | `/portfolio/studio`, `/portfolio/studio/<slug>` | KMPN Studio - Branding Case Studies - [Public] | *Status* = Done & Delivered, with a cover |
+| كامبين كومرس | `/portfolio/commerce` | Kampaign Commerce Shopify Portfolio | *Project Status* = Delivered and *Status* = Active & Running (live stores) |
+| كامبين ديجيتال | `/portfolio/digital` | Digital Transformation Case Studies | *Company Status* ≠ Closed |
+
+Studio projects are a cover plus *Type*, *Market* / *Date*, *Behance Link*,
+*Brand Book* and *Logo concept (anatomy)*; *Behance Publish Status* is about
+Behance only and does not affect the site. Stores link to the live store;
+digital cases show *Solution*, *Industry*, *Market*, *Performance*,
+*Monthly record*, *ROI* and *Services*, with the page icon as the logo.
+Arabic labels for Notion's options live in `lib/portfolio.ts`.
 
 `scripts/sync-portfolio.mjs` writes `lib/portfolio.json` and the images in
-`public/portfolio/`. Notion's file links expire within the hour, so images
-are copied and converted to WebP. It runs as `prebuild` when `NOTION_TOKEN`
-is set, so every Vercel build picks up the latest Notion data; without a
-token, or if Notion fails, the committed files are used. To refresh locally:
+`public/portfolio/<vertical>/`. Notion's file links expire within the hour,
+so images are copied and converted to WebP. It runs as `prebuild` when
+`NOTION_TOKEN` is set, so every Vercel build picks up the latest Notion data;
+without a token, or if Notion fails, the committed files are used. To refresh
+locally (with `NOTION_TOKEN` in `.env.local`):
 
 ```bash
-NOTION_TOKEN=ntn_xxx npm run sync:portfolio
+node --env-file=.env.local scripts/sync-portfolio.mjs
 ```
 
-The token's integration must be connected to the database (••• →
-Connections). Projects keep the order they have in `lib/portfolio.json`;
-newly published ones are added at the top.
+The token's integration must be connected to the **Kampaign Portfolio** page
+(••• → Connections). Order: studio keeps the order in `lib/portfolio.json`
+with new projects on top, commerce is newest delivery year first, digital
+follows the *Priority* column.
 
 ## Supabase
 
