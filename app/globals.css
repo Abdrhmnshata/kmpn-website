@@ -462,29 +462,103 @@ body {
 
 /* ---------- client / partner logo strips ---------------- */
 
-.logo-row {
+/* Client logos: a rounded card with the logos drifting left in a loop
+   (components/home/LogoMarquee.tsx). */
+.logo-card {
+  margin: clamp(24px, 3.5vw, 44px) 0;
+  padding: clamp(22px, 3vw, 34px) 0;
+  border-radius: clamp(24px, 3vw, 40px);
+  background: var(--bg);
+  border: 1px solid var(--line);
   display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
-  gap: 16px 20px;
-  align-items: center;
-  padding: 8px 0;
+  gap: clamp(12px, 2vw, 20px);
+  overflow: hidden;
 }
 
-.logo-cell {
-  height: clamp(84px, 10vw, 110px);
+.logo-card-title {
+  font-size: clamp(15px, 1.6vw, 18px);
+  font-weight: 600;
+  color: var(--fg2);
+  text-align: center;
+  padding-inline: 16px;
+  text-wrap: balance;
+}
+
+.marquee {
+  /* --logo-size is the side of the square every logo's area equals; at
+     phone width it puts about three and a half logos in view. */
+  --logo-size: clamp(46px, 12.5vw, 80px);
+  --marquee-gap: clamp(12px, 2vw, 28px);
+  /* Logos have no reading order, so the strip runs left-to-right even on
+     this RTL page; that keeps the -50% loop below seamless. */
+  direction: ltr;
+  overflow: hidden;
+  margin-inline: clamp(12px, 5vw, 80px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 26s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Each set ends with one gap, so two sets side by side repeat exactly. */
+.marquee-set {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--marquee-gap);
+  padding-right: var(--marquee-gap);
 }
 
-.logo-img {
+/* Same area for every logo, shaped by its own aspect ratio (--sq). */
+.marquee-logo {
+  flex: none;
   display: block;
-  width: 100%;
-  height: clamp(64px, 8vw, 96px);
-  background: center / contain no-repeat;
-  transform: scale(1.19);
+  width: calc(var(--logo-size) * var(--sq, 1));
+  height: calc(var(--logo-size) / var(--sq, 1));
+  object-fit: contain;
   filter: var(--logo-filter);
   mix-blend-mode: var(--icon-blend);
+  user-select: none;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Still logos, wrapped, for people who ask for less motion. `animation:
+   none` (not the global 0.01ms rule, which would turn the loop into a
+   flicker); the class selector outranks the global `*` rule. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .marquee-track {
+    animation: none !important;
+    width: auto;
+    justify-content: center;
+  }
+
+  .marquee-set {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+    row-gap: 12px;
+  }
+
+  .marquee-set[aria-hidden] {
+    display: none;
+  }
 }
 
 .partner-row {
@@ -494,10 +568,6 @@ body {
 }
 
 @media (max-width: 639px) {
-  .logo-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .partner-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

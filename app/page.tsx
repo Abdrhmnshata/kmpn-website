@@ -6,8 +6,8 @@ import { NumbersPanel } from "@/components/home/NumbersPanel";
 import { GrowthAccordion } from "@/components/home/GrowthAccordion";
 import { ProcessSteps } from "@/components/home/ProcessSteps";
 import { MethodCard } from "@/components/home/MethodCard";
+import { LogoMarquee } from "@/components/home/LogoMarquee";
 import {
-  CLIENTS,
   GROWTH_IMG,
   HERO_IMG,
   PARTNERS,
@@ -116,37 +116,7 @@ export default function Home() {
         <div className="container">
 
           {/* ------------------------------------------- 02 Clients ---- */}
-          <section
-            className="sec-line-t sec-line-b"
-            style={{
-              padding: "clamp(28px, 4vw, 48px) 0",
-              display: "grid",
-              gap: 24,
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "clamp(18px, 2vw, 22px)",
-                fontWeight: 700,
-                textAlign: "center",
-                textWrap: "balance",
-              }}
-            >
-              أدرنا التحوّل الرقمي لكبرى العلامات التجارية الرائدة
-            </h2>
-            <div className="logo-row">
-              {CLIENTS.map((c) => (
-                <div key={c.name} className="logo-cell">
-                  <span
-                    role="img"
-                    aria-label={c.name}
-                    className="logo-img"
-                    style={{ backgroundImage: `url("${c.src}")` }}
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
+          <LogoMarquee title="أدرنا التحوّل الرقمي لكبرى العلامات التجارية الرائدة" />
 
           {/* ---------------------------------------- 03 Situations ---- */}
           <section
