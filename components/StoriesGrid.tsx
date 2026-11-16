@@ -255,7 +255,7 @@ function Card({ s }: { s: Story }) {
 
   const style: React.CSSProperties = {
     display: "grid",
-    border: "1px solid var(--line)",
+    border: "1px solid var(--card-border)",
     borderRadius: 20,
     overflow: "hidden",
     background: "var(--bg)",

@@ -63,7 +63,8 @@ export default function ContactPage() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    border: "1px solid var(--line)",
+                    border: "1px solid var(--card-border)",
+                    background: "var(--bg)",
                     borderRadius: 14,
                     padding: "14px 18px",
                   }}
@@ -79,7 +80,7 @@ export default function ContactPage() {
 
           <div
             style={{
-              background: "var(--sunk)",
+              background: "var(--bg)",
               borderRadius: 24,
               padding: "clamp(20px, 3vw, 32px)",
             }}

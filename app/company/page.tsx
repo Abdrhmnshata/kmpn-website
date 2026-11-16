@@ -241,7 +241,7 @@ export default function CompanyPage() {
                   display: "grid",
                   gap: 10,
                   alignContent: "start",
-                  background: "var(--sunk)",
+                  background: "var(--bg)",
                   color: "var(--fg)",
                 }}
               >
@@ -339,7 +339,7 @@ export default function CompanyPage() {
               <article
                 key={f.n}
                 style={{
-                  border: "1px solid var(--line)",
+                  border: "1px solid var(--card-border)",
                   borderRadius: 20,
                   padding: 24,
                   display: "grid",
@@ -392,7 +392,7 @@ export default function CompanyPage() {
           >
             <article
               style={{
-                background: "var(--sunk)",
+                background: "var(--bg)",
                 borderRadius: 24,
                 padding: "clamp(22px, 3vw, 32px)",
                 display: "grid",

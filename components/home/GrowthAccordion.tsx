@@ -5,8 +5,10 @@ import { GROWTH } from "@/lib/content";
 
 const OPEN_BG =
   "linear-gradient(var(--ok-bg), var(--ok-bg)) padding-box, linear-gradient(120deg,#32AC63,#8FD9AE,#1DB4D8,#32AC63) border-box";
+// Closed rows follow the site's card borders (--card-border): none in
+// light mode, a faint edge in dark mode.
 const CLOSED_BG =
-  "linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(var(--line), var(--line)) border-box";
+  "linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(var(--card-border), var(--card-border)) border-box";
 
 export function GrowthAccordion() {
   const [open, setOpen] = useState(0);

@@ -14,7 +14,7 @@ export function MethodCard() {
         gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
         gap: "clamp(20px, 3vw, 40px)",
         alignItems: "stretch",
-        border: "1px solid var(--line)",
+        border: "1px solid var(--card-border)",
         borderRadius: 24,
         padding: "clamp(14px, 2.4vw, 24px)",
       }}

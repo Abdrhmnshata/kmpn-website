@@ -6,8 +6,19 @@
    the [data-tw] blocks in the design .dc.html files.
    ========================================================= */
 
+/* --page is the canvas; --bg is the surface of cards and panels on it;
+   --hdr is the floating header; --hero-zone paints the block behind the
+   hero (and behind the header at the top of the page). */
 [data-tw="light"] {
-  --bg: #faf7f2;
+  --page: #ffffff;
+  --hdr: #ffffff;
+  --hero-zone:
+    radial-gradient(72% 100% at 100% 0%, #fbd4c7 0%, rgba(251, 212, 199, 0) 64%),
+    radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #f9efe4 0%, #faf7f2 60%, #fdfcfa 100%);
+  --bg: #fcfbf8;
+  /* Cards sit borderless on the white page. */
+  --card-border: transparent;
   --sunk: #efede8;
   --line: #dedad2;
   --line2: #c4beb1;
@@ -17,6 +28,8 @@
   --accent: #ee4037;
   --accent2: #d62e25;
   --tint: #fce7e5;
+  /* A lighter pink for larger tinted areas (the home pain-point items). */
+  --tint-soft: #fdf1ef;
   --logo-filter: none;
   --img-blend: multiply;
   --icon-blend: multiply;
@@ -28,7 +41,14 @@
 }
 
 [data-tw="dark"] {
+  --page: #0b0b0b;
+  --hdr: #161513;
+  --hero-zone:
+    radial-gradient(70% 95% at 100% 0%, rgba(238, 64, 55, 0.24) 0%, rgba(238, 64, 55, 0) 62%),
+    linear-gradient(180deg, #1a100e 0%, #120d0c 60%, #0e0c0b 100%);
   --bg: #0b0b0b;
+  /* Card and page share a colour here, so cards keep a faint edge. */
+  --card-border: var(--line);
   --sunk: #1a1917;
   --line: #2e2c27;
   --line2: #4a463e;
@@ -38,6 +58,7 @@
   --accent: #ff5b4f;
   --accent2: #ff7266;
   --tint: rgba(238, 64, 55, 0.18);
+  --tint-soft: rgba(238, 64, 55, 0.11);
   --logo-filter: invert(1) grayscale(1) brightness(1.6);
   --img-blend: normal;
   --icon-blend: screen;
@@ -64,16 +85,13 @@ body {
   padding: 0;
 }
 
+html,
 body {
-  background: #faf7f2;
-}
-
-body[data-theme="dark"] {
-  background: #0b0b0b;
+  background: var(--page);
 }
 
 .page {
-  background: var(--bg);
+  background: var(--page);
   color: var(--fg);
   font-family: var(--font-arabic), system-ui, sans-serif;
   font-size: 15.5px;
@@ -166,8 +184,27 @@ body[data-theme="dark"] {
   position: sticky;
   top: 0;
   z-index: 30;
-  padding: 10px clamp(12px, 3vw, 24px) 0;
+  padding: 18px clamp(12px, 3vw, 24px) 0;
   pointer-events: none;
+}
+
+/* The hero sits in a rounded, gradient block that also runs up behind the
+   sticky header, so the white header floats on it. --hdr-h is the header's
+   height (its top padding + the bar). */
+.hero-zone {
+  --hdr-h: 77px;
+  --zone-top: 8px;
+  --zone-inset: clamp(8px, 1.4vw, 20px);
+  margin: calc(var(--zone-top) - var(--hdr-h)) var(--zone-inset) 0;
+  padding-top: calc(var(--hdr-h) - var(--zone-top));
+  border-radius: clamp(22px, 2.6vw, 34px);
+  background: var(--hero-zone);
+}
+
+/* On the gradient the usual tinted pill would disappear. */
+.hero-zone .pill {
+  background: var(--hdr);
+  box-shadow: 0 1px 0 var(--line);
 }
 
 .hdr-inner {
@@ -182,7 +219,7 @@ body[data-theme="dark"] {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: var(--sunk);
+  background: var(--hdr);
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 8px;
@@ -240,6 +277,27 @@ body[data-theme="dark"] {
   padding: 0;
 }
 
+/* Sits under the header bar (it comes first inside .hdr) and over the page. */
+.hdr-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 11, 11, 0.4);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.hdr-backdrop[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-tw="dark"] .hdr-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
 .mob-menu-wrap {
   position: absolute;
   top: calc(100% + 8px);
@@ -253,7 +311,7 @@ body[data-theme="dark"] {
 }
 
 .mob-menu {
-  background: var(--sunk);
+  background: var(--hdr);
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: 12px 20px 20px;
@@ -353,8 +411,10 @@ body[data-theme="dark"] {
 
 /* ---------- cards --------------------------------------- */
 
+/* Card borders all use --card-border: none in light mode, a faint edge in
+   dark mode. */
 .card {
-  border: 1px solid var(--line);
+  border: 1px solid var(--card-border);
   border-radius: 20px;
   background: var(--bg);
 }
@@ -411,29 +471,103 @@ body[data-theme="dark"] {
 
 /* ---------- client / partner logo strips ---------------- */
 
-.logo-row {
+/* Client logos: a rounded card with the logos drifting left in a loop
+   (components/home/LogoMarquee.tsx). */
+.logo-card {
+  margin: clamp(24px, 3.5vw, 44px) 0;
+  padding: clamp(22px, 3vw, 34px) 0;
+  border-radius: clamp(24px, 3vw, 40px);
+  background: var(--bg);
+  border: 1px solid var(--card-border);
   display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
-  gap: 16px 20px;
-  align-items: center;
-  padding: 8px 0;
+  gap: clamp(12px, 2vw, 20px);
+  overflow: hidden;
 }
 
-.logo-cell {
-  height: clamp(84px, 10vw, 110px);
+.logo-card-title {
+  font-size: clamp(15px, 1.6vw, 18px);
+  font-weight: 600;
+  color: var(--fg2);
+  text-align: center;
+  padding-inline: 16px;
+  text-wrap: balance;
+}
+
+.marquee {
+  /* --logo-size is the side of the square every logo's area equals; at
+     phone width it puts about three and a half logos in view. */
+  --logo-size: clamp(46px, 12.5vw, 64px);
+  --marquee-gap: clamp(20px, 3vw, 36px);
+  /* Logos have no reading order, so the strip runs left-to-right even on
+     this RTL page; that keeps the -50% loop below seamless. */
+  direction: ltr;
+  overflow: hidden;
+  margin-inline: clamp(12px, 5vw, 80px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 26s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Each set ends with one gap, so two sets side by side repeat exactly. */
+.marquee-set {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--marquee-gap);
+  padding-right: var(--marquee-gap);
 }
 
-.logo-img {
+/* Same area for every logo, shaped by its own aspect ratio (--sq). */
+.marquee-logo {
+  flex: none;
   display: block;
-  width: 100%;
-  height: clamp(64px, 8vw, 96px);
-  background: center / contain no-repeat;
-  transform: scale(1.19);
+  width: calc(var(--logo-size) * var(--sq, 1));
+  height: calc(var(--logo-size) / var(--sq, 1));
+  object-fit: contain;
   filter: var(--logo-filter);
   mix-blend-mode: var(--icon-blend);
+  user-select: none;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Still logos, wrapped, for people who ask for less motion. `animation:
+   none` (not the global 0.01ms rule, which would turn the loop into a
+   flicker); the class selector outranks the global `*` rule. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .marquee-track {
+    animation: none !important;
+    width: auto;
+    justify-content: center;
+  }
+
+  .marquee-set {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+    row-gap: 12px;
+  }
+
+  .marquee-set[aria-hidden] {
+    display: none;
+  }
 }
 
 .partner-row {
@@ -443,10 +577,6 @@ body[data-theme="dark"] {
 }
 
 @media (max-width: 639px) {
-  .logo-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .partner-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -614,6 +744,376 @@ a.story-card:hover {
   box-shadow: 0 18px 36px -18px rgba(11, 11, 11, 0.35);
   text-decoration: none;
   color: var(--fg);
+}
+
+/* ---------- portfolio ----------------------------------- */
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 16px;
+  padding-bottom: clamp(32px, 4vw, 56px);
+}
+
+/* On phones the hub's three-card previews become a swipeable row: one card
+   and about a quarter of the next in view, so it is clear there is more. */
+@media (max-width: 639px) {
+  .work-rail {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: calc(-1 * clamp(16px, 4vw, 40px));
+    padding-inline: clamp(16px, 4vw, 40px);
+    scroll-padding-inline: clamp(16px, 4vw, 40px);
+    scrollbar-width: none;
+  }
+
+  .work-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .work-rail > * {
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+  }
+}
+
+.work-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s;
+}
+
+/* Covers are a logo on a flat colour; the box takes that colour so a crop
+   to 16:10 never shows an edge. */
+.work-media {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.work-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+a.work-card:hover .work-media img {
+  transform: scale(1.04);
+}
+
+.work-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg2);
+  line-height: 1.6;
+}
+
+.work-tag-lg {
+  padding: 6px 14px;
+  font-size: 13.5px;
+}
+
+.work-chip {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line2);
+  background: transparent;
+  color: var(--fg2);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.work-chip[aria-pressed="true"],
+.page a.work-chip[aria-current="page"] {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.page a.work-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg2);
+}
+
+.page a.work-chip:hover {
+  color: var(--fg);
+}
+
+.work-chip-count {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.work-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+}
+
+/* The vertical tabs sit above a page's own filter chips. */
+.work-tabs {
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 16px;
+}
+
+.work-body {
+  padding: 18px 20px 20px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.work-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.work-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  align-self: end;
+}
+
+.work-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.work-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.work-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.work-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.work-status-live {
+  color: #23864b;
+}
+
+.work-status-soon {
+  color: #b7791f;
+}
+
+.work-status-off {
+  color: var(--muted);
+}
+
+[data-tw="dark"] .work-status-live {
+  color: #6fd39a;
+}
+
+[data-tw="dark"] .work-status-soon {
+  color: #f0b45a;
+}
+
+.work-tag-accent {
+  border-color: transparent;
+  background: var(--tint);
+  color: var(--accent);
+}
+
+.work-media-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.work-media-logo img {
+  width: auto;
+  height: auto;
+  max-width: 58%;
+  max-height: 58%;
+  object-fit: contain;
+}
+
+.work-avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+}
+
+.work-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.work-numbers {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3a1210 0%, #1a0b0a 50%, #0b0b0b 100%);
+  color: #faf7f2;
+}
+
+.work-numbers dt {
+  font-size: 11.5px;
+  color: #c4beb1;
+}
+
+.work-numbers dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.work-roi dd {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ff5b4f;
+  justify-self: start;
+}
+
+/* ---------- portfolio hub: one section per vertical ----- */
+
+.vert-section {
+  border-top: 1px solid var(--line);
+  padding-top: clamp(28px, 4vw, 44px);
+  margin-top: clamp(8px, 2vw, 16px);
+}
+
+.vert-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px 32px;
+  margin-bottom: 20px;
+}
+
+.vert-title {
+  font-size: clamp(26px, 3.4vw, 38px);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.vert-stat {
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.vert-stat .num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--fg);
+}
+
+.page a.vert-link {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.work-hero {
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.work-hero img {
+  width: 100%;
+  max-width: 1500px;
+  height: auto;
+  display: block;
+}
+
+.work-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px 32px;
+  padding: clamp(20px, 3vw, 28px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.work-dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px clamp(24px, 4vw, 48px);
+  margin: 0;
+}
+
+.work-dl dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.work-dl dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.work-concept {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 24px;
+  border: 1px solid var(--line);
 }
 
 /* ---------- forms --------------------------------------- */

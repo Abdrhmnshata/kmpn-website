@@ -411,7 +411,7 @@ export function AdResults() {
       <div
         style={{
           marginTop: 16,
-          border: "1px solid var(--line)",
+          border: "1px solid var(--card-border)",
           borderRadius: 16,
           overflow: "hidden",
           background: "var(--bg)",

@@ -19,16 +19,23 @@ const opt = (file: string) => CDN_OPT + encodeURIComponent(file);
 
 /* ---------------------------------------------------------------- nav ---- */
 
+/** The blog is its own site (repo kmpn-blog) and links back to this one. */
+export const BLOG_URL = "https://blog.kmpn.agency/";
+
 export const NAV = [
   { label: "قصص النجاح", href: "/success-stories" },
+  { label: "أعمالنا", href: "/portfolio" },
   { label: "الخدمات", href: "/services" },
   { label: "الشركة", href: "/company" },
+  { label: "المدونة", href: BLOG_URL },
 ];
 
 export const FOOTER_NAV = [
   { label: "الشركة", href: "/company" },
   { label: "القيم", href: "/values" },
   { label: "الخدمات", href: "/services" },
+  { label: "أعمالنا", href: "/portfolio" },
+  { label: "المدونة", href: BLOG_URL },
   { label: "التواصل", href: "/contact" },
 ];
 
@@ -50,19 +57,22 @@ export const BOOKING_URL = "https://calendar.app.google/ozU87NdKP7GD22z7A";
 
 /* ------------------------------------------------------------ clients ---- */
 
+/**
+ * Client logos for the home marquee. The LightFunnels originals are square
+ * canvases with the artwork small in the middle; these copies in
+ * public/assets/clients/ are cropped to the artwork, so the marquee can size
+ * each logo by its real shape. `w` × `h` are the files' pixel sizes.
+ */
 export const CLIENTS = [
-  { name: "التوحيد والنور", src: raw("0608c6fe-2326-4be1-bd71-fbbd38fa5205.T&N.svg") },
-  { name: "OQ", src: raw("ae5b0973-4f7f-4211-a181-054fa3bb75ef.OQ.svg") },
-  { name: "Rugmorph", src: raw("c50caf8d-030b-41f6-a759-19d2980dc195.Rugmorph.svg") },
-  {
-    name: "Halley International Schools",
-    src: raw("83e2cd58-393f-4ac0-9cb9-8d5d0deea283.HIS.svg"),
-  },
-  { name: "KOAY", src: raw("df427e5b-0cca-489b-9088-99b45fbaa60b.KOAY.svg") },
-  { name: "SE", src: raw("90b894a3-c7db-4e51-acac-993c42c198c1.SE.svg") },
-  { name: "Kandil", src: raw("f7e2111d-4142-46d1-be8f-fca7e1a80486.Kandil.svg") },
-  { name: "CIG", src: raw("e1d193f0-7ba0-4f98-ad1b-a7214b87ee89.CIG.svg") },
-  { name: "XZone", src: raw("feeb65ac-38f0-4f24-bf9a-218fb7c10f24.XZone.svg") },
+  { name: "التوحيد والنور", src: "/assets/clients/tawheed.webp", w: 720, h: 187 },
+  { name: "OQ", src: "/assets/clients/oq.webp", w: 417, h: 240 },
+  { name: "Rugmorph", src: "/assets/clients/rugmorph.webp", w: 720, h: 155 },
+  { name: "Halley International Schools", src: "/assets/clients/halley.webp", w: 208, h: 240 },
+  { name: "KOAY", src: "/assets/clients/koay.webp", w: 554, h: 240 },
+  { name: "SE", src: "/assets/clients/se.webp", w: 239, h: 240 },
+  { name: "Kandil", src: "/assets/clients/kandil.webp", w: 720, h: 147 },
+  { name: "CIG", src: "/assets/clients/cig.webp", w: 227, h: 240 },
+  { name: "XZone", src: "/assets/clients/xzone.webp", w: 720, h: 225 },
 ];
 
 export const PARTNERS = [
