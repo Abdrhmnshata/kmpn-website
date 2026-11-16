@@ -339,7 +339,7 @@ export default function CompanyPage() {
               <article
                 key={f.n}
                 style={{
-                  border: "1px solid var(--line)",
+                  border: "1px solid var(--card-border)",
                   borderRadius: 20,
                   padding: 24,
                   display: "grid",

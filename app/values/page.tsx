@@ -146,7 +146,7 @@ export default function ValuesPage() {
             <article
               key={p.n}
               style={{
-                border: "1px solid var(--line)",
+                border: "1px solid var(--card-border)",
                 borderRadius: 20,
                 padding: "clamp(20px, 3vw, 28px)",
                 display: "grid",
@@ -305,7 +305,7 @@ export default function ValuesPage() {
                   display: "flex",
                   alignItems: "center",
                   gap: 14,
-                  border: "1px solid var(--line)",
+                  border: "1px solid var(--card-border)",
                   borderRadius: 14,
                   padding: "14px 18px",
                   background: "var(--bg)",

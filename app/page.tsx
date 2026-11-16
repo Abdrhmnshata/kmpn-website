@@ -261,7 +261,7 @@ export default function Home() {
                   key={w.title}
                   style={{
                     background: "var(--bg)",
-                    border: "1px solid var(--line)",
+                    border: "1px solid var(--card-border)",
                     borderRadius: 20,
                     padding: 22,
                     display: "grid",
@@ -434,7 +434,7 @@ export default function Home() {
                     alignItems: "center",
                     gap: 12,
                     padding: 14,
-                    border: "1px solid var(--line)",
+                    border: "1px solid var(--card-border)",
                     borderRadius: 16,
                     background: "var(--bg)",
                     minWidth: 0,

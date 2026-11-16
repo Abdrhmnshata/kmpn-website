@@ -63,7 +63,8 @@ export default function ContactPage() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    border: "1px solid var(--line)",
+                    border: "1px solid var(--card-border)",
+                    background: "var(--bg)",
                     borderRadius: 14,
                     padding: "14px 18px",
                   }}

@@ -346,7 +346,7 @@ export function Timeline() {
                   justifyItems: "end",
                   pointerEvents: "none",
                   background: "var(--bg)",
-                  border: "1px solid var(--line)",
+                  border: "1px solid var(--card-border)",
                   borderRadius: 10,
                   padding: "8px 12px",
                 }}

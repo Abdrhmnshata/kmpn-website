@@ -17,6 +17,8 @@
     radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
     linear-gradient(180deg, #f9efe4 0%, #faf7f2 60%, #fdfcfa 100%);
   --bg: #fcfbf8;
+  /* Cards sit borderless on the white page. */
+  --card-border: transparent;
   --sunk: #efede8;
   --line: #dedad2;
   --line2: #c4beb1;
@@ -43,6 +45,8 @@
     radial-gradient(70% 95% at 100% 0%, rgba(238, 64, 55, 0.24) 0%, rgba(238, 64, 55, 0) 62%),
     linear-gradient(180deg, #1a100e 0%, #120d0c 60%, #0e0c0b 100%);
   --bg: #0b0b0b;
+  /* Card and page share a colour here, so cards keep a faint edge. */
+  --card-border: var(--line);
   --sunk: #1a1917;
   --line: #2e2c27;
   --line2: #4a463e;
@@ -404,8 +408,10 @@ body {
 
 /* ---------- cards --------------------------------------- */
 
+/* Card borders all use --card-border: none in light mode, a faint edge in
+   dark mode. */
 .card {
-  border: 1px solid var(--line);
+  border: 1px solid var(--card-border);
   border-radius: 20px;
   background: var(--bg);
 }
@@ -469,7 +475,7 @@ body {
   padding: clamp(22px, 3vw, 34px) 0;
   border-radius: clamp(24px, 3vw, 40px);
   background: var(--bg);
-  border: 1px solid var(--line);
+  border: 1px solid var(--card-border);
   display: grid;
   gap: clamp(12px, 2vw, 20px);
   overflow: hidden;
@@ -773,7 +779,7 @@ a.story-card:hover {
 .work-card {
   display: grid;
   grid-template-rows: auto 1fr;
-  border: 1px solid var(--line);
+  border: 1px solid var(--card-border);
   border-radius: 20px;
   overflow: hidden;
   background: var(--bg);

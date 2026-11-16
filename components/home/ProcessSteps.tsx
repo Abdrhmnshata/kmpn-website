@@ -54,7 +54,7 @@ export function ProcessSteps() {
                 cursor: "pointer",
                 fontFamily: "inherit",
                 textAlign: "right",
-                background: i === active ? "var(--fg)" : "var(--sunk)",
+                background: i === active ? "var(--fg)" : "var(--bg)",
                 color: i === active ? "var(--bg)" : "var(--fg2)",
                 transition: "background .25s, color .25s",
               }}
@@ -70,7 +70,7 @@ export function ProcessSteps() {
         <div
           role="tabpanel"
           style={{
-            background: "var(--sunk)",
+            background: "var(--bg)",
             borderRadius: 20,
             padding: "clamp(20px, 3vw, 28px)",
             display: "grid",
@@ -122,7 +122,7 @@ export function ProcessSteps() {
               style={{
                 borderRadius: 16,
                 overflow: "hidden",
-                background: isOpen ? "var(--fg)" : "var(--sunk)",
+                background: isOpen ? "var(--fg)" : "var(--bg)",
                 color: isOpen ? "var(--bg)" : "var(--fg2)",
                 transition: "background .3s, color .3s",
               }}

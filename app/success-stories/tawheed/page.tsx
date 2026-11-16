@@ -315,7 +315,7 @@ export default function TawheedCaseStudy() {
                   display: "flex",
                   alignItems: "center",
                   gap: 14,
-                  border: "1px solid var(--line)",
+                  border: "1px solid var(--card-border)",
                   borderRadius: 14,
                   padding: "14px 18px",
                   background: "var(--bg)",

@@ -168,7 +168,7 @@ export default function ServicesPage() {
                 <article
                   key={item.t}
                   style={{
-                    border: "1px solid var(--line)",
+                    border: "1px solid var(--card-border)",
                     borderTop: `3px solid ${g.accent}`,
                     borderRadius: 18,
                     padding: 22,
