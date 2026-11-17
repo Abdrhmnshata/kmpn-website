@@ -1,6 +1,7 @@
 import "server-only";
 import { createSign } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { parseServiceAccount, type ServiceAccount } from "./credentials";
 
 /**
  * Read-only access to Google Sheets with a service account.
@@ -11,8 +12,6 @@ import { readFile } from "node:fs/promises";
  *
  * The account only needs Viewer on the spreadsheet; nothing here writes.
  */
-
-type ServiceAccount = { client_email: string; private_key: string };
 
 const SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -27,14 +26,16 @@ async function serviceAccount(): Promise<ServiceAccount | null> {
   let raw: string | null = null;
   if (inline) raw = inline;
   else if (file) raw = await readFile(file, "utf8").catch(() => null);
-  if (!raw) return (cachedAccount = null);
-  try {
-    const parsed = JSON.parse(raw) as ServiceAccount;
-    if (!parsed.client_email || !parsed.private_key) return (cachedAccount = null);
-    return (cachedAccount = parsed);
-  } catch {
+  if (!raw) {
+    console.error(`[reports] no Google service account: ${inline === undefined && !file ? "GOOGLE_SERVICE_ACCOUNT_JSON is not set" : "the key is empty or unreadable"}`);
     return (cachedAccount = null);
   }
+  const result = parseServiceAccount(raw);
+  if ("error" in result) {
+    console.error(`[reports] GOOGLE_SERVICE_ACCOUNT_${inline ? "JSON" : "FILE"} is unusable: ${result.error}`);
+    return (cachedAccount = null);
+  }
+  return (cachedAccount = result.account);
 }
 
 export async function googleConfigured(): Promise<boolean> {
