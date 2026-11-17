@@ -28,30 +28,36 @@ export default function CommercePage() {
     <div className="page">
       <Header ctaHref="/contact" />
 
-      <main id="top" className="container">
-        <PageIntro
-          pill="كامبين كومرس"
-          title={
-            <>
-              متاجر شوبيفاي <Accent>تبيع فعلاً</Accent>.
-            </>
-          }
-          text={DESCRIPTION}
-        />
+      <main id="top">
+        <div className="hero-zone" data-tone="mint">
+          <div className="container">
+            <PageIntro
+              pill="كامبين كومرس"
+              title={
+                <>
+                  متاجر شوبيفاي <Accent>تبيع فعلاً</Accent>.
+                </>
+              }
+              text={DESCRIPTION}
+            />
+          </div>
+        </div>
 
-        <VerticalTabs current="commerce" />
+        <div className="container">
+          <VerticalTabs current="commerce" />
 
-        <FilterGrid
-          label="تصنيف المتاجر"
-          chips={chips}
-          items={COMMERCE.map((s) => ({
-            id: s.id,
-            keys: s.country ? [s.country] : [],
-            node: <StoreCard store={s} />,
-          }))}
-        />
+          <FilterGrid
+            label="تصنيف المتاجر"
+            chips={chips}
+            items={COMMERCE.map((s) => ({
+              id: s.id,
+              keys: s.country ? [s.country] : [],
+              node: <StoreCard store={s} />,
+            }))}
+          />
 
-        <CtaSection />
+          <CtaSection />
+        </div>
       </main>
 
       <Footer />

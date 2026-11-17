@@ -22,72 +22,79 @@ export default function ContactPage() {
     <div className="page">
       <Header ctaHref="/contact" />
 
-      <main id="top" className="container">
-        <section
-          style={{
-            padding: "clamp(40px, 6vw, 80px) 0 clamp(48px, 6vw, 80px)",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
-            gap: "32px clamp(28px, 5vw, 64px)",
-            alignItems: "start",
-          }}
-        >
-          <div style={{ display: "grid", gap: 18 }}>
-            <span className="pill" style={{ justifySelf: "start" }}>
-              <span className="dot" />
-              تواصل معنا
-            </span>
-            <h1
+      <main id="top">
+        <div className="hero-zone" data-tone="lavender">
+          <div className="container">
+            <section
               style={{
-                fontSize: "clamp(32px, 4.6vw, 54px)",
-                lineHeight: 1.3,
-                fontWeight: 700,
-                textWrap: "balance",
+                padding: "clamp(40px, 6vw, 80px) 0 clamp(48px, 6vw, 80px)",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
+                gap: "32px clamp(28px, 5vw, 64px)",
+                alignItems: "start",
               }}
             >
-              املأ البيانات الآن وابدأ في تحول تجارتك{" "}
-              <span style={{ color: "var(--accent)" }}>رقمياً</span>
-            </h1>
-            <p style={{ fontSize: 17, lineHeight: 1.9, color: "var(--fg2)" }}>
-              اطلب عرضًا توضيحيًا وسنقوم بالرد عليكم في أقرب وقت.
-            </p>
-
-            <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
-              {CONTACTS.map((c) => (
-                <a
-                  key={c.label}
-                  href={c.href}
-                  target={c.href.startsWith("http") ? "_blank" : undefined}
-                  rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              <div style={{ display: "grid", gap: 18 }}>
+                <span className="pill" style={{ justifySelf: "start" }}>
+                  <span className="dot" />
+                  تواصل معنا
+                </span>
+                <h1
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    border: "1px solid var(--card-border)",
-                    background: "var(--bg)",
-                    borderRadius: 14,
-                    padding: "14px 18px",
+                    fontSize: "clamp(32px, 4.6vw, 54px)",
+                    lineHeight: 1.3,
+                    fontWeight: 700,
+                    textWrap: "balance",
                   }}
                 >
-                  <span style={{ fontSize: 13, color: "var(--muted)" }}>
-                    {c.label}
-                  </span>
-                  <strong dir="ltr">{c.value}</strong>
-                </a>
-              ))}
-            </div>
-          </div>
+                  املأ البيانات الآن وابدأ في تحول تجارتك{" "}
+                  <span style={{ color: "var(--accent)" }}>رقمياً</span>
+                </h1>
+                <p style={{ fontSize: 17, lineHeight: 1.9, color: "var(--fg2)" }}>
+                  اطلب عرضًا توضيحيًا وسنقوم بالرد عليكم في أقرب وقت.
+                </p>
 
-          <div
-            style={{
-              background: "var(--bg)",
-              borderRadius: 24,
-              padding: "clamp(20px, 3vw, 32px)",
-            }}
-          >
-            <ContactForm />
+                <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
+                  {CONTACTS.map((c) => (
+                    <a
+                      key={c.label}
+                      href={c.href}
+                      target={c.href.startsWith("http") ? "_blank" : undefined}
+                      rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        border: "1px solid var(--card-border)",
+                        background: "var(--bg)",
+                        borderRadius: 14,
+                        padding: "14px 18px",
+                      }}
+                    >
+                      <span style={{ fontSize: 13, color: "var(--muted)" }}>
+                        {c.label}
+                      </span>
+                      <strong dir="ltr">{c.value}</strong>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: "var(--bg)",
+                  borderRadius: 24,
+                  padding: "clamp(20px, 3vw, 32px)",
+                }}
+              >
+                <ContactForm />
+              </div>
+            </section>
           </div>
-        </section>
+        </div>
+
+        <div className="container">
+        </div>
       </main>
 
       <Footer />

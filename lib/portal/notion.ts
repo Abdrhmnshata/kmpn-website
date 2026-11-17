@@ -1,16 +1,19 @@
 import "server-only";
-import { CATEGORIES, NEVER, categoryOf, type Category } from "./layer";
+import { CATEGORIES, NEVER, categoryOf, isSoon, type Category } from "./layer";
 
 /**
  * Client-portal data, read live from Notion through the layer in ./layer.ts.
  *
  *   customer   the client's row in "KC - Master Customers", matched when the
  *              client's confirmed email is in its "Portal Emails" field;
- *   projects,  databases found under the client's KC page and on the page in
- *   meetings,  its "Dashboard" field, sorted into categories by title, with
- *   resources  only the fields the layer allows;
- *   invoices   "Portal - Invoices" rows related to the customer, not Draft;
- *   tickets    "Portal - Support Tickets", matched on the client's email.
+ *   projects,     databases found under the client's KC page and on the page
+ *   deliverables, in its "Dashboard" field, sorted into categories by title,
+ *   meetings,     with only the fields the layer allows (meetings, resources
+ *   resources     and tickets wait for V2, see SOON in ./layer.ts);
+ *   invoices      "Portal - Invoices" rows related to the customer, not Draft;
+ *   contracts     "KMPN Dev Tasks" rows with Portal ticked and the customer;
+ *   edit requests Notion comments on a deliverable's page (getEditThreads);
+ *   tickets       "Portal - Support Tickets", matched on the client's email.
  *
  * Uses its own token (NOTION_PORTAL_TOKEN, server-only), separate from the
  * portfolio's NOTION_TOKEN, which stays off Vercel.
@@ -25,6 +28,8 @@ const DS = {
   // Tickets: on "Operation Master Page" (Account Management), for the team.
   invoices: process.env.NOTION_PORTAL_INVOICES_DS ?? "41ac45aa-cc37-818c-9130-000b6f844124",
   tickets: process.env.NOTION_PORTAL_TICKETS_DS ?? "41ac45aa-cc37-81c4-86ba-000b898f3b43",
+  // "KMPN Dev Tasks" under Business Dev.
+  contracts: process.env.NOTION_PORTAL_CONTRACTS_DS ?? "267c45aa-cc37-81c6-b4d9-000b23cc93b0",
 };
 
 const token = () => process.env.NOTION_PORTAL_TOKEN?.trim() ?? "";
@@ -69,6 +74,44 @@ export type Resource = {
   company: string;
 };
 
+/**
+ * A file on a deliverable, sorted into how the portal can show it: Google
+ * Drive and Docs links get Google's own preview frame, Notion-hosted images
+ * and videos play inline, anything else is a link.
+ */
+export type DeliverableFile = {
+  name: string;
+  url: string;
+  kind: "image" | "video" | "pdf" | "drive" | "folder" | "link";
+  /** What to put in an <iframe> (Drive/Docs preview), or the media URL. */
+  preview: string | null;
+};
+
+export type Deliverable = {
+  id: string;
+  name: string;
+  types: string[];
+  status: string;
+  date: string | null;
+  files: DeliverableFile[];
+  company: string;
+};
+
+export type Contract = {
+  id: string;
+  name: string;
+  kind: "contract" | "proposal" | null;
+  status: string;
+  due: string | null;
+  files: { name: string; url: string }[];
+};
+
+/** One edit request (a Notion comment thread the client started). */
+export type EditThread = {
+  id: string;
+  messages: { fromClient: boolean; text: string; created: string }[];
+};
+
 export type InvoiceStatus = "unpaid" | "paid" | "overdue" | "void";
 
 export type Invoice = {
@@ -101,6 +144,8 @@ export type PortalData = {
   linked: boolean;
   customers: Customer[];
   projects: Project[];
+  deliverables: Deliverable[];
+  contracts: Contract[];
   meetings: Meeting[];
   resources: Resource[];
   invoices: Invoice[];
@@ -111,6 +156,8 @@ const EMPTY: PortalData = {
   linked: false,
   customers: [],
   projects: [],
+  deliverables: [],
+  contracts: [],
   meetings: [],
   resources: [],
   invoices: [],
@@ -140,7 +187,8 @@ type NotionProp = {
   email?: string | null;
   created_time?: string;
   relation?: { id: string }[];
-  files?: { type: string; file?: { url: string }; external?: { url: string } }[];
+  checkbox?: boolean;
+  files?: { name?: string; type: string; file?: { url: string }; external?: { url: string } }[];
 };
 
 type Block = {
@@ -152,20 +200,28 @@ type Block = {
 };
 
 async function notion<T>(path: string, body?: unknown): Promise<T> {
-  const res = await fetch(`https://api.notion.com/v1/${path}`, {
-    method: body === undefined ? "GET" : "POST",
-    headers: {
-      Authorization: `Bearer ${token()}`,
-      "Notion-Version": NOTION_VERSION,
-      "Content-Type": "application/json",
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Notion ${res.status} on ${path}: ${(await res.text()).slice(0, 200)}`);
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`https://api.notion.com/v1/${path}`, {
+      method: body === undefined ? "GET" : "POST",
+      headers: {
+        Authorization: `Bearer ${token()}`,
+        "Notion-Version": NOTION_VERSION,
+        "Content-Type": "application/json",
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      cache: "no-store",
+    });
+    // Notion allows about 3 requests a second and says how long to wait.
+    if (res.status === 429 && attempt < 3) {
+      const wait = Math.min(Number(res.headers.get("retry-after")) || 1, 5);
+      await new Promise((resolve) => setTimeout(resolve, wait * 1000));
+      continue;
+    }
+    if (!res.ok) {
+      throw new Error(`Notion ${res.status} on ${path}: ${(await res.text()).slice(0, 200)}`);
+    }
+    return res.json() as Promise<T>;
   }
-  return res.json() as Promise<T>;
 }
 
 async function query(dataSource: string, body: Record<string, unknown> = {}) {
@@ -293,23 +349,38 @@ async function sourcesOf(customer: Customer): Promise<Sources> {
   const cached = sourcesCache.get(customer.id);
   if (cached && Date.now() - cached.at < SOURCES_TTL) return cached.sources;
 
-  const sources: Sources = { projects: [], meetings: [], resources: [] };
+  const sources: Sources = { deliverables: [], projects: [], meetings: [], resources: [] };
   const roots = [customer.id, customer.dashboardId].filter(Boolean) as string[];
+  // Only a full walk is cached: after a failed call (rate limit, outage) the
+  // next visit tries again instead of showing empty lists for ten minutes.
+  let complete = true;
+  const failed = (label: string, err: unknown) => {
+    complete = false;
+    console.error(`[portal] ${label}:`, err instanceof Error ? err.message : err);
+  };
   for (const root of roots) {
-    const dbs = await safely(`walk ${root}`, [], () => childDatabases(root));
+    let dbs: { id: string; title: string }[] = [];
+    try {
+      dbs = await childDatabases(root);
+    } catch (err) {
+      failed(`walk ${root}`, err);
+    }
     for (const db of dbs) {
       const cat = categoryOf(db.title);
       if (!cat) continue;
-      // Linked views are not readable here; they fail and are skipped.
-      const info = await safely(`database ${db.id}`, null, () =>
-        notion<{ data_sources?: { id: string; name: string }[] }>(`databases/${db.id}`),
-      );
-      for (const ds of info?.data_sources ?? []) {
-        if (!sources[cat].includes(ds.id)) sources[cat].push(ds.id);
+      try {
+        const info = await notion<{ data_sources?: { id: string; name: string }[] }>(
+          `databases/${db.id}`,
+        );
+        for (const ds of info.data_sources ?? []) {
+          if (!sources[cat].includes(ds.id)) sources[cat].push(ds.id);
+        }
+      } catch (err) {
+        failed(`database ${db.id}`, err);
       }
     }
   }
-  sourcesCache.set(customer.id, { at: Date.now(), sources });
+  if (complete) sourcesCache.set(customer.id, { at: Date.now(), sources });
   return sources;
 }
 
@@ -358,6 +429,75 @@ async function readResources(ids: string[], company: string): Promise<Resource[]
       company,
     }))
     .filter((r) => r.name && !hidden("resources", r.status));
+}
+
+/* -------------------------------------------------------- deliverables ---- */
+
+const IMAGE = /\.(png|jpe?g|webp|gif|avif|svg)(\?|$)/i;
+const VIDEO = /\.(mp4|mov|webm|m4v)(\?|$)/i;
+const PDF = /\.pdf(\?|$)/i;
+
+/** Sorts a Files-property entry into how the portal shows it. */
+function toFile(name: string, url: string): DeliverableFile {
+  const label = name || url;
+  const driveFile = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{10,})/);
+  if (driveFile) return { name: label, url, kind: "drive", preview: `https://drive.google.com/file/d/${driveFile[1]}/preview` };
+  const folder = url.match(/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([\w-]{10,})/);
+  if (folder) return { name: label, url, kind: "folder", preview: `https://drive.google.com/embeddedfolderview?id=${folder[1]}#grid` };
+  const doc = url.match(/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/([\w-]{10,})/);
+  if (doc) return { name: label, url, kind: "drive", preview: `https://docs.google.com/${doc[1]}/d/${doc[2]}/preview` };
+  const probe = `${name} ${url.split("?")[0]}`;
+  if (IMAGE.test(probe)) return { name: label, url, kind: "image", preview: url };
+  if (VIDEO.test(probe)) return { name: label, url, kind: "video", preview: url };
+  if (PDF.test(probe)) return { name: label, url, kind: "pdf", preview: null };
+  return { name: label, url, kind: "link", preview: null };
+}
+
+const filesOf = (p?: NotionProp) =>
+  (p?.files ?? [])
+    .map((f) => ({ name: f.name ?? "", url: f.file?.url ?? f.external?.url ?? "" }))
+    .filter((f) => f.url);
+
+async function readDeliverables(ids: string[], company: string): Promise<Deliverable[]> {
+  const rows = (await Promise.all(ids.map((id) => query(id)))).flat();
+  return rows
+    .map((row) => ({
+      id: row.id,
+      name: text(prop(row, "title")),
+      types: (prop(row, "Type")?.multi_select ?? []).map((o) => o.name),
+      status: choice(prop(row, "Status")),
+      date: prop(row, "Delivery Date")?.date?.start ?? null,
+      files: filesOf(prop(row, "Files")).map((f) => toFile(f.name, f.url)),
+      company,
+    }))
+    .filter((d) => d.name && !hidden("deliverables", d.status))
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+/* ----------------------------------------------------------- contracts ---- */
+
+async function readContracts(customers: Customer[]): Promise<Contract[]> {
+  if (!DS.contracts || customers.length === 0) return [];
+  const rows = await query(DS.contracts, {
+    filter: {
+      and: [
+        { property: "Portal", checkbox: { equals: true } },
+        { or: customers.map((c) => ({ property: "Customer", relation: { contains: c.id } })) },
+      ],
+    },
+    sorts: [{ timestamp: "created_time", direction: "descending" }],
+  });
+  return rows.map((row) => {
+    const kind = choice(prop(row, "Portal Type")).toLowerCase();
+    return {
+      id: row.id,
+      name: text(prop(row, "Task name")),
+      kind: kind === "contract" || kind === "proposal" ? kind : null,
+      status: choice(prop(row, "Status")),
+      due: prop(row, "Due date")?.date?.start ?? null,
+      files: filesOf(prop(row, "Files & media")).map((f) => ({ name: f.name || "الملف", url: f.url })),
+    };
+  });
 }
 
 const INVOICE_STATUS: Record<string, InvoiceStatus> = {
@@ -425,22 +565,33 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
   const perCustomer = await Promise.all(
     customers.map(async (c) => {
       const src = await sourcesOf(c);
-      const [projects, meetings, resources] = await Promise.all([
+      // V2 sections (SOON) are not read until they open.
+      const [projects, deliverables, meetings, resources] = await Promise.all([
         safely(`projects ${c.company}`, [], () => readProjects(src.projects, c.company)),
-        safely(`meetings ${c.company}`, [], () => readMeetings(src.meetings, c.company)),
-        safely(`resources ${c.company}`, [], () => readResources(src.resources, c.company)),
+        safely(`deliverables ${c.company}`, [], () => readDeliverables(src.deliverables, c.company)),
+        isSoon("meetings")
+          ? Promise.resolve([] as Meeting[])
+          : safely(`meetings ${c.company}`, [], () => readMeetings(src.meetings, c.company)),
+        isSoon("resources")
+          ? Promise.resolve([] as Resource[])
+          : safely(`resources ${c.company}`, [], () => readResources(src.resources, c.company)),
       ]);
-      return { projects, meetings, resources };
+      return { projects, deliverables, meetings, resources };
     }),
   );
-  const [invoices, tickets] = await Promise.all([
+  const [invoices, contracts, tickets] = await Promise.all([
     safely("invoices", [], () => readInvoices(customers)),
-    ticketFilter ? safely("tickets", [], () => readTickets(ticketFilter)) : Promise.resolve([]),
+    safely("contracts", [], () => readContracts(customers)),
+    ticketFilter && !isSoon("support")
+      ? safely("tickets", [], () => readTickets(ticketFilter))
+      : Promise.resolve([] as Ticket[]),
   ]);
   return {
     linked: customers.length > 0,
     customers,
     projects: perCustomer.flatMap((x) => x.projects),
+    deliverables: perCustomer.flatMap((x) => x.deliverables),
+    contracts,
     meetings: perCustomer.flatMap((x) => x.meetings),
     resources: perCustomer.flatMap((x) => x.resources),
     invoices,
@@ -513,6 +664,102 @@ export async function createTicket(input: {
     return true;
   } catch (err) {
     console.error("[portal] Notion ticket failed:", err instanceof Error ? err.message : err);
+    return false;
+  }
+}
+
+/* ------------------------------------------------------- edit requests ---- */
+
+// Edit requests are Notion comments on the deliverable's page, so the team
+// answers them where it already works. The integration needs the "Read
+// comments" and "Insert comments" capabilities.
+
+/** First line of every request the portal posts; stripped when shown. */
+const REQUEST_HEADER = "طلب تعديل من بوابة العملاء";
+
+type NotionComment = {
+  id: string;
+  discussion_id: string;
+  created_time: string;
+  created_by: { id: string };
+  rich_text: { plain_text: string }[];
+};
+
+let botId: Promise<string> | null = null;
+const integrationId = () => (botId ??= notion<{ id: string }>("users/me").then((u) => u.id));
+
+/**
+ * The client's edit-request threads per deliverable. Only threads the portal
+ * started are returned: the team's own discussions on the same page stay
+ * internal. Team replies show as "فريق كامبين", never by name.
+ */
+export async function getEditThreads(deliverableIds: string[]): Promise<Record<string, EditThread[]>> {
+  if (!isNotionConfigured() || deliverableIds.length === 0) return {};
+  try {
+    const me = await integrationId();
+    const out: Record<string, EditThread[]> = {};
+    // A few at a time: Notion allows about 3 requests a second.
+    for (let i = 0; i < deliverableIds.length; i += 3) {
+      await Promise.all(
+        deliverableIds.slice(i, i + 3).map(async (id) => {
+          const res = await notion<{ results: NotionComment[] }>(`comments?block_id=${id}&page_size=100`);
+          const threads = new Map<string, NotionComment[]>();
+          for (const c of res.results) {
+            threads.set(c.discussion_id, [...(threads.get(c.discussion_id) ?? []), c]);
+          }
+          out[id] = [...threads.values()]
+            .map((list) => list.sort((a, b) => a.created_time.localeCompare(b.created_time)))
+            .filter((list) => list[0].created_by.id === me)
+            .map((list) => ({
+              id: list[0].discussion_id,
+              messages: list.map((c) => {
+                const fromClient = c.created_by.id === me;
+                const body = c.rich_text.map((t) => t.plain_text).join("");
+                return {
+                  fromClient,
+                  // The portal's header line names the client for the team.
+                  text: fromClient ? body.split("\n").slice(1).join("\n").trim() || body : body,
+                  created: c.created_time,
+                };
+              }),
+            }))
+            .sort((a, b) => b.messages[0].created.localeCompare(a.messages[0].created));
+        }),
+      );
+    }
+    return out;
+  } catch (err) {
+    console.error("[portal] edit threads:", err instanceof Error ? err.message : err);
+    return {};
+  }
+}
+
+/**
+ * Posts a client's edit request as a comment on the deliverable's page. The
+ * caller must check the deliverable is one of this client's.
+ */
+export async function addEditRequest(input: {
+  deliverableId: string;
+  name: string;
+  email: string;
+  message: string;
+}): Promise<boolean> {
+  if (!isNotionConfigured()) return false;
+  try {
+    await notion("comments", {
+      parent: { page_id: input.deliverableId },
+      rich_text: [
+        {
+          type: "text",
+          text: {
+            content: `${REQUEST_HEADER} · ${input.name} (${input.email})\n${input.message}`.slice(0, 2000),
+          },
+        },
+      ],
+    });
+    return true;
+  } catch (err) {
+    console.error("[portal] edit request:", err instanceof Error ? err.message : err);
     return false;
   }
 }

@@ -641,3 +641,205 @@
   background: rgba(245, 170, 40, 0.16);
   color: #f3c36b;
 }
+
+/* ---------- V1: soon, deliverables ---------------------- */
+
+/* V2 sections in the menu: listed, not clickable. */
+.portal-soon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.portal-soon small,
+.p-soon-badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--sunk);
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+@media (min-width: 900px) {
+  .portal-soon {
+    background: transparent;
+    padding: 7px 0;
+    font-size: 17px;
+  }
+}
+
+.p-soon {
+  justify-items: start;
+}
+
+.p-soon-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.d-month {
+  display: grid;
+  gap: 12px;
+}
+
+.d-card {
+  padding: clamp(16px, 2.4vw, 22px);
+  display: grid;
+  gap: 14px;
+}
+
+.d-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.d-card-title {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.d-card-title h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.d-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.d-gallery {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+}
+
+.d-gallery-one {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.d-media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 14px;
+  background: var(--sunk);
+  overflow: hidden;
+}
+
+.d-media-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.d-media-folder {
+  aspect-ratio: auto;
+  height: 360px;
+}
+
+.d-files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.d-files li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 14px;
+}
+
+.d-threads {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.d-threads-title {
+  font-size: 14px;
+}
+
+.d-thread {
+  display: grid;
+  gap: 6px;
+}
+
+.d-msg {
+  display: grid;
+  gap: 2px;
+  max-width: 88%;
+  padding: 10px 14px;
+  border-radius: 14px;
+}
+
+.d-msg p {
+  margin: 0;
+  font-size: 14.5px;
+  white-space: pre-line;
+}
+
+.d-msg-client {
+  justify-self: start;
+  background: var(--sunk);
+}
+
+.d-msg-team {
+  justify-self: end;
+  background: var(--tint-soft);
+  border-inline-end: 3px solid var(--accent);
+}
+
+.d-msg-who {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.d-msg-team .d-msg-who {
+  color: var(--accent);
+}
+
+.d-request {
+  padding-top: 4px;
+}
+
+.d-request-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.d-request-actions .p-submit {
+  height: 44px;
+  padding: 0 22px;
+  margin: 0;
+  font-size: 15px;
+}

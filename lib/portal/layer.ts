@@ -20,7 +20,22 @@ export const CUSTOMER_FIELDS = ["Company", "Status", "Active Projects", "Date"] 
 /** Pages and databases the portal never walks into or reads. */
 export const NEVER = /credential|password|passwords|\bpass\b|باسورد|internal|داخلي|invoice|فاتور/i;
 
-export type Category = "projects" | "meetings" | "resources";
+export type Category = "deliverables" | "projects" | "meetings" | "resources";
+
+/**
+ * Portal sections planned for V2 (Notion page "Sign Up System"): listed in
+ * the menu as «قريبًا», not read from Notion until they open.
+ */
+export const SOON = ["resources", "meetings", "reports", "support"] as const;
+export type SoonSection = (typeof SOON)[number];
+export const isSoon = (key: string) => (SOON as readonly string[]).includes(key);
+
+/**
+ * Contracts & proposals: rows of "KMPN Dev Tasks" (Business Dev.) with
+ * *Portal* ticked and the client in *Customer*. Only these fields leave
+ * Notion; never the page body, assignees or other tasks.
+ */
+export const CONTRACT_FIELDS = ["Task name", "Portal Type", "Status", "Due date", "Files & media"] as const;
 
 /**
  * Which databases count as what, by title, and which of their fields may be
@@ -30,6 +45,14 @@ export const CATEGORIES: Record<
   Category,
   { match: RegExp; fields: string[]; hide: string[] }
 > = {
+  // Checked first: a "… Deliverables" database is never a project list.
+  deliverables: {
+    match: /deliverable/i,
+    // The files are the point here (previews and downloads). Edit requests
+    // are Notion comments on the row's page, see lib/portal/notion.ts.
+    fields: ["title", "Type", "Status", "Delivery Date", "Files"],
+    hide: ["backlog", "cancelled"],
+  },
   projects: {
     match: /project/i,
     // Not Completion (it follows Status: Delivered reads 70%), Owner,
