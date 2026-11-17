@@ -9,6 +9,7 @@ export type NavItem = { href: string; label: string; key: string };
 export const PORTAL_NAV: NavItem[] = [
   { key: "dashboard", href: "/portal", label: "اللوحة" },
   { key: "projects", href: "/portal/projects", label: "المشاريع" },
+  { key: "reports", href: "/portal/reports", label: "التقارير" },
   { key: "resources", href: "/portal/resources", label: "المطلوب منك" },
   { key: "meetings", href: "/portal/meetings", label: "الاجتماعات" },
   { key: "invoices", href: "/portal/invoices", label: "الفواتير" },

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { reportClient } from "@/lib/reports/clients";
 import { hasReportAccess } from "@/lib/reports/access";
 import { googleConfigured } from "@/lib/reports/google";
-import { readTab, reportTabs, type ParsedTab, type TabRef } from "@/lib/reports/sheet";
+import { loadReport } from "@/lib/reports/sheet";
 import { ReportView } from "@/components/report/ReportView";
 import { UnlockForm } from "@/components/report/UnlockForm";
 import { ReportThemeToggle } from "@/components/report/ReportThemeToggle";
@@ -69,15 +69,9 @@ export default async function ReportPage({ params, searchParams }: Props) {
     );
   }
 
-  let tabs: TabRef[];
-  let current: TabRef | undefined;
-  let tab: ParsedTab;
+  let report: Awaited<ReturnType<typeof loadReport>>;
   try {
-    tabs = await reportTabs(client);
-    const wanted = (await searchParams).tab;
-    current = tabs.find((t) => t.title === wanted) ?? tabs[0];
-    if (!current) throw new Error("no tabs");
-    tab = await readTab(client, current.title);
+    report = await loadReport(client, (await searchParams).tab);
   } catch (err) {
     console.error(`[report:${slug}]`, err);
     return (
@@ -91,9 +85,7 @@ export default async function ReportPage({ params, searchParams }: Props) {
     <Shell>
       <ReportView
         clientName={client.name}
-        tabs={tabs}
-        current={current}
-        tab={tab}
+        {...report}
         hrefFor={(t) => `/report/${slug}?tab=${encodeURIComponent(t.title)}`}
       />
     </Shell>
