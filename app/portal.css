@@ -1,0 +1,643 @@
+/* =========================================================
+   Client portal — header account link, login / sign-up,
+   and /portal. Built on the tokens in globals.css.
+   ========================================================= */
+
+/* Header login button: icon and words from 900px, a round icon on phones
+   (the words stay for screen readers). */
+.hdr-login {
+  height: 40px;
+  min-width: 40px;
+  padding: 0 16px 0 18px;
+  font-size: 14px;
+  gap: 6px;
+}
+
+@media (max-width: 899px) {
+  .hdr-login {
+    width: 40px;
+    padding: 0;
+  }
+
+  .hdr-login-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ---------- login / sign-up ----------------------------- */
+
+.auth-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding-block: clamp(32px, 6vw, 72px) clamp(48px, 7vw, 96px);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: clamp(22px, 3.4vw, 36px);
+  display: grid;
+  gap: 14px;
+}
+
+.auth-title {
+  font-size: clamp(28px, 3.6vw, 38px);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.auth-lead,
+.auth-below {
+  color: var(--fg2);
+}
+
+.auth-below {
+  font-size: 15px;
+}
+
+.p-form {
+  display: grid;
+  gap: 14px;
+}
+
+.p-label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.p-hint {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.field:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.p-code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 22px;
+  letter-spacing: 0.3em;
+  text-align: center;
+}
+
+.p-submit {
+  height: 52px;
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+.p-notice {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+.p-notice-err {
+  background: var(--tint);
+  color: var(--accent2);
+}
+
+.p-notice-ok {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.page .p-link {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.page .p-link:hover {
+  text-decoration: underline;
+}
+
+.p-plain {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  justify-self: center;
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--sunk);
+}
+
+.seg button {
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg2);
+  cursor: pointer;
+}
+
+.seg button[aria-selected="true"] {
+  background: var(--hdr);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgba(11, 11, 11, 0.12);
+}
+
+.p-done {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+  padding: 12px 4px;
+}
+
+.p-done-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-done h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.p-done p {
+  color: var(--fg2);
+}
+
+/* ---------- portal frame -------------------------------- */
+
+/* Nav chips above the content on phones, wrapping onto rows so every tab
+   is in view (no sideways scrolling); a side list from 900px (on the
+   right, as the page is RTL). */
+.portal {
+  display: grid;
+  gap: 24px;
+  padding-block: clamp(28px, 5vw, 64px) clamp(48px, 6vw, 96px);
+}
+
+.portal-main {
+  min-width: 0;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.portal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 6px;
+}
+
+.portal-nav a,
+.portal-out {
+  flex: none;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.page .portal-nav a {
+  color: var(--fg2);
+}
+
+.page .portal-nav a[aria-current="page"] {
+  color: var(--accent);
+  background: var(--tint);
+}
+
+.portal-out {
+  color: var(--muted);
+}
+
+.portal-out:hover {
+  color: var(--accent);
+}
+
+@media (min-width: 900px) {
+  .portal {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+
+  .portal-nav {
+    flex-direction: column;
+    gap: 2px;
+    position: sticky;
+    top: 110px;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .portal-nav a,
+  .portal-out {
+    background: transparent;
+    border-radius: 0;
+    padding: 7px 0;
+    font-size: 17px;
+    text-align: start;
+  }
+
+  .page .portal-nav a[aria-current="page"] {
+    background: transparent;
+  }
+
+  .portal-nav form {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+}
+
+/* ---------- portal content ------------------------------ */
+
+.p-hello {
+  font-size: clamp(42px, 7vw, 84px);
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.page .p-companies {
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: -10px;
+}
+
+.p-banner {
+  background: var(--tint-soft);
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.p-head h1 {
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.page .p-head p {
+  color: var(--fg2);
+  margin-top: 6px;
+}
+
+.p-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+}
+
+.p-card {
+  padding: clamp(18px, 2.4vw, 26px);
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.p-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.p-card-head h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.p-mini {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+.p-mini li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.p-mini li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.p-figure {
+  display: grid;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.p-empty {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  color: var(--fg2);
+  font-size: 15px;
+}
+
+.p-small-btn {
+  height: 38px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.p-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.p-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.p-status-ok {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.p-status-warn {
+  background: #fdf0d5;
+  color: #7a5000;
+}
+
+.p-status-bad {
+  background: var(--tint);
+  color: var(--accent2);
+}
+
+.p-status-info {
+  background: #e5eefc;
+  color: #1d4f9e;
+}
+
+.p-status-off {
+  background: var(--sunk);
+  color: var(--muted);
+}
+
+[data-tw="dark"] .p-status-warn {
+  background: rgba(245, 170, 40, 0.16);
+  color: #f3c36b;
+}
+
+[data-tw="dark"] .p-status-info {
+  background: rgba(80, 140, 240, 0.16);
+  color: #9cc0ff;
+}
+
+.p-list {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.p-row {
+  padding: 18px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px 24px;
+}
+
+.p-row-main {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.p-row-main h2 {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.page .p-row-main p {
+  color: var(--fg2);
+  font-size: 14.5px;
+}
+
+.p-row-side {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.p-meta {
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.p-amount {
+  font-size: 18px;
+}
+
+.p-split {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  align-items: start;
+}
+
+.p-sub {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.p-ticket {
+  padding: 18px 20px;
+  display: grid;
+  gap: 6px;
+}
+
+.p-ticket-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+}
+
+.p-ticket-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.page .p-ticket-msg,
+.page .p-reply p {
+  color: var(--fg2);
+  font-size: 14.5px;
+  white-space: pre-line;
+}
+
+.p-reply {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--sunk);
+  border-inline-start: 3px solid var(--accent);
+}
+
+.p-reply strong {
+  font-size: 13px;
+  color: var(--accent);
+}
+
+/* ---------- projects, resources, preview ---------------- */
+
+.p-count {
+  margin-inline-start: 8px;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--accent2);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.p-client {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 15px;
+}
+
+.p-services {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.p-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.p-chip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.p-project {
+  padding: 18px 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.p-project .p-row {
+  padding: 0;
+}
+
+.p-subs {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--line);
+  display: grid;
+}
+
+.p-subs li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 8px 0;
+  font-size: 14.5px;
+  border-top: 1px solid var(--line);
+}
+
+.p-subs li:first-child {
+  border-top: 0;
+}
+
+.p-more {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 16px 20px;
+}
+
+.p-more summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.p-more[open] summary {
+  margin-bottom: 12px;
+}
+
+.p-preview {
+  margin: 20px 0 0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #fdf0d5;
+  color: #7a5000;
+  font-size: 14px;
+}
+
+[data-tw="dark"] .p-preview {
+  background: rgba(245, 170, 40, 0.16);
+  color: #f3c36b;
+}
