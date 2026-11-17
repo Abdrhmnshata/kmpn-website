@@ -108,6 +108,14 @@ export async function reportTabs(client: ReportClient): Promise<TabRef[]> {
   return [...months, ...extras];
 }
 
+/** The tab list, the tab asked for (else the newest month) and its contents. */
+export async function loadReport(client: ReportClient, wanted: string | undefined) {
+  const tabs = await reportTabs(client);
+  const current = tabs.find((t) => t.title === wanted) ?? tabs[0];
+  if (!current) throw new Error(`no report tabs in ${client.spreadsheetId}`);
+  return { tabs, current, tab: await readTab(client, current.title) };
+}
+
 export async function readTab(client: ReportClient, title: string): Promise<ParsedTab> {
   const quoted = `'${title.replace(/'/g, "''")}'`;
   const res = await sheetsGet<{ sheets: ApiSheet[] }>(

@@ -14,6 +14,7 @@ import {
 } from "@/components/portal/Views";
 import { PageHead } from "@/components/portal/Bits";
 import { getPortalDataForCustomer } from "@/lib/portal/notion";
+import { PortalReport } from "@/components/report/PortalReport";
 
 /**
  * The team's local preview of what one KC customer sees in the portal.
@@ -23,9 +24,10 @@ import { getPortalDataForCustomer } from "@/lib/portal/notion";
 
 export const metadata: Metadata = { title: "معاينة البوابة", robots: { index: false } };
 
-const TABS: { key: "dashboard" | Tab; label: string }[] = [
+const TABS: { key: "dashboard" | "reports" | Tab; label: string }[] = [
   { key: "dashboard", label: "اللوحة" },
   { key: "projects", label: "المشاريع" },
+  { key: "reports", label: "التقارير" },
   { key: "resources", label: "المطلوب منك" },
   { key: "meetings", label: "الاجتماعات" },
   { key: "invoices", label: "الفواتير" },
@@ -37,11 +39,11 @@ export default async function PreviewPage({
   searchParams,
 }: {
   params: Promise<{ customer: string }>;
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; sheet?: string }>;
 }) {
   if (process.env.NODE_ENV === "production") notFound();
 
-  const [{ customer }, { tab: rawTab }] = await Promise.all([params, searchParams]);
+  const [{ customer }, { tab: rawTab, sheet }] = await Promise.all([params, searchParams]);
   const tab = TABS.some((t) => t.key === rawTab) ? (rawTab as (typeof TABS)[number]["key"]) : "dashboard";
   const data = await getPortalDataForCustomer(customer);
   if (!data.linked) notFound();
@@ -51,7 +53,7 @@ export default async function PreviewPage({
   const items: NavItem[] = TABS.map((t) => ({
     key: t.key,
     label: t.label,
-    href: t.key === "dashboard" ? base : href(t.key),
+    href: t.key === "dashboard" ? base : `${base}?tab=${t.key}`,
   }));
   const company = data.customers[0]?.company ?? "";
 
@@ -71,6 +73,12 @@ export default async function PreviewPage({
         <div className="portal-main">
           {tab === "dashboard" ? (
             <DashboardView name={company} data={data} verified href={href} />
+          ) : tab === "reports" ? (
+            <PortalReport
+              customerIds={data.customers.map((c) => c.id)}
+              tab={sheet}
+              hrefFor={(title) => `${base}?tab=reports&sheet=${encodeURIComponent(title)}`}
+            />
           ) : tab === "projects" ? (
             <ProjectsView data={data} />
           ) : tab === "resources" ? (
