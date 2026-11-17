@@ -104,6 +104,50 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 Without them the site still works: `/success-stories` renders the seed list
 and the contact form tells visitors to email instead.
 
+## Client portal (بوابة العملاء)
+
+`/signup`, `/login` (password or a one-time code by email),
+`/forgot-password`, and behind them `/portal`: اللوحة, المشاريع, الفواتير,
+الدعم الفني, حسابي.
+
+- **Accounts** are Supabase Auth users (same project as above; name,
+  company and phone sit in `user_metadata`, no extra tables). Sessions are
+  cookies via `@supabase/ssr`; `middleware.ts` refreshes them and guards
+  `/portal`, and only runs on the portal and auth routes so the marketing
+  pages stay static.
+- **Data** comes live from Notion (`lib/portal/notion.ts`), with its own
+  token `NOTION_PORTAL_TOKEN` (see `.env.example`):
+  - a client sees a row of *KC - Master Customers* when their **confirmed**
+    email is in its *Portal Emails* field; its *Active Projects* are the
+    projects shown;
+  - invoices: *Portal - Invoices* rows related to that customer, except
+    *Draft*;
+  - tickets: *Portal - Support Tickets*, matched on email; the support form
+    creates a row with status *New*. The team answers in *Reply*.
+  *Portal - Invoices* lives on the Notion page *Client Portal - بوابة
+  العملاء*, private to the agency director (invoices and amounts), which
+  also explains the workflow. *Portal - Support Tickets* sits on *Operation
+  Master Page* in Account Management so the team can answer.
+- The public header shows "دخول العملاء", or "أهلاً، …" from the `kp_name`
+  cookie the middleware sets — no Supabase SDK on the public pages.
+
+Supabase settings the portal relies on (Authentication in the dashboard):
+email sign-ups on and *Confirm email* required; **URL Configuration** with
+Site URL `https://kmpn.agency` and redirect URLs for `https://kmpn.agency/**`,
+`http://localhost:3000/**` and `https://*-abdrhmnshatas-projects.vercel.app/**`
+(all set on 2026-11-17).
+
+Emails go through **Resend** SMTP (`smtp.resend.com:465`, user `resend`,
+sender `KMPN Sign in <noreply@kmpn.agency>`; kmpn.agency is verified in
+Resend with DNS records in GoDaddy). The templates load the Arabic logo from
+`https://kmpn.agency/assets/email/kmpn-logo-ar.png` (`public/assets/email/`;
+email clients do not render SVG), so it only shows once that file is live. Supabase only allows editing templates with custom
+SMTP. The Arabic templates are versioned in `supabase/templates/`
+(confirm sign-up, magic link / OTP, reset password) and pasted into the
+dashboard; their links use `{{ .RedirectTo }}&token_hash=…&type=…` so they
+sign in from any browser, and the magic-link one carries `{{ .Token }}` for
+the code login. Edit the file first, then paste it into Supabase.
+
 ## Deploy
 
 Push to GitHub, import the repo in Vercel, set the two env vars above, deploy.

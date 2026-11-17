@@ -1,0 +1,31 @@
+<!--
+  Supabase → Authentication → Emails → "Magic link or OTP".
+  Subject: كود الدخول لبوابة كامبين: {{ .Token }}
+
+  Carries both the code (typed on /login → "بكود على البريد") and a link
+  that signs in from any browser (token_hash, see confirm-signup.html).
+-->
+<div dir="rtl" style="margin:0;padding:24px 12px;background:#faf7f2;font-family:Tahoma,Arial,sans-serif;color:#0b0b0b;text-align:right">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:20px">
+    <tr>
+      <td style="padding:32px 28px">
+        <a href="https://kmpn.agency" style="display:inline-block;margin:0 0 24px"><img src="https://kmpn.agency/assets/email/kmpn-logo-ar.png" width="120" height="45" alt="KMPN" style="display:block;border:0;width:120px;height:45px"></a>
+        <h1 style="margin:0 0 12px;font-size:22px;line-height:1.5">كود الدخول لبوابة العملاء</h1>
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.9;color:#4a463e">اكتب هذا الكود في صفحة تسجيل الدخول:</p>
+        <p dir="ltr" style="margin:0 0 8px;text-align:center;background:#faf7f2;border-radius:14px;padding:16px"><span style="font-family:'Courier New',monospace;font-size:32px;font-weight:bold;letter-spacing:2px;color:#0b0b0b;-webkit-user-select:all;user-select:all">{{ .Token }}</span></p>
+        <p style="margin:0 0 24px;font-size:13px;color:#6e685c;text-align:center">اضغط مرتين على الكود (أو مطوّلًا على الموبايل) لنسخه.</p>
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.9;color:#4a463e">أو ادخل مباشرة من الزر:</p>
+        <p style="margin:0 0 28px">
+          <a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email"
+             style="display:inline-block;background:#ee4037;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;padding:14px 28px;border-radius:999px">
+            الدخول إلى البوابة
+          </a>
+        </p>
+        <p style="margin:0;font-size:13px;line-height:1.8;color:#6e685c">
+          الكود والرابط صالحان لفترة قصيرة ولمرة واحدة. إذا لم تطلب الدخول، تجاهل هذه الرسالة.
+        </p>
+      </td>
+    </tr>
+  </table>
+  <p style="max-width:520px;margin:16px auto 0;font-size:12px;color:#6e685c;text-align:center">كامبين · kmpn.agency</p>
+</div>
