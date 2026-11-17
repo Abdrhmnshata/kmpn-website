@@ -5,9 +5,35 @@ import { useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import { NAV } from "@/lib/content";
 
+/** First name of a signed-in portal client, from the cookie the portal
+ *  middleware sets. Read after mount so static pages hydrate cleanly. */
+function usePortalName() {
+  const [name, setName] = useState<string | null>(null);
+  useEffect(() => {
+    const raw = document.cookie.match(/(?:^|;\s*)kp_name=([^;]*)/)?.[1];
+    if (!raw) return;
+    try {
+      setName(decodeURIComponent(decodeURIComponent(raw)));
+    } catch {
+      setName(null);
+    }
+  }, []);
+  return name;
+}
+
+const PersonIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <circle cx="12" cy="7.5" r="4" />
+    <path d="M4 20.5c0-4.1 3.6-7 8-7s8 2.9 8 7a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z" />
+  </svg>
+);
+
 export function Header({ ctaHref = "#contact" }: { ctaHref?: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggle } = useTheme();
+  const portalName = usePortalName();
+  const accountHref = portalName ? "/portal" : "/login";
+  const accountLabel = portalName ? `أهلاً، ${portalName}` : "تسجيل الدخول";
 
   const themeLabel = theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن";
 
@@ -41,12 +67,12 @@ export function Header({ ctaHref = "#contact" }: { ctaHref?: string }) {
           </nav>
 
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <Link
-              href={ctaHref}
-              className="btn-primary desk-nav"
-              style={{ height: 40, padding: "0 18px", fontSize: 14 }}
-            >
-              اطلب استشارة مجانية
+            {/* Client login, or "أهلاً، …" once signed in: icon and words from
+                900px, the icon alone on phones. The free-consultation CTA stays
+                in the phone menu and on the pages themselves. */}
+            <Link href={accountHref} className="btn-primary hdr-login" aria-label={accountLabel} title={accountLabel}>
+              <PersonIcon />
+              <span className="hdr-login-text">{accountLabel}</span>
             </Link>
 
             <button
