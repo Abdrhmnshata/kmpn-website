@@ -1,0 +1,476 @@
+/* =========================================================
+   Client performance report (/report/<slug>).
+   Built on the tokens in globals.css. Cell tones mirror the
+   sheet's colours: the light values are the sheet's own
+   fills; dark mode gets its own steps of the same hues.
+   ========================================================= */
+
+[data-tw="light"] .rp-page {
+  --rp-good-bg: #c6efce;
+  --rp-good-fg: #0e5a2e;
+  --rp-bad-bg: #f4cccc;
+  --rp-bad-fg: #8a1f1a;
+  --rp-warn-bg: #fff2cc;
+  --rp-warn-fg: #6b4e00;
+  --rp-info-bg: #cfe2f3;
+  --rp-info-fg: #1d4b73;
+  --rp-neutral-bg: #ececea;
+  --rp-sec-bg: #f6f3ee;
+  --rp-head-bg: #f3f1ec;
+}
+
+[data-tw="dark"] .rp-page {
+  --rp-good-bg: rgba(74, 186, 116, 0.22);
+  --rp-good-fg: #9fe3b7;
+  --rp-bad-bg: rgba(238, 82, 72, 0.24);
+  --rp-bad-fg: #ffb4ad;
+  --rp-warn-bg: rgba(240, 190, 60, 0.2);
+  --rp-warn-fg: #f3d68a;
+  --rp-info-bg: rgba(92, 150, 230, 0.22);
+  --rp-info-fg: #accdf6;
+  --rp-neutral-bg: rgba(255, 255, 255, 0.07);
+  --rp-sec-bg: #161513;
+  --rp-head-bg: #1a1917;
+}
+
+.rp-wide {
+  max-width: 1680px;
+  margin: 0 auto;
+  padding-inline: clamp(16px, 3vw, 40px);
+}
+
+.rp-bar-top {
+  background: var(--hdr);
+  border-bottom: 1px solid var(--line);
+}
+
+.rp-bar-in {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rp {
+  display: grid;
+  gap: 20px;
+  padding-block: clamp(20px, 3vw, 36px) 56px;
+}
+
+/* ---------- heading and tabs ---------------------------- */
+
+.rp-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.rp-eyebrow {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.page .rp-head h1 {
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.page .rp-asof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  color: var(--fg2);
+  font-size: 14px;
+}
+
+.rp-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--line2);
+}
+
+.rp-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.page .rp-tab {
+  flex: none;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--fg2);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.page .rp-tab:hover {
+  border-color: var(--line2);
+  color: var(--fg);
+}
+
+.page .rp-tab.is-on {
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--page);
+}
+
+/* ---------- headline tiles ------------------------------ */
+
+.rp-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+}
+
+.rp-tile {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 16px 18px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.rp-tile-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rp-tile-en {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.rp-tile-value {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.rp-tile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.rp-tile-meta bdi {
+  color: var(--fg2);
+  font-variant-numeric: tabular-nums;
+}
+
+.rp-tile-pct {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ---------- bars and pills ------------------------------ */
+
+.rp-bar {
+  flex: 1;
+  display: block;
+  min-width: 48px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--sunk);
+  overflow: hidden;
+}
+
+.rp-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--fg2);
+}
+
+.rp-pill {
+  flex: none;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--sunk);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the table ----------------------------------- */
+
+.rp-block {
+  display: grid;
+  gap: 10px;
+}
+
+.page .rp-block-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.rp-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+  scrollbar-width: thin;
+}
+
+.rp-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rp-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+.rp-table th,
+.rp-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.rp-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.rp-table thead th {
+  background: var(--rp-head-bg);
+  color: var(--fg2);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.rp-stick {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  min-width: 190px;
+  background: var(--bg);
+  border-inline-end: 1px solid var(--line);
+  text-align: start !important;
+}
+
+.rp-table thead .rp-stick {
+  z-index: 2;
+  background: var(--rp-head-bg);
+}
+
+.rp-sec-row > * {
+  background: var(--rp-sec-bg);
+  padding-block: 9px !important;
+}
+
+.rp-sec-row th {
+  background: var(--rp-sec-bg);
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rp-metric {
+  font-weight: 400;
+}
+
+.rp-group {
+  display: inline-block;
+  margin-inline-end: 6px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: var(--sunk);
+  color: var(--fg2);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.rp-metric-name {
+  font-weight: 600;
+}
+
+.rp-note {
+  display: block;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.rp-key {
+  color: var(--fg2);
+}
+
+.rp-mtd {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.rp-pct {
+  min-width: 150px;
+  border-inline-end: 1px solid var(--line);
+}
+
+.rp-pct-in {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rp-day {
+  min-width: 64px;
+  font-size: 12px !important;
+}
+
+.rp-extra {
+  color: var(--fg2);
+  font-size: 12.5px;
+}
+
+/* Sheet colours, as tones. */
+.rp-t-good {
+  background: var(--rp-good-bg) !important;
+  color: var(--rp-good-fg) !important;
+}
+
+.rp-t-bad {
+  background: var(--rp-bad-bg) !important;
+  color: var(--rp-bad-fg) !important;
+}
+
+.rp-t-warn {
+  background: var(--rp-warn-bg) !important;
+  color: var(--rp-warn-fg) !important;
+}
+
+.rp-t-info {
+  background: var(--rp-info-bg) !important;
+  color: var(--rp-info-fg) !important;
+}
+
+.rp-t-neutral {
+  background: var(--rp-neutral-bg) !important;
+}
+
+[data-tw="light"] .rp-t-raw {
+  background: var(--cell) !important;
+}
+
+[data-tw="dark"] .rp-t-raw {
+  background: color-mix(in srgb, var(--cell) 28%, transparent) !important;
+}
+
+/* Tones inside the table read as tinted cells; keep the grid lines visible. */
+.rp-table td.rp-t-good,
+.rp-table td.rp-t-bad,
+.rp-table td.rp-t-warn,
+.rp-table td.rp-t-info,
+.rp-table td.rp-t-neutral,
+.rp-table td.rp-t-raw {
+  box-shadow: inset 0 0 0 1px var(--bg);
+}
+
+/* ---------- side notes and footer ----------------------- */
+
+.rp-side {
+  justify-self: start;
+  min-width: min(100%, 280px);
+  padding: 14px 18px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.page .rp-side h3 {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rp-side dl {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.rp-side dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 14px;
+}
+
+.rp-side dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.page .rp-foot {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .rp-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .rp-tile {
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .rp-tile-value {
+    font-size: 21px;
+  }
+
+  .rp-tile-head {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* A narrow metric column, wrapping its note, leaves room for the numbers. */
+  .rp-stick {
+    min-width: 118px;
+    max-width: 132px;
+  }
+
+  .rp-table th.rp-stick {
+    white-space: normal;
+  }
+
+  .rp-note {
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+}
