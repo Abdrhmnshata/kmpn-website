@@ -4,7 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getAuthClient, getUser, profileOf, GREETING_COOKIE } from "@/lib/supabase/auth";
-import { createTicket } from "@/lib/portal/notion";
+import { addEditRequest, createTicket, getPortalData } from "@/lib/portal/notion";
 
 export type FormState = {
   ok?: boolean;
@@ -223,4 +223,29 @@ export async function openTicket(_: FormState, form: FormData): Promise<FormStat
   if (!ok) return fail("تعذّر إرسال التذكرة الآن. راسلنا على a@kmpn.agency.");
   revalidatePath("/portal", "layout");
   return { ok: true, message: "تم استلام تذكرتك، وسيرد عليك فريقنا قريبًا." };
+}
+
+/* ------------------------------------------------------- deliverables ---- */
+
+export async function requestEdit(_: FormState, form: FormData): Promise<FormState> {
+  const user = await getUser();
+  if (!user) redirect("/login?next=/portal/deliverables");
+  const profile = profileOf(user);
+
+  const deliverableId = clean(form.get("deliverable"), 64);
+  const message = clean(form.get("message"), 1800);
+  const fail = (error: string): FormState => ({ error, values: { message } });
+  if (!message) return fail("اكتب التعديل المطلوب.");
+  if (!profile.verified) return fail("أكّد بريدك الإلكتروني أولًا.");
+
+  // Only one of this client's own deliverables can take a comment.
+  const data = await getPortalData(profile.email);
+  if (!data.deliverables.some((d) => d.id === deliverableId)) {
+    return fail("هذا التسليم غير متاح لحسابك.");
+  }
+
+  const ok = await addEditRequest({ deliverableId, name: profile.name, email: profile.email, message });
+  if (!ok) return fail("تعذّر إرسال الطلب الآن. راسلنا على a@kmpn.agency.");
+  revalidatePath("/portal/deliverables");
+  return { ok: true, message: "وصل طلبك لفريق كامبين، وسيظهر ردهم هنا." };
 }

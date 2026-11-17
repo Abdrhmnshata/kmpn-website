@@ -2,9 +2,13 @@ import { currentClient, portalData } from "@/lib/portal/session";
 import { NotLinked } from "@/components/portal/Bits";
 import { ResourcesView } from "@/components/portal/Views";
 
+import { isSoon } from "@/lib/portal/layer";
+import { ComingSoon } from "@/components/portal/V1Views";
+
 export const metadata = { title: "المطلوب منك · بوابة العملاء" };
 
 export default async function ResourcesPage() {
+  if (isSoon("resources")) return <ComingSoon title="المطلوب منك" />;
   const [client, data] = await Promise.all([currentClient(), portalData()]);
   return (
     <>

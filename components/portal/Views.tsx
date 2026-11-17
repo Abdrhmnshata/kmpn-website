@@ -3,7 +3,10 @@ import type { PortalData, Project, Ticket } from "@/lib/portal/notion";
 import {
   INVOICE_STATUS,
   TICKET_STATUS,
+  contractKind,
+  contractStatus,
   customerStatus,
+  deliverableStatus,
   formatDate,
   formatMoney,
   formatRange,
@@ -21,7 +24,14 @@ import { Empty, NotLinked, PageHead, Status } from "./Bits";
  * layer in lib/portal/layer.ts). Shared by /portal and the local preview.
  */
 
-export type Tab = "projects" | "resources" | "meetings" | "invoices" | "support";
+export type Tab =
+  | "projects"
+  | "deliverables"
+  | "contracts"
+  | "resources"
+  | "meetings"
+  | "invoices"
+  | "support";
 export type HrefFor = (tab: Tab) => string;
 
 /* ------------------------------------------------------------ helpers ---- */
@@ -88,7 +98,6 @@ export function DashboardView({
 }) {
   const { top } = tree(data.projects);
   const openProjects = top.filter((p) => !isDoneProject(p.status));
-  const awaiting = data.resources.filter((r) => isAwaiting(r.status));
   const unpaid = data.invoices.filter((i) => i.status === "unpaid" || i.status === "overdue");
   const due = Object.entries(
     unpaid.reduce<Record<string, number>>((acc, i) => {
@@ -132,33 +141,18 @@ export function DashboardView({
           )}
         </Card>
 
-        <Card title="المطلوب منك" href={href("resources")} count={awaiting.length ? String(awaiting.length) : undefined}>
-          {awaiting.length ? (
+        <Card title="التسليمات" href={href("deliverables")}>
+          {data.deliverables.length ? (
             <ul className="p-mini">
-              {awaiting.slice(0, 4).map((r) => (
-                <li key={r.id}>
-                  <span>{r.name}</span>
-                  {r.due ? <span className="p-meta">{formatDate(r.due)}</span> : null}
+              {data.deliverables.slice(0, 4).map((d) => (
+                <li key={d.id}>
+                  <span>{d.name}</span>
+                  <Status label={deliverableStatus(d.status)[0]} tone={deliverableStatus(d.status)[1]} />
                 </li>
               ))}
             </ul>
           ) : (
-            <Empty>لا يوجد شيء مطلوب منك الآن.</Empty>
-          )}
-        </Card>
-
-        <Card title="الاجتماعات" href={href("meetings")}>
-          {data.meetings.length ? (
-            <ul className="p-mini">
-              {data.meetings.slice(0, 3).map((m) => (
-                <li key={m.id}>
-                  <span>{m.name}</span>
-                  <span className="p-meta">{formatDate(m.date)}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <Empty>لا توجد اجتماعات بعد.</Empty>
+            <Empty>لا توجد تسليمات حتى الآن.</Empty>
           )}
         </Card>
 
@@ -180,21 +174,26 @@ export function DashboardView({
           )}
         </Card>
 
-        <Card title="التذاكر" href={href("support")}>
-          {data.tickets.length ? (
+        <Card title="العقود" href={href("contracts")}>
+          {data.contracts.length ? (
             <ul className="p-mini">
-              {data.tickets.slice(0, 3).map((t) => (
-                <li key={t.id}>
-                  <span>{t.subject}</span>
-                  <Status label={TICKET_STATUS[t.status][0]} tone={TICKET_STATUS[t.status][1]} />
+              {data.contracts.slice(0, 3).map((c) => (
+                <li key={c.id}>
+                  <span>{[contractKind(c.kind), c.name].filter(Boolean).join(": ")}</span>
+                  <Status label={contractStatus(c.status)[0]} tone={contractStatus(c.status)[1]} />
                 </li>
               ))}
             </ul>
           ) : (
-            <Empty>ليس لديك أي مشاكل حتى الآن.</Empty>
+            <Empty>لا توجد عقود حتى الآن.</Empty>
           )}
         </Card>
       </div>
+
+      <p className="p-soon-strip">
+        <span className="p-soon-badge">قريبًا</span>
+        التقارير اللحظية، والمطلوب منك، والاجتماعات، والدعم الفني.
+      </p>
     </>
   );
 }
