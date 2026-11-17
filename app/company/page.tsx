@@ -135,422 +135,428 @@ export default function CompanyPage() {
     <div className="page">
       <Header />
 
-      <main id="top" className="container">
-        {/* --------------------------------------------- 01 About ---- */}
-        <section
-          style={{
-            padding: "clamp(40px, 6vw, 80px) 0 clamp(32px, 4vw, 48px)",
-            display: "grid",
-            gap: 18,
-            maxWidth: 760,
-          }}
-        >
-          <span className="pill" style={{ justifySelf: "start" }}>
-            <span className="dot" />
-            عن كامبين
-          </span>
-          <h1
-            style={{
-              fontSize: "clamp(34px, 5.2vw, 60px)",
-              lineHeight: 1.3,
-              fontWeight: 700,
-              textWrap: "balance",
-            }}
-          >
-            رحلتنا بدأت بإطلاق متاجر حقيقية ونشرها،{" "}
-            <span style={{ color: "var(--accent)" }}>ليست بداية إنشاء وكالة</span>.
-          </h1>
-          <p
-            style={{
-              fontSize: 17,
-              lineHeight: 1.9,
-              color: "var(--fg2)",
-              textWrap: "pretty",
-            }}
-          >
-            بدأت كامبين رسميًا في 2021، لكن رحلتنا الحقيقية بدأت قبلها بثلاث
-            سنوات في 2018، بمتجر Vroots. منحتنا هذه التجربة فهمًا حقيقيًا
-            لتحديات التجارة الإلكترونية، وأكسبتنا خبرة عملية مكنتنا من:
-          </p>
-        </section>
-
-        {/* --------------------------------------------- 02 Story ---- */}
-        <section
-          style={{
-            padding: "0 0 clamp(48px, 6vw, 80px)",
-            display: "grid",
-            gap: 24,
-          }}
-        >
-          <ul
-            style={{
-              margin: 0,
-              padding: 0,
-              listStyle: "none",
-              display: "grid",
-              gap: 10,
-              maxWidth: 640,
-            }}
-          >
-            {GAINS.map((g) => (
-              <li
-                key={g}
+      <main id="top">
+        <div className="hero-zone" data-tone="aqua">
+          <div className="container">
+            {/* --------------------------------------------- 01 About ---- */}
+            <section
+              style={{
+                padding: "clamp(40px, 6vw, 80px) 0 clamp(32px, 4vw, 48px)",
+                display: "grid",
+                gap: 18,
+                maxWidth: 760,
+              }}
+            >
+              <span className="pill" style={{ justifySelf: "start" }}>
+                <span className="dot" />
+                عن كامبين
+              </span>
+              <h1
                 style={{
-                  display: "flex",
-                  gap: 10,
-                  alignItems: "flex-start",
-                  lineHeight: 1.75,
+                  fontSize: "clamp(34px, 5.2vw, 60px)",
+                  lineHeight: 1.3,
+                  fontWeight: 700,
+                  textWrap: "balance",
                 }}
               >
-                <span
+                رحلتنا بدأت بإطلاق متاجر حقيقية ونشرها،{" "}
+                <span style={{ color: "var(--accent)" }}>ليست بداية إنشاء وكالة</span>.
+              </h1>
+              <p
+                style={{
+                  fontSize: 17,
+                  lineHeight: 1.9,
+                  color: "var(--fg2)",
+                  textWrap: "pretty",
+                }}
+              >
+                بدأت كامبين رسميًا في 2021، لكن رحلتنا الحقيقية بدأت قبلها بثلاث
+                سنوات في 2018، بمتجر Vroots. منحتنا هذه التجربة فهمًا حقيقيًا
+                لتحديات التجارة الإلكترونية، وأكسبتنا خبرة عملية مكنتنا من:
+              </p>
+            </section>
+          </div>
+        </div>
+
+        <div className="container">
+          {/* --------------------------------------------- 02 Story ---- */}
+          <section
+            style={{
+              padding: "0 0 clamp(48px, 6vw, 80px)",
+              display: "grid",
+              gap: 24,
+            }}
+          >
+            <ul
+              style={{
+                margin: 0,
+                padding: 0,
+                listStyle: "none",
+                display: "grid",
+                gap: 10,
+                maxWidth: 640,
+              }}
+            >
+              {GAINS.map((g) => (
+                <li
+                  key={g}
                   style={{
-                    flex: "none",
-                    width: 22,
-                    height: 22,
-                    borderRadius: "50%",
-                    background: "var(--fg)",
-                    color: "var(--bg)",
                     display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    gap: 10,
+                    alignItems: "flex-start",
+                    lineHeight: 1.75,
                   }}
                 >
-                  <Check />
-                </span>
-                <span>{g}</span>
-              </li>
-            ))}
-          </ul>
-
-          <ol
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
-              gap: 12,
-            }}
-          >
-            {TIMELINE.map((t) => (
-              <li
-                key={t.name}
-                style={{
-                  borderRadius: 20,
-                  padding: 22,
-                  display: "grid",
-                  gap: 10,
-                  alignContent: "start",
-                  background: "var(--bg)",
-                  color: "var(--fg)",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span
                     style={{
-                      width: 56,
-                      height: 56,
                       flex: "none",
-                      borderRadius: 14,
-                      background: "#fff",
-                      border: "1px solid var(--line)",
-                      overflow: "hidden",
+                      width: 22,
+                      height: 22,
+                      borderRadius: "50%",
+                      background: "var(--fg)",
+                      color: "var(--bg)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    {t.logo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={t.logo}
-                        alt={t.name}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain",
-                          display: "block",
-                        }}
-                      />
-                    ) : (
-                      <span
-                        role="img"
-                        aria-label="كامبين"
-                        style={{
-                          display: "block",
-                          width: "74%",
-                          aspectRatio: "3192.5 / 1200",
-                          background: "#0B0B0B",
-                          WebkitMask:
-                            "url(/assets/kmpn-logo-ar.svg) center/contain no-repeat",
-                          mask: "url(/assets/kmpn-logo-ar.svg) center/contain no-repeat",
-                        }}
-                      />
-                    )}
+                    <Check />
                   </span>
-                  <div style={{ display: "grid", gap: 0 }}>
-                    <span
-                      className="num"
-                      style={{ fontSize: 13, fontWeight: 700, color: "var(--muted)" }}
-                    >
-                      {t.year}
-                    </span>
-                    <strong style={{ fontSize: 18 }}>{t.name}</strong>
-                  </div>
-                </div>
-                <span style={{ fontSize: 14, lineHeight: 1.8, opacity: 0.85 }}>
-                  {t.text}
-                </span>
-              </li>
-            ))}
-          </ol>
+                  <span>{g}</span>
+                </li>
+              ))}
+            </ul>
 
-          <p style={{ maxWidth: "70ch", color: "var(--fg2)", lineHeight: 1.9 }}>
-            اليوم، نعمل بفريق متكامل يجمع بين المعرفة والخبرة، لنساعد عملائنا على
-            مواجهة تحديات السوق، وبناء علامات تجارية قوية، وصناعة قصص نجاح ملهمة.
-          </p>
-        </section>
-
-        {/* --------------------------------------- 03 Foundations ---- */}
-        <section
-          className="sec-line-t"
-          style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
-        >
-          <div style={{ display: "grid", gap: 8, maxWidth: "62ch" }}>
-            <h2
+            <ol
               style={{
-                fontSize: "clamp(26px, 3.4vw, 42px)",
-                lineHeight: 1.35,
-                fontWeight: 700,
-                textWrap: "balance",
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
+                gap: 12,
               }}
             >
-              أسُسنا
-            </h2>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-              gap: 12,
-            }}
+              {TIMELINE.map((t) => (
+                <li
+                  key={t.name}
+                  style={{
+                    borderRadius: 20,
+                    padding: 22,
+                    display: "grid",
+                    gap: 10,
+                    alignContent: "start",
+                    background: "var(--bg)",
+                    color: "var(--fg)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span
+                      style={{
+                        width: 56,
+                        height: 56,
+                        flex: "none",
+                        borderRadius: 14,
+                        background: "#fff",
+                        border: "1px solid var(--line)",
+                        overflow: "hidden",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {t.logo ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={t.logo}
+                          alt={t.name}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
+                            display: "block",
+                          }}
+                        />
+                      ) : (
+                        <span
+                          role="img"
+                          aria-label="كامبين"
+                          style={{
+                            display: "block",
+                            width: "74%",
+                            aspectRatio: "3192.5 / 1200",
+                            background: "#0B0B0B",
+                            WebkitMask:
+                              "url(/assets/kmpn-logo-ar.svg) center/contain no-repeat",
+                            mask: "url(/assets/kmpn-logo-ar.svg) center/contain no-repeat",
+                          }}
+                        />
+                      )}
+                    </span>
+                    <div style={{ display: "grid", gap: 0 }}>
+                      <span
+                        className="num"
+                        style={{ fontSize: 13, fontWeight: 700, color: "var(--muted)" }}
+                      >
+                        {t.year}
+                      </span>
+                      <strong style={{ fontSize: 18 }}>{t.name}</strong>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 14, lineHeight: 1.8, opacity: 0.85 }}>
+                    {t.text}
+                  </span>
+                </li>
+              ))}
+            </ol>
+
+            <p style={{ maxWidth: "70ch", color: "var(--fg2)", lineHeight: 1.9 }}>
+              اليوم، نعمل بفريق متكامل يجمع بين المعرفة والخبرة، لنساعد عملائنا على
+              مواجهة تحديات السوق، وبناء علامات تجارية قوية، وصناعة قصص نجاح ملهمة.
+            </p>
+          </section>
+
+          {/* --------------------------------------- 03 Foundations ---- */}
+          <section
+            className="sec-line-t"
+            style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
           >
-            {FOUNDATIONS.map((f) => (
-              <article
-                key={f.n}
+            <div style={{ display: "grid", gap: 8, maxWidth: "62ch" }}>
+              <h2
                 style={{
-                  border: "1px solid var(--card-border)",
-                  borderRadius: 20,
-                  padding: 24,
+                  fontSize: "clamp(26px, 3.4vw, 42px)",
+                  lineHeight: 1.35,
+                  fontWeight: 700,
+                  textWrap: "balance",
+                }}
+              >
+                أسُسنا
+              </h2>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+                gap: 12,
+              }}
+            >
+              {FOUNDATIONS.map((f) => (
+                <article
+                  key={f.n}
+                  style={{
+                    border: "1px solid var(--card-border)",
+                    borderRadius: 20,
+                    padding: 24,
+                    display: "grid",
+                    gap: 10,
+                    alignContent: "start",
+                    background: "var(--bg)",
+                  }}
+                >
+                  <span
+                    className="num"
+                    dir="ltr"
+                    style={{
+                      fontSize: 28,
+                      fontWeight: 800,
+                      color: "var(--accent)",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {f.n}
+                  </span>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5 }}>
+                    {f.t}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: 14.5,
+                      color: "var(--fg2)",
+                      lineHeight: 1.85,
+                      textWrap: "pretty",
+                    }}
+                  >
+                    {f.d}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* ------------------------------------------- 04 Mission ---- */}
+          <section
+            className="sec-line-t"
+            style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
+                gap: 12,
+              }}
+            >
+              <article
+                style={{
+                  background: "var(--bg)",
+                  borderRadius: 24,
+                  padding: "clamp(22px, 3vw, 32px)",
                   display: "grid",
                   gap: 10,
-                  alignContent: "start",
-                  background: "var(--bg)",
                 }}
               >
-                <span
-                  className="num"
-                  dir="ltr"
-                  style={{
-                    fontSize: 28,
-                    fontWeight: 800,
-                    color: "var(--accent)",
-                    lineHeight: 1,
-                  }}
-                >
-                  {f.n}
+                <span className="pill" style={{ justifySelf: "start" }}>
+                  <span className="dot" />
+                  هدفنا
                 </span>
-                <h3 style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5 }}>
-                  {f.t}
-                </h3>
                 <p
                   style={{
-                    fontSize: 14.5,
-                    color: "var(--fg2)",
-                    lineHeight: 1.85,
-                    textWrap: "pretty",
+                    fontSize: "clamp(17px, 1.8vw, 21px)",
+                    fontWeight: 600,
+                    lineHeight: 1.8,
                   }}
                 >
-                  {f.d}
+                  تحقيق معادلة النمو الربحي المستدام لشركائنا من المتاجر الإلكترونية
+                  عبر استراتيجيات تسعير مدروسة، وطرق عرض فعّالة، تضمن مبيعات
+                  متزايدة ونموًا صحيًا.
                 </p>
               </article>
-            ))}
-          </div>
-        </section>
 
-        {/* ------------------------------------------- 04 Mission ---- */}
-        <section
-          className="sec-line-t"
-          style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
-              gap: 12,
-            }}
-          >
-            <article
-              style={{
-                background: "var(--bg)",
-                borderRadius: 24,
-                padding: "clamp(22px, 3vw, 32px)",
-                display: "grid",
-                gap: 10,
-              }}
-            >
-              <span className="pill" style={{ justifySelf: "start" }}>
-                <span className="dot" />
-                هدفنا
-              </span>
-              <p
-                style={{
-                  fontSize: "clamp(17px, 1.8vw, 21px)",
-                  fontWeight: 600,
-                  lineHeight: 1.8,
-                }}
-              >
-                تحقيق معادلة النمو الربحي المستدام لشركائنا من المتاجر الإلكترونية
-                عبر استراتيجيات تسعير مدروسة، وطرق عرض فعّالة، تضمن مبيعات
-                متزايدة ونموًا صحيًا.
-              </p>
-            </article>
-
-            <article
-              style={{
-                background: "var(--fg)",
-                color: "var(--bg)",
-                borderRadius: 24,
-                padding: "clamp(22px, 3vw, 32px)",
-                display: "grid",
-                gap: 10,
-              }}
-            >
-              <span
-                style={{
-                  justifySelf: "start",
-                  padding: "6px 12px",
-                  borderRadius: 999,
-                  background: "var(--accent)",
-                  color: "#fff",
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                رؤيتنا
-              </span>
-              <p
-                style={{
-                  fontSize: "clamp(17px, 1.8vw, 21px)",
-                  fontWeight: 600,
-                  lineHeight: 1.8,
-                }}
-              >
-                أن نكون الشريك الأكثر موثوقية والخيار الأول لأصحاب المتاجر
-                الإلكترونية المؤثرة في رحلة نموهم وتوسعهم السريع.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        {/* -------------------------------------------- 05 Impact ---- */}
-        <div style={{ marginBottom: 16 }}>
-          <NumbersPanel
-            eyebrow="أثرنا"
-            headline={IMPACT_HEADLINE}
-            more={IMPACT_MORE}
-          />
-        </div>
-
-        {/* ---------------------------------------------- 06 Team ---- */}
-        <section
-          className="sec-line-t"
-          style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
-        >
-          <div style={{ display: "grid", gap: 8, maxWidth: "62ch" }}>
-            <h2
-              style={{
-                fontSize: "clamp(26px, 3.4vw, 42px)",
-                lineHeight: 1.35,
-                fontWeight: 700,
-              }}
-            >
-              فريق عمل <span style={{ color: "var(--accent)" }}>كامبين</span>
-            </h2>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(min(46%, 240px), 1fr))",
-              gap: 12,
-            }}
-          >
-            {TEAM.map((m) => (
               <article
-                key={m.name}
                 style={{
-                  position: "relative",
-                  aspectRatio: "3 / 4",
-                  borderRadius: 20,
-                  overflow: "hidden",
-                  background: "#0B0B0B",
-                  border: `1.5px solid rgba(${m.rgb},.55)`,
+                  background: "var(--fg)",
+                  color: "var(--bg)",
+                  borderRadius: 24,
+                  padding: "clamp(22px, 3vw, 32px)",
+                  display: "grid",
+                  gap: 10,
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={m.photo}
-                  alt={m.name}
-                  loading="lazy"
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "50% 20%",
-                    filter: "grayscale(1) contrast(1.05)",
-                    transform: "scale(.78)",
-                    transformOrigin: "50% 25%",
-                  }}
-                />
                 <span
-                  aria-hidden="true"
                   style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: `linear-gradient(180deg, rgba(${m.rgb},.28) 0%, rgba(${m.rgb},.08) 45%, rgba(11,11,11,.85) 100%)`,
-                  }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    insetInline: 0,
-                    bottom: 0,
-                    padding: "14px 16px",
-                    display: "grid",
-                    gap: 2,
-                    color: "#FAF7F2",
-                    textAlign: "center",
+                    justifySelf: "start",
+                    padding: "6px 12px",
+                    borderRadius: 999,
+                    background: "var(--accent)",
+                    color: "#fff",
+                    fontSize: 13,
+                    fontWeight: 600,
                   }}
                 >
-                  <strong
-                    style={{ fontSize: "clamp(15px, 1.8vw, 19px)", lineHeight: 1.4 }}
-                  >
-                    {m.name}
-                  </strong>
-                  <span
-                    style={{ fontSize: "clamp(12px, 1.3vw, 14px)", color: "#C4BEB1" }}
-                  >
-                    {m.role}
-                  </span>
-                </div>
+                  رؤيتنا
+                </span>
+                <p
+                  style={{
+                    fontSize: "clamp(17px, 1.8vw, 21px)",
+                    fontWeight: 600,
+                    lineHeight: 1.8,
+                  }}
+                >
+                  أن نكون الشريك الأكثر موثوقية والخيار الأول لأصحاب المتاجر
+                  الإلكترونية المؤثرة في رحلة نموهم وتوسعهم السريع.
+                </p>
               </article>
-            ))}
-          </div>
-        </section>
+            </div>
+          </section>
 
-        <CtaSection />
+          {/* -------------------------------------------- 05 Impact ---- */}
+          <div style={{ marginBottom: 16 }}>
+            <NumbersPanel
+              eyebrow="أثرنا"
+              headline={IMPACT_HEADLINE}
+              more={IMPACT_MORE}
+            />
+          </div>
+
+          {/* ---------------------------------------------- 06 Team ---- */}
+          <section
+            className="sec-line-t"
+            style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
+          >
+            <div style={{ display: "grid", gap: 8, maxWidth: "62ch" }}>
+              <h2
+                style={{
+                  fontSize: "clamp(26px, 3.4vw, 42px)",
+                  lineHeight: 1.35,
+                  fontWeight: 700,
+                }}
+              >
+                فريق عمل <span style={{ color: "var(--accent)" }}>كامبين</span>
+              </h2>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(min(46%, 240px), 1fr))",
+                gap: 12,
+              }}
+            >
+              {TEAM.map((m) => (
+                <article
+                  key={m.name}
+                  style={{
+                    position: "relative",
+                    aspectRatio: "3 / 4",
+                    borderRadius: 20,
+                    overflow: "hidden",
+                    background: "#0B0B0B",
+                    border: `1.5px solid rgba(${m.rgb},.55)`,
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={m.photo}
+                    alt={m.name}
+                    loading="lazy"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "50% 20%",
+                      filter: "grayscale(1) contrast(1.05)",
+                      transform: "scale(.78)",
+                      transformOrigin: "50% 25%",
+                    }}
+                  />
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: `linear-gradient(180deg, rgba(${m.rgb},.28) 0%, rgba(${m.rgb},.08) 45%, rgba(11,11,11,.85) 100%)`,
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      insetInline: 0,
+                      bottom: 0,
+                      padding: "14px 16px",
+                      display: "grid",
+                      gap: 2,
+                      color: "#FAF7F2",
+                      textAlign: "center",
+                    }}
+                  >
+                    <strong
+                      style={{ fontSize: "clamp(15px, 1.8vw, 19px)", lineHeight: 1.4 }}
+                    >
+                      {m.name}
+                    </strong>
+                    <span
+                      style={{ fontSize: "clamp(12px, 1.3vw, 14px)", color: "#C4BEB1" }}
+                    >
+                      {m.role}
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <CtaSection />
+        </div>
       </main>
 
       <Footer />

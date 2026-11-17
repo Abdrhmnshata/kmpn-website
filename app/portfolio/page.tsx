@@ -33,45 +33,51 @@ export default function PortfolioPage() {
     <div className="page">
       <Header ctaHref="/contact" />
 
-      <main id="top" className="container">
-        <PageIntro
-          pill="أعمالنا"
-          title={
-            <>
-              ثلاث وحدات متخصصة، <Accent>وشريك واحد</Accent>.
-            </>
-          }
-          text={DESCRIPTION}
-        />
+      <main id="top">
+        <div className="hero-zone" data-tone="lavender">
+          <div className="container">
+            <PageIntro
+              pill="أعمالنا"
+              title={
+                <>
+                  ثلاث وحدات متخصصة، <Accent>وشريك واحد</Accent>.
+                </>
+              }
+              text={DESCRIPTION}
+            />
+          </div>
+        </div>
 
-        <VerticalTabs current="all" />
+        <div className="container">
+          <VerticalTabs current="all" />
 
-        {VERTICALS.map((v) => (
-          <section key={v.key} className="vert-section" aria-labelledby={`v-${v.key}`}>
-            <div className="vert-head">
-              <div style={{ display: "grid", gap: 6, maxWidth: "52ch" }}>
-                <h2 id={`v-${v.key}`} className="vert-title">
-                  {v.name}
-                </h2>
-                <p style={{ color: "var(--fg2)", lineHeight: 1.8 }}>{v.tagline}</p>
+          {VERTICALS.map((v) => (
+            <section key={v.key} className="vert-section" aria-labelledby={`v-${v.key}`}>
+              <div className="vert-head">
+                <div style={{ display: "grid", gap: 6, maxWidth: "52ch" }}>
+                  <h2 id={`v-${v.key}`} className="vert-title">
+                    {v.name}
+                  </h2>
+                  <p style={{ color: "var(--fg2)", lineHeight: 1.8 }}>{v.tagline}</p>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                  <span className="vert-stat">
+                    <bdi dir="ltr" className="num">
+                      +{v.count}
+                    </bdi>{" "}
+                    {v.unit}
+                  </span>
+                  <Link href={v.href} className="vert-link">
+                    كل أعمال {v.name} ←
+                  </Link>
+                </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                <span className="vert-stat">
-                  <bdi dir="ltr" className="num">
-                    +{v.count}
-                  </bdi>{" "}
-                  {v.unit}
-                </span>
-                <Link href={v.href} className="vert-link">
-                  كل أعمال {v.name} ←
-                </Link>
-              </div>
-            </div>
-            <div className="work-grid work-rail">{previews[v.key]}</div>
-          </section>
-        ))}
+              <div className="work-grid work-rail">{previews[v.key]}</div>
+            </section>
+          ))}
 
-        <CtaSection />
+          <CtaSection />
+        </div>
       </main>
 
       <Footer />

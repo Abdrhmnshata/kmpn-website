@@ -28,30 +28,36 @@ export default function DigitalPage() {
     <div className="page">
       <Header ctaHref="/contact" />
 
-      <main id="top" className="container">
-        <PageIntro
-          pill="كامبين ديجيتال"
-          title={
-            <>
-              تحول رقمي <Accent>بأرقام حقيقية</Accent>.
-            </>
-          }
-          text={DESCRIPTION}
-        />
+      <main id="top">
+        <div className="hero-zone" data-tone="sky">
+          <div className="container">
+            <PageIntro
+              pill="كامبين ديجيتال"
+              title={
+                <>
+                  تحول رقمي <Accent>بأرقام حقيقية</Accent>.
+                </>
+              }
+              text={DESCRIPTION}
+            />
+          </div>
+        </div>
 
-        <VerticalTabs current="digital" />
+        <div className="container">
+          <VerticalTabs current="digital" />
 
-        <FilterGrid
-          label="تصنيف قصص التحول الرقمي"
-          chips={chips}
-          items={DIGITAL.map((c) => ({
-            id: c.id,
-            keys: c.solution ? [c.solution] : [],
-            node: <CaseCard item={c} />,
-          }))}
-        />
+          <FilterGrid
+            label="تصنيف قصص التحول الرقمي"
+            chips={chips}
+            items={DIGITAL.map((c) => ({
+              id: c.id,
+              keys: c.solution ? [c.solution] : [],
+              node: <CaseCard item={c} />,
+            }))}
+          />
 
-        <CtaSection />
+          <CtaSection />
+        </div>
       </main>
 
       <Footer />

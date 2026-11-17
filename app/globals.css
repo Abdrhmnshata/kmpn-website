@@ -207,6 +207,74 @@ body {
   box-shadow: 0 1px 0 var(--line);
 }
 
+/* Tones: the same soft block in other light colours, one per page
+   (data-tone on .hero-zone; the home page keeps the default peach). Each
+   has a light and a dark version, built like --hero-zone above. */
+[data-tw="light"] .hero-zone[data-tone="sky"] {
+  background:
+    radial-gradient(72% 100% at 100% 0%, #b9d5f9 0%, rgba(185, 213, 249, 0) 64%),
+    radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #e7effb 0%, #f2f6fd 60%, #fcfdfe 100%);
+}
+
+[data-tw="light"] .hero-zone[data-tone="mint"] {
+  background:
+    radial-gradient(72% 100% at 100% 0%, #b8e6cb 0%, rgba(184, 230, 203, 0) 64%),
+    radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #e5f4ea 0%, #f1f9f4 60%, #fcfdfc 100%);
+}
+
+[data-tw="light"] .hero-zone[data-tone="lavender"] {
+  background:
+    radial-gradient(72% 100% at 100% 0%, #d6c9f9 0%, rgba(214, 201, 249, 0) 64%),
+    radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #eee8fb 0%, #f6f3fd 60%, #fdfcfe 100%);
+}
+
+[data-tw="light"] .hero-zone[data-tone="sand"] {
+  background:
+    radial-gradient(72% 100% at 100% 0%, #f3da98 0%, rgba(243, 218, 152, 0) 64%),
+    radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #f9f0d9 0%, #fbf7ec 60%, #fdfcf8 100%);
+}
+
+[data-tw="light"] .hero-zone[data-tone="aqua"] {
+  background:
+    radial-gradient(72% 100% at 100% 0%, #afe3e7 0%, rgba(175, 227, 231, 0) 64%),
+    radial-gradient(60% 80% at 0% 100%, #ffffff 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #e2f3f5 0%, #f0f9fa 60%, #fcfefe 100%);
+}
+
+[data-tw="dark"] .hero-zone[data-tone="sky"] {
+  background:
+    radial-gradient(70% 95% at 100% 0%, rgba(80, 140, 240, 0.22) 0%, rgba(80, 140, 240, 0) 62%),
+    linear-gradient(180deg, #0e131c 0%, #0c1017 60%, #0b0d10 100%);
+}
+
+[data-tw="dark"] .hero-zone[data-tone="mint"] {
+  background:
+    radial-gradient(70% 95% at 100% 0%, rgba(50, 172, 99, 0.2) 0%, rgba(50, 172, 99, 0) 62%),
+    linear-gradient(180deg, #0d1712 0%, #0c130f 60%, #0b0e0c 100%);
+}
+
+[data-tw="dark"] .hero-zone[data-tone="lavender"] {
+  background:
+    radial-gradient(70% 95% at 100% 0%, rgba(140, 110, 240, 0.22) 0%, rgba(140, 110, 240, 0) 62%),
+    linear-gradient(180deg, #13101c 0%, #100e17 60%, #0d0c10 100%);
+}
+
+[data-tw="dark"] .hero-zone[data-tone="sand"] {
+  background:
+    radial-gradient(70% 95% at 100% 0%, rgba(240, 180, 60, 0.18) 0%, rgba(240, 180, 60, 0) 62%),
+    linear-gradient(180deg, #19150c 0%, #14110b 60%, #0e0d0b 100%);
+}
+
+[data-tw="dark"] .hero-zone[data-tone="aqua"] {
+  background:
+    radial-gradient(70% 95% at 100% 0%, rgba(40, 180, 190, 0.2) 0%, rgba(40, 180, 190, 0) 62%),
+    linear-gradient(180deg, #0c1718 0%, #0b1314 60%, #0b0e0e 100%);
+}
+
 .hdr-inner {
   max-width: 1200px;
   margin: 0 auto;

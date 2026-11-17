@@ -97,217 +97,66 @@ export default function ValuesPage() {
     <div className="page">
       <Header />
 
-      <main id="top" className="container">
-        {/* -------------------------------------------- 01 Values ---- */}
-        <section
-          style={{
-            padding: "clamp(40px, 6vw, 80px) 0 clamp(32px, 4vw, 48px)",
-            display: "grid",
-            gap: 18,
-            maxWidth: 760,
-          }}
-        >
-          <span className="pill" style={{ justifySelf: "start" }}>
-            <span className="dot" />
-            القيم
-          </span>
-          <h1
-            style={{
-              fontSize: "clamp(34px, 5.2vw, 60px)",
-              lineHeight: 1.3,
-              fontWeight: 700,
-              textWrap: "balance",
-            }}
-          >
-            أُسس <span style={{ color: "var(--accent)" }}>نعمل بها</span> قبل أي حملة.
-          </h1>
-          <p
-            style={{
-              fontSize: 17,
-              lineHeight: 1.9,
-              color: "var(--fg2)",
-              textWrap: "pretty",
-            }}
-          >
-            قيمنا ليست شعارات، بل الميزان الذي نحكم به على كل قرار، من اختيار
-            العميل حتى آخر إعلان.
-          </p>
-        </section>
-
-        {/* ---------------------------------------- 02 Principles ---- */}
-        <section
-          style={{
-            padding: "0 0 clamp(48px, 6vw, 80px)",
-            display: "grid",
-            gap: 12,
-          }}
-        >
-          {PRINCIPLES.map((p) => (
-            <article
-              key={p.n}
+      <main id="top">
+        <div className="hero-zone" data-tone="mint">
+          <div className="container">
+            {/* -------------------------------------------- 01 Values ---- */}
+            <section
               style={{
-                border: "1px solid var(--card-border)",
-                borderRadius: 20,
-                padding: "clamp(20px, 3vw, 28px)",
+                padding: "clamp(40px, 6vw, 80px) 0 clamp(32px, 4vw, 48px)",
                 display: "grid",
-                gridTemplateColumns: "auto minmax(0, 1fr)",
-                gap: "8px 20px",
-                background: "var(--bg)",
+                gap: 18,
+                maxWidth: 760,
               }}
             >
-              <span
-                className="num"
-                dir="ltr"
+              <span className="pill" style={{ justifySelf: "start" }}>
+                <span className="dot" />
+                القيم
+              </span>
+              <h1
                 style={{
-                  fontSize: 32,
-                  fontWeight: 800,
-                  lineHeight: 1.1,
-                  color: "var(--accent)",
+                  fontSize: "clamp(34px, 5.2vw, 60px)",
+                  lineHeight: 1.3,
+                  fontWeight: 700,
+                  textWrap: "balance",
                 }}
               >
-                {p.n}
-              </span>
-              <div style={{ display: "grid", gap: 12 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.5 }}>
-                  {p.title}
-                </h3>
-                <ul
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    listStyle: "none",
-                    display: "grid",
-                    gap: 10,
-                    color: "var(--fg2)",
-                    fontSize: 14.5,
-                  }}
-                >
-                  {p.points.map((pt) => (
-                    <li
-                      key={pt.text}
-                      style={{
-                        display: "flex",
-                        gap: 10,
-                        alignItems: "flex-start",
-                        lineHeight: 1.75,
-                      }}
-                    >
-                      <span
-                        style={{
-                          flex: "none",
-                          width: 22,
-                          height: 22,
-                          borderRadius: "50%",
-                          background: "var(--fg)",
-                          color: "var(--bg)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <svg
-                          width="11"
-                          height="11"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M5 12.5l4.5 4.5L19 7.5" />
-                        </svg>
-                      </span>
-                      <span>
-                        {pt.strong ? <strong>{pt.strong}</strong> : null}
-                        {pt.strong ? " " : null}
-                        {pt.text}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))}
-        </section>
-
-        {/* ------------------------------------------- 03 Promise ---- */}
-        <section
-          style={{
-            borderRadius: 24,
-            padding: "clamp(28px, 5vw, 56px)",
-            background:
-              "linear-gradient(135deg, #3A1210 0%, #1A0B0A 45%, #0B0B0B 100%)",
-            color: "#FAF7F2",
-            display: "grid",
-            gap: 14,
-            marginBottom: 16,
-          }}
-        >
-          <span
-            style={{
-              justifySelf: "start",
-              padding: "6px 14px",
-              borderRadius: 999,
-              background: "rgba(238,64,55,.16)",
-              color: "#FF7266",
-              fontSize: 13,
-              fontWeight: 600,
-            }}
-          >
-            الوعد · الميثاق
-          </span>
-          <p
-            style={{
-              fontSize: "clamp(20px, 2.6vw, 30px)",
-              fontWeight: 700,
-              lineHeight: 1.6,
-              color: "#FAF7F2",
-              maxWidth: "36ch",
-            }}
-          >
-            يلتزم فريق عمل كامبين بتقديم الخدمات بكل شفافية وأمانة، ويبذل الجهد
-            الكافي لعمل أثر وفارق في المتاجر الإلكترونية.
-          </p>
-        </section>
-
-        {/* ----------------------------------------------- 04 Fit ---- */}
-        <section
-          className="sec-line-t"
-          style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
-        >
-          <div style={{ display: "grid", gap: 8, maxWidth: "62ch" }}>
-            <h2
-              style={{
-                fontSize: "clamp(26px, 3.4vw, 42px)",
-                lineHeight: 1.35,
-                fontWeight: 700,
-                textWrap: "balance",
-              }}
-            >
-              الشركات المناسبة{" "}
-              <span style={{ color: "var(--accent)" }}>للعمل معنا</span>
-            </h2>
-          </div>
-          <ol
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "grid",
-              gap: 8,
-            }}
-          >
-            {FIT.map((text, i) => (
-              <li
-                key={text}
+                أُسس <span style={{ color: "var(--accent)" }}>نعمل بها</span> قبل أي حملة.
+              </h1>
+              <p
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 14,
+                  fontSize: 17,
+                  lineHeight: 1.9,
+                  color: "var(--fg2)",
+                  textWrap: "pretty",
+                }}
+              >
+                قيمنا ليست شعارات، بل الميزان الذي نحكم به على كل قرار، من اختيار
+                العميل حتى آخر إعلان.
+              </p>
+            </section>
+          </div>
+        </div>
+
+        <div className="container">
+          {/* ---------------------------------------- 02 Principles ---- */}
+          <section
+            style={{
+              padding: "0 0 clamp(48px, 6vw, 80px)",
+              display: "grid",
+              gap: 12,
+            }}
+          >
+            {PRINCIPLES.map((p) => (
+              <article
+                key={p.n}
+                style={{
                   border: "1px solid var(--card-border)",
-                  borderRadius: 14,
-                  padding: "14px 18px",
+                  borderRadius: 20,
+                  padding: "clamp(20px, 3vw, 28px)",
+                  display: "grid",
+                  gridTemplateColumns: "auto minmax(0, 1fr)",
+                  gap: "8px 20px",
                   background: "var(--bg)",
                 }}
               >
@@ -315,21 +164,178 @@ export default function ValuesPage() {
                   className="num"
                   dir="ltr"
                   style={{
+                    fontSize: 32,
                     fontWeight: 800,
-                    fontSize: 15,
+                    lineHeight: 1.1,
                     color: "var(--accent)",
-                    minWidth: 22,
                   }}
                 >
-                  {"0" + (i + 1)}
+                  {p.n}
                 </span>
-                <span style={{ fontSize: 15, lineHeight: 1.75 }}>{text}</span>
-              </li>
+                <div style={{ display: "grid", gap: 12 }}>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.5 }}>
+                    {p.title}
+                  </h3>
+                  <ul
+                    style={{
+                      margin: 0,
+                      padding: 0,
+                      listStyle: "none",
+                      display: "grid",
+                      gap: 10,
+                      color: "var(--fg2)",
+                      fontSize: 14.5,
+                    }}
+                  >
+                    {p.points.map((pt) => (
+                      <li
+                        key={pt.text}
+                        style={{
+                          display: "flex",
+                          gap: 10,
+                          alignItems: "flex-start",
+                          lineHeight: 1.75,
+                        }}
+                      >
+                        <span
+                          style={{
+                            flex: "none",
+                            width: 22,
+                            height: 22,
+                            borderRadius: "50%",
+                            background: "var(--fg)",
+                            color: "var(--bg)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <svg
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 12.5l4.5 4.5L19 7.5" />
+                          </svg>
+                        </span>
+                        <span>
+                          {pt.strong ? <strong>{pt.strong}</strong> : null}
+                          {pt.strong ? " " : null}
+                          {pt.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
             ))}
-          </ol>
-        </section>
+          </section>
 
-        <CtaSection />
+          {/* ------------------------------------------- 03 Promise ---- */}
+          <section
+            style={{
+              borderRadius: 24,
+              padding: "clamp(28px, 5vw, 56px)",
+              background:
+                "linear-gradient(135deg, #3A1210 0%, #1A0B0A 45%, #0B0B0B 100%)",
+              color: "#FAF7F2",
+              display: "grid",
+              gap: 14,
+              marginBottom: 16,
+            }}
+          >
+            <span
+              style={{
+                justifySelf: "start",
+                padding: "6px 14px",
+                borderRadius: 999,
+                background: "rgba(238,64,55,.16)",
+                color: "#FF7266",
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            >
+              الوعد · الميثاق
+            </span>
+            <p
+              style={{
+                fontSize: "clamp(20px, 2.6vw, 30px)",
+                fontWeight: 700,
+                lineHeight: 1.6,
+                color: "#FAF7F2",
+                maxWidth: "36ch",
+              }}
+            >
+              يلتزم فريق عمل كامبين بتقديم الخدمات بكل شفافية وأمانة، ويبذل الجهد
+              الكافي لعمل أثر وفارق في المتاجر الإلكترونية.
+            </p>
+          </section>
+
+          {/* ----------------------------------------------- 04 Fit ---- */}
+          <section
+            className="sec-line-t"
+            style={{ padding: "clamp(48px, 6vw, 80px) 0", display: "grid", gap: 28 }}
+          >
+            <div style={{ display: "grid", gap: 8, maxWidth: "62ch" }}>
+              <h2
+                style={{
+                  fontSize: "clamp(26px, 3.4vw, 42px)",
+                  lineHeight: 1.35,
+                  fontWeight: 700,
+                  textWrap: "balance",
+                }}
+              >
+                الشركات المناسبة{" "}
+                <span style={{ color: "var(--accent)" }}>للعمل معنا</span>
+              </h2>
+            </div>
+            <ol
+              style={{
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                display: "grid",
+                gap: 8,
+              }}
+            >
+              {FIT.map((text, i) => (
+                <li
+                  key={text}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                    border: "1px solid var(--card-border)",
+                    borderRadius: 14,
+                    padding: "14px 18px",
+                    background: "var(--bg)",
+                  }}
+                >
+                  <span
+                    className="num"
+                    dir="ltr"
+                    style={{
+                      fontWeight: 800,
+                      fontSize: 15,
+                      color: "var(--accent)",
+                      minWidth: 22,
+                    }}
+                  >
+                    {"0" + (i + 1)}
+                  </span>
+                  <span style={{ fontSize: 15, lineHeight: 1.75 }}>{text}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <CtaSection />
+        </div>
       </main>
 
       <Footer />

@@ -27,30 +27,36 @@ export default function StudioPage() {
     <div className="page">
       <Header ctaHref="/contact" />
 
-      <main id="top" className="container">
-        <PageIntro
-          pill="كامبين استوديو"
-          title={
-            <>
-              هويات تُعرَف من <Accent>أول نظرة</Accent>.
-            </>
-          }
-          text={DESCRIPTION}
-        />
+      <main id="top">
+        <div className="hero-zone" data-tone="sand">
+          <div className="container">
+            <PageIntro
+              pill="كامبين استوديو"
+              title={
+                <>
+                  هويات تُعرَف من <Accent>أول نظرة</Accent>.
+                </>
+              }
+              text={DESCRIPTION}
+            />
+          </div>
+        </div>
 
-        <VerticalTabs current="studio" />
+        <div className="container">
+          <VerticalTabs current="studio" />
 
-        <FilterGrid
-          label="تصنيف مشاريع الاستوديو"
-          chips={chips}
-          items={STUDIO.map((p) => ({
-            id: p.id,
-            keys: p.services,
-            node: <StudioCard project={p} />,
-          }))}
-        />
+          <FilterGrid
+            label="تصنيف مشاريع الاستوديو"
+            chips={chips}
+            items={STUDIO.map((p) => ({
+              id: p.id,
+              keys: p.services,
+              node: <StudioCard project={p} />,
+            }))}
+          />
 
-        <CtaSection />
+          <CtaSection />
+        </div>
       </main>
 
       <Footer />

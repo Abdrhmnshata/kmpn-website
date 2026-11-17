@@ -73,163 +73,169 @@ export default async function ProjectPage({ params }: Params) {
     <div className="page">
       <Header ctaHref="#contact" />
 
-      <main id="top" className="container">
-        <nav
-          aria-label="مسار التصفح"
-          style={{
-            display: "flex",
-            gap: 8,
-            alignItems: "center",
-            padding: "clamp(24px, 3vw, 36px) 0 0",
-            fontSize: 14,
-            color: "var(--muted)",
-          }}
-        >
-          <Link href="/portfolio">أعمالنا</Link>
-          <span aria-hidden="true">←</span>
-          <Link href="/portfolio/studio">كامبين استوديو</Link>
-          <span aria-hidden="true">←</span>
-          <span dir="auto" style={{ color: "var(--fg2)" }}>
-            {p.name}
-          </span>
-        </nav>
-
-        <section
-          style={{
-            padding: "clamp(16px, 2.5vw, 28px) 0 clamp(24px, 3vw, 36px)",
-            display: "grid",
-            gap: 16,
-          }}
-        >
-          <h1
-            className="num"
-            style={{
-              fontSize: "clamp(36px, 6vw, 72px)",
-              lineHeight: 1.15,
-              fontWeight: 800,
-              textWrap: "balance",
-            }}
-          >
-            {p.name}
-          </h1>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {services.map((s) => (
-              <span key={s} className="work-tag work-tag-lg">
-                {s}
+      <main id="top">
+        <div className="hero-zone" data-tone="sand">
+          <div className="container">
+            <nav
+              aria-label="مسار التصفح"
+              style={{
+                display: "flex",
+                gap: 8,
+                alignItems: "center",
+                padding: "clamp(24px, 3vw, 36px) 0 0",
+                fontSize: 14,
+                color: "var(--muted)",
+              }}
+            >
+              <Link href="/portfolio">أعمالنا</Link>
+              <span aria-hidden="true">←</span>
+              <Link href="/portfolio/studio">كامبين استوديو</Link>
+              <span aria-hidden="true">←</span>
+              <span dir="auto" style={{ color: "var(--fg2)" }}>
+                {p.name}
               </span>
-            ))}
-          </div>
-        </section>
+            </nav>
 
-        {p.cover && (
-          <div className="work-hero" style={{ background: p.cover.color ?? "var(--sunk)" }}>
-            <Image
-              src={p.cover.src}
-              width={p.cover.width}
-              height={p.cover.height}
-              alt={`هوية ${p.name}`}
-              sizes="(max-width: 1200px) 100vw, 1120px"
-              priority
-            />
-          </div>
-        )}
-
-        <section className="work-facts">
-          <dl className="work-dl">
-            <div>
-              <dt>الخدمات</dt>
-              <dd>{services.join(" · ")}</dd>
-            </div>
-            {facts.map(([k, v]) => (
-              <div key={k}>
-                <dt>{k}</dt>
-                <dd>{v}</dd>
+            <section
+              style={{
+                padding: "clamp(16px, 2.5vw, 28px) 0 clamp(24px, 3vw, 36px)",
+                display: "grid",
+                gap: 16,
+              }}
+            >
+              <h1
+                className="num"
+                style={{
+                  fontSize: "clamp(36px, 6vw, 72px)",
+                  lineHeight: 1.15,
+                  fontWeight: 800,
+                  textWrap: "balance",
+                }}
+              >
+                {p.name}
+              </h1>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {services.map((s) => (
+                  <span key={s} className="work-tag work-tag-lg">
+                    {s}
+                  </span>
+                ))}
               </div>
-            ))}
-            {status && (
-              <div>
-                <dt>حالة الشركة</dt>
-                <dd>
-                  <CompanyStatus status={status} />
-                </dd>
-              </div>
-            )}
-          </dl>
+            </section>
+          </div>
+        </div>
 
-          {(p.behance || p.brandBook) && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {p.behance && (
-                <a
-                  href={p.behance}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary"
-                  style={{ height: 50, padding: "0 24px", fontSize: 15, gap: 8 }}
-                >
-                  المشروع كاملاً على Behance
-                  <ExternalIcon />
-                </a>
-              )}
-              {p.brandBook && (
-                <a
-                  href={p.brandBook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-outline"
-                  style={{ height: 50, padding: "0 24px", fontSize: 15, gap: 8 }}
-                >
-                  دليل الهوية
-                  <ExternalIcon />
-                </a>
-              )}
+        <div className="container">
+          {p.cover && (
+            <div className="work-hero" style={{ background: p.cover.color ?? "var(--sunk)" }}>
+              <Image
+                src={p.cover.src}
+                width={p.cover.width}
+                height={p.cover.height}
+                alt={`هوية ${p.name}`}
+                sizes="(max-width: 1200px) 100vw, 1120px"
+                priority
+              />
             </div>
           )}
-        </section>
 
-        {p.concept && (
-          <section style={{ padding: "clamp(24px, 4vw, 48px) 0", display: "grid", gap: 20 }}>
-            <h2 style={{ fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, lineHeight: 1.4 }}>
-              فكرة الشعار
-            </h2>
-            <Image
-              src={p.concept.src}
-              width={p.concept.width}
-              height={p.concept.height}
-              alt={`شرح فكرة شعار ${p.name}`}
-              sizes="(max-width: 1200px) 100vw, 1120px"
-              className="work-concept"
-            />
+          <section className="work-facts">
+            <dl className="work-dl">
+              <div>
+                <dt>الخدمات</dt>
+                <dd>{services.join(" · ")}</dd>
+              </div>
+              {facts.map(([k, v]) => (
+                <div key={k}>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+              {status && (
+                <div>
+                  <dt>حالة الشركة</dt>
+                  <dd>
+                    <CompanyStatus status={status} />
+                  </dd>
+                </div>
+              )}
+            </dl>
+
+            {(p.behance || p.brandBook) && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {p.behance && (
+                  <a
+                    href={p.behance}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary"
+                    style={{ height: 50, padding: "0 24px", fontSize: 15, gap: 8 }}
+                  >
+                    المشروع كاملاً على Behance
+                    <ExternalIcon />
+                  </a>
+                )}
+                {p.brandBook && (
+                  <a
+                    href={p.brandBook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline"
+                    style={{ height: 50, padding: "0 24px", fontSize: 15, gap: 8 }}
+                  >
+                    دليل الهوية
+                    <ExternalIcon />
+                  </a>
+                )}
+              </div>
+            )}
           </section>
-        )}
 
-        <section
-          className="sec-line-t"
-          style={{ padding: "clamp(32px, 5vw, 56px) 0 clamp(8px, 2vw, 16px)", display: "grid", gap: 20 }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "baseline",
-              gap: 16,
-              flexWrap: "wrap",
-            }}
+          {p.concept && (
+            <section style={{ padding: "clamp(24px, 4vw, 48px) 0", display: "grid", gap: 20 }}>
+              <h2 style={{ fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, lineHeight: 1.4 }}>
+                فكرة الشعار
+              </h2>
+              <Image
+                src={p.concept.src}
+                width={p.concept.width}
+                height={p.concept.height}
+                alt={`شرح فكرة شعار ${p.name}`}
+                sizes="(max-width: 1200px) 100vw, 1120px"
+                className="work-concept"
+              />
+            </section>
+          )}
+
+          <section
+            className="sec-line-t"
+            style={{ padding: "clamp(32px, 5vw, 56px) 0 clamp(8px, 2vw, 16px)", display: "grid", gap: 20 }}
           >
-            <h2 style={{ fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, lineHeight: 1.4 }}>
-              مشاريع أخرى من الاستوديو
-            </h2>
-            <Link href="/portfolio/studio" className="vert-link">
-              كل أعمال كامبين استوديو ←
-            </Link>
-          </div>
-          <div className="work-grid" style={{ paddingBottom: 0 }}>
-            {otherStudioProjects(p.slug).map((o) => (
-              <StudioCard key={o.slug} project={o} />
-            ))}
-          </div>
-        </section>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                gap: 16,
+                flexWrap: "wrap",
+              }}
+            >
+              <h2 style={{ fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, lineHeight: 1.4 }}>
+                مشاريع أخرى من الاستوديو
+              </h2>
+              <Link href="/portfolio/studio" className="vert-link">
+                كل أعمال كامبين استوديو ←
+              </Link>
+            </div>
+            <div className="work-grid" style={{ paddingBottom: 0 }}>
+              {otherStudioProjects(p.slug).map((o) => (
+                <StudioCard key={o.slug} project={o} />
+              ))}
+            </div>
+          </section>
 
-        <CtaSection />
+          <CtaSection />
+        </div>
       </main>
 
       <Footer />
