@@ -43,6 +43,9 @@ const RESOURCE: Record<string, Label> = {
   "in reviewing": ["قيد المراجعة", "info"],
   "partially delivered": ["تم جزئيًا", "warn"],
   "client delivered": ["تم الاستلام", "ok"],
+  // RugMorph's two libraries (required from / for the client).
+  "fully delivered": ["تم الاستلام", "ok"],
+  "awaiting from kmpn": ["يجهّزه فريقنا", "info"],
 };
 
 export const projectStatus = (raw: string) => lookup(PROJECT, raw);

@@ -286,7 +286,7 @@ export function ResourcesView({ data }: { data: PortalData }) {
       {rest.length ? (
         <details className="p-more">
           <summary>
-            ما استلمناه أو نراجعه <span className="num">({rest.length})</span>
+            باقي الملفات والطلبات <span className="num">({rest.length})</span>
           </summary>
           <ul className="p-mini">
             {rest.map((r) => (

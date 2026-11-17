@@ -152,20 +152,28 @@ type Block = {
 };
 
 async function notion<T>(path: string, body?: unknown): Promise<T> {
-  const res = await fetch(`https://api.notion.com/v1/${path}`, {
-    method: body === undefined ? "GET" : "POST",
-    headers: {
-      Authorization: `Bearer ${token()}`,
-      "Notion-Version": NOTION_VERSION,
-      "Content-Type": "application/json",
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(`Notion ${res.status} on ${path}: ${(await res.text()).slice(0, 200)}`);
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`https://api.notion.com/v1/${path}`, {
+      method: body === undefined ? "GET" : "POST",
+      headers: {
+        Authorization: `Bearer ${token()}`,
+        "Notion-Version": NOTION_VERSION,
+        "Content-Type": "application/json",
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      cache: "no-store",
+    });
+    // Notion allows about 3 requests a second and says how long to wait.
+    if (res.status === 429 && attempt < 3) {
+      const wait = Math.min(Number(res.headers.get("retry-after")) || 1, 5);
+      await new Promise((resolve) => setTimeout(resolve, wait * 1000));
+      continue;
+    }
+    if (!res.ok) {
+      throw new Error(`Notion ${res.status} on ${path}: ${(await res.text()).slice(0, 200)}`);
+    }
+    return res.json() as Promise<T>;
   }
-  return res.json() as Promise<T>;
 }
 
 async function query(dataSource: string, body: Record<string, unknown> = {}) {
@@ -295,21 +303,36 @@ async function sourcesOf(customer: Customer): Promise<Sources> {
 
   const sources: Sources = { projects: [], meetings: [], resources: [] };
   const roots = [customer.id, customer.dashboardId].filter(Boolean) as string[];
+  // Only a full walk is cached: after a failed call (rate limit, outage) the
+  // next visit tries again instead of showing empty lists for ten minutes.
+  let complete = true;
+  const failed = (label: string, err: unknown) => {
+    complete = false;
+    console.error(`[portal] ${label}:`, err instanceof Error ? err.message : err);
+  };
   for (const root of roots) {
-    const dbs = await safely(`walk ${root}`, [], () => childDatabases(root));
+    let dbs: { id: string; title: string }[] = [];
+    try {
+      dbs = await childDatabases(root);
+    } catch (err) {
+      failed(`walk ${root}`, err);
+    }
     for (const db of dbs) {
       const cat = categoryOf(db.title);
       if (!cat) continue;
-      // Linked views are not readable here; they fail and are skipped.
-      const info = await safely(`database ${db.id}`, null, () =>
-        notion<{ data_sources?: { id: string; name: string }[] }>(`databases/${db.id}`),
-      );
-      for (const ds of info?.data_sources ?? []) {
-        if (!sources[cat].includes(ds.id)) sources[cat].push(ds.id);
+      try {
+        const info = await notion<{ data_sources?: { id: string; name: string }[] }>(
+          `databases/${db.id}`,
+        );
+        for (const ds of info.data_sources ?? []) {
+          if (!sources[cat].includes(ds.id)) sources[cat].push(ds.id);
+        }
+      } catch (err) {
+        failed(`database ${db.id}`, err);
       }
     }
   }
-  sourcesCache.set(customer.id, { at: Date.now(), sources });
+  if (complete) sourcesCache.set(customer.id, { at: Date.now(), sources });
   return sources;
 }
 
