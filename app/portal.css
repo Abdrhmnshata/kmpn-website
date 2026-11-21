@@ -843,3 +843,32 @@
   margin: 0;
   font-size: 15px;
 }
+
+/* Portal page loading (app/portal/loading.tsx) */
+.p-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 40vh;
+  color: var(--muted);
+  font-weight: 600;
+}
+.p-spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  animation: p-spin 0.8s linear infinite;
+}
+@keyframes p-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .p-spinner {
+    animation-duration: 2.4s;
+  }
+}

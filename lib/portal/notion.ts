@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { CATEGORIES, NEVER, categoryOf, isSoon, type Category } from "./layer";
 
 /**
@@ -218,7 +219,8 @@ async function notion<T>(path: string, body?: unknown): Promise<T> {
       continue;
     }
     if (!res.ok) {
-      throw new Error(`Notion ${res.status} on ${path}: ${(await res.text()).slice(0, 200)}`);
+      const message = `Notion ${res.status} on ${path}: ${(await res.text()).slice(0, 200)}`;
+      throw Object.assign(new Error(message), { status: res.status });
     }
     return res.json() as Promise<T>;
   }
@@ -239,13 +241,62 @@ async function query(dataSource: string, body: Record<string, unknown> = {}) {
   return pages;
 }
 
+/**
+ * A failure that may pass on a retry: a rate limit, a Notion outage or a
+ * network error. A missing or unshared database (404, 403) stays missing
+ * until someone fixes it in Notion, so it does not count.
+ */
+function isTransient(err: unknown) {
+  const status = (err as { status?: number } | null)?.status;
+  return status === undefined || status === 429 || status >= 500;
+}
+
 /** Runs one source; a failure there leaves the others standing. */
-async function safely<T>(label: string, fallback: T, run: () => Promise<T>): Promise<T> {
+async function safely<T>(
+  label: string,
+  fallback: T,
+  run: () => Promise<T>,
+  onFail?: () => void,
+): Promise<T> {
   try {
     return await run();
   } catch (err) {
     console.error(`[portal] ${label}:`, err instanceof Error ? err.message : err);
+    if (isTransient(err)) onFail?.();
     return fallback;
+  }
+}
+
+/**
+ * Keeps a complete read in Next's data cache, which every server instance
+ * shares, for `seconds`; after that the cached copy is still served at once
+ * while a fresh read runs in the background. A read that hit a passing
+ * failure is returned to this request but never kept.
+ */
+async function keepComplete<T>(
+  keyParts: string[],
+  seconds: number,
+  load: () => Promise<{ value: T; complete: boolean }>,
+): Promise<{ value: T; complete: boolean }> {
+  let partial: { value: T } | null = null;
+  const cached = unstable_cache(
+    async () => {
+      const result = await load();
+      if (!result.complete) {
+        partial = { value: result.value };
+        throw new Error("[portal] incomplete Notion read, not cached");
+      }
+      return result.value;
+    },
+    keyParts,
+    { revalidate: seconds, tags: ["portal"] },
+  );
+  try {
+    return { value: await cached(), complete: true };
+  } catch (err) {
+    const read = partial as { value: T } | null;
+    if (read) return { value: read.value, complete: false };
+    throw err;
   }
 }
 
@@ -318,10 +369,9 @@ async function customerById(id: string) {
 
 type Sources = Record<Category, string[]>;
 
-// The databases under a client's pages rarely change; walking them costs a
-// dozen API calls, so the result is kept for a few minutes per server.
-const SOURCES_TTL = 10 * 60 * 1000;
-const sourcesCache = new Map<string, { at: number; sources: Sources }>();
+// The databases under a client's pages rarely change, and walking them costs
+// dozens of API calls, so a complete walk is kept for six hours.
+const SOURCES_SECONDS = 6 * 60 * 60;
 
 async function childDatabases(pageId: string, depth = 0, found: { id: string; title: string }[] = []) {
   if (depth > 3) return found;
@@ -345,17 +395,23 @@ async function childDatabases(pageId: string, depth = 0, found: { id: string; ti
   return found;
 }
 
-async function sourcesOf(customer: Customer): Promise<Sources> {
-  const cached = sourcesCache.get(customer.id);
-  if (cached && Date.now() - cached.at < SOURCES_TTL) return cached.sources;
+async function sourcesOf(customer: Customer): Promise<{ sources: Sources; complete: boolean }> {
+  const { value, complete } = await keepComplete(
+    ["portal-sources", customer.id, customer.dashboardId ?? ""],
+    SOURCES_SECONDS,
+    () => walkSources(customer),
+  );
+  return { sources: value, complete };
+}
 
+async function walkSources(customer: Customer): Promise<{ value: Sources; complete: boolean }> {
   const sources: Sources = { deliverables: [], projects: [], meetings: [], resources: [] };
   const roots = [customer.id, customer.dashboardId].filter(Boolean) as string[];
   // Only a full walk is cached: after a failed call (rate limit, outage) the
   // next visit tries again instead of showing empty lists for ten minutes.
   let complete = true;
   const failed = (label: string, err: unknown) => {
-    complete = false;
+    if (isTransient(err)) complete = false;
     console.error(`[portal] ${label}:`, err instanceof Error ? err.message : err);
   };
   for (const root of roots) {
@@ -380,8 +436,7 @@ async function sourcesOf(customer: Customer): Promise<Sources> {
       }
     }
   }
-  if (complete) sourcesCache.set(customer.id, { at: Date.now(), sources });
-  return sources;
+  return { value: sources, complete };
 }
 
 /* ---------------------------------------------------------------- read ---- */
@@ -561,32 +616,42 @@ async function readTickets(filter: Record<string, unknown>): Promise<Ticket[]> {
   }));
 }
 
+/**
+ * Reads everything for these customers. `complete` is false when any source
+ * failed (rate limit, outage), so the caller knows not to keep the result.
+ */
 async function build(customers: Customer[], ticketFilter: Record<string, unknown> | null) {
+  let complete = true;
+  const fail = () => {
+    complete = false;
+  };
   const perCustomer = await Promise.all(
     customers.map(async (c) => {
-      const src = await sourcesOf(c);
+      const walk = await sourcesOf(c);
+      if (!walk.complete) fail();
+      const src = walk.sources;
       // V2 sections (SOON) are not read until they open.
       const [projects, deliverables, meetings, resources] = await Promise.all([
-        safely(`projects ${c.company}`, [], () => readProjects(src.projects, c.company)),
-        safely(`deliverables ${c.company}`, [], () => readDeliverables(src.deliverables, c.company)),
+        safely(`projects ${c.company}`, [], () => readProjects(src.projects, c.company), fail),
+        safely(`deliverables ${c.company}`, [], () => readDeliverables(src.deliverables, c.company), fail),
         isSoon("meetings")
           ? Promise.resolve([] as Meeting[])
-          : safely(`meetings ${c.company}`, [], () => readMeetings(src.meetings, c.company)),
+          : safely(`meetings ${c.company}`, [], () => readMeetings(src.meetings, c.company), fail),
         isSoon("resources")
           ? Promise.resolve([] as Resource[])
-          : safely(`resources ${c.company}`, [], () => readResources(src.resources, c.company)),
+          : safely(`resources ${c.company}`, [], () => readResources(src.resources, c.company), fail),
       ]);
       return { projects, deliverables, meetings, resources };
     }),
   );
   const [invoices, contracts, tickets] = await Promise.all([
-    safely("invoices", [], () => readInvoices(customers)),
-    safely("contracts", [], () => readContracts(customers)),
+    safely("invoices", [], () => readInvoices(customers), fail),
+    safely("contracts", [], () => readContracts(customers), fail),
     ticketFilter && !isSoon("support")
-      ? safely("tickets", [], () => readTickets(ticketFilter))
+      ? safely("tickets", [], () => readTickets(ticketFilter), fail)
       : Promise.resolve([] as Ticket[]),
   ]);
-  return {
+  const data = {
     linked: customers.length > 0,
     customers,
     projects: perCustomer.flatMap((x) => x.projects),
@@ -597,6 +662,32 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     invoices,
     tickets,
   } satisfies PortalData;
+  return { data, complete };
+}
+
+/*
+ * Every portal page needs the same Notion data, and Notion allows only about
+ * three requests a second. So one client's data is kept for a minute (see
+ * keepComplete), and requests that arrive while it is being read wait for
+ * that read instead of starting their own.
+ */
+const DATA_SECONDS = 60;
+const inflight = new Map<string, Promise<PortalData>>();
+
+function remembered(
+  key: string,
+  load: () => Promise<{ data: PortalData; complete: boolean }>,
+): Promise<PortalData> {
+  const running = inflight.get(key);
+  if (running) return running;
+  const read = keepComplete(["portal-data", key], DATA_SECONDS, async () => {
+    const { data, complete } = await load();
+    return { value: data, complete };
+  })
+    .then((r) => r.value)
+    .finally(() => inflight.delete(key));
+  inflight.set(key, read);
+  return read;
 }
 
 /**
@@ -606,8 +697,14 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
 export async function getPortalData(email: string): Promise<PortalData> {
   if (!isNotionConfigured() || !email) return EMPTY;
   const address = email.toLowerCase();
-  const rows = await safely("customers", [], () => customersFor(address));
-  return build(rows.map(toCustomer), { property: "Email", email: { equals: address } });
+  return remembered(`email:${address}`, async () => {
+    let found = true;
+    const rows = await safely("customers", [], () => customersFor(address), () => {
+      found = false;
+    });
+    const result = await build(rows.map(toCustomer), { property: "Email", email: { equals: address } });
+    return { data: result.data, complete: found && result.complete };
+  });
 }
 
 /**
@@ -618,7 +715,7 @@ export async function getPortalDataForCustomer(id: string): Promise<PortalData> 
   if (!isNotionConfigured()) return EMPTY;
   const row = await safely("customer", null, () => customerById(id));
   if (!row) return EMPTY;
-  return build([toCustomer(row)], { property: "Customer", relation: { contains: row.id } });
+  return (await build([toCustomer(row)], { property: "Customer", relation: { contains: row.id } })).data;
 }
 
 /** KC customers with a Dashboard link — for the local preview's index. */
