@@ -23,10 +23,10 @@ export const NEVER = /credential|password|passwords|\bpass\b|باسورد|intern
 export type Category = "deliverables" | "projects" | "meetings" | "resources";
 
 /**
- * Portal sections planned for V2 (Notion page "Sign Up System"): listed in
- * the menu as «قريبًا», not read from Notion until they open.
+ * Portal sections not open yet: listed in the menu and on the dashboard as
+ * «قريبًا», and not read from Notion until they open.
  */
-export const SOON = ["resources", "meetings", "reports", "support"] as const;
+export const SOON = ["deliverables", "invoices", "contracts"] as const;
 export type SoonSection = (typeof SOON)[number];
 export const isSoon = (key: string) => (SOON as readonly string[]).includes(key);
 

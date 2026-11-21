@@ -12,11 +12,14 @@ import {
   formatRange,
   isAwaiting,
   isDoneProject,
-  meetingStatus,
+  meetingLabel,
   projectStatus,
   resourceStatus,
   serviceLabel,
 } from "@/lib/portal/format";
+import { isSoon } from "@/lib/portal/layer";
+import { PORTAL_NAV } from "@/lib/portal/nav";
+import { reportForCustomers } from "@/lib/reports/clients";
 import { Empty, NotLinked, PageHead, Status } from "./Bits";
 
 /**
@@ -31,6 +34,7 @@ export type Tab =
   | "resources"
   | "meetings"
   | "invoices"
+  | "reports"
   | "support";
 export type HrefFor = (tab: Tab) => string;
 
@@ -74,7 +78,7 @@ function Card({
           {title}
           {count ? <span className="p-count num">{count}</span> : null}
         </h2>
-        <Link href={href} className="p-link" style={{ fontSize: 14 }}>
+        <Link href={href} prefetch={false} className="p-link" style={{ fontSize: 14 }}>
           عرض الكل ←
         </Link>
       </div>
@@ -98,6 +102,9 @@ export function DashboardView({
 }) {
   const { top } = tree(data.projects);
   const openProjects = top.filter((p) => !isDoneProject(p.status));
+  const awaiting = data.resources.filter((r) => isAwaiting(r.status));
+  const report = reportForCustomers(data.customers.map((c) => c.id));
+  const soon = PORTAL_NAV.filter((item) => isSoon(item.key)).map((item) => item.label);
   const unpaid = data.invoices.filter((i) => i.status === "unpaid" || i.status === "overdue");
   const due = Object.entries(
     unpaid.reduce<Record<string, number>>((acc, i) => {
@@ -141,59 +148,120 @@ export function DashboardView({
           )}
         </Card>
 
-        <Card title="التسليمات" href={href("deliverables")}>
-          {data.deliverables.length ? (
-            <ul className="p-mini">
-              {data.deliverables.slice(0, 4).map((d) => (
-                <li key={d.id}>
-                  <span>{d.name}</span>
-                  <Status label={deliverableStatus(d.status)[0]} tone={deliverableStatus(d.status)[1]} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <Empty>لا توجد تسليمات حتى الآن.</Empty>
-          )}
-        </Card>
-
-        <Card title="الفواتير" href={href("invoices")}>
-          {data.invoices.length ? (
-            <p className="p-figure">
-              {due.length ? (
-                due.map(([cur, sum]) => (
-                  <span key={cur} className="num">
-                    {formatMoney(sum, cur)}
-                  </span>
-                ))
-              ) : (
-                <span style={{ fontSize: 17 }}>لا توجد مبالغ مستحقة</span>
-              )}
+        {report ? (
+          <Card title="التقارير" href={href("reports")}>
+            <p className="p-meta" style={{ margin: 0 }}>
+              أداء حملات {report.name} يومًا بيوم، من شيت الأداء الذي يتابعه فريق كامبين.
             </p>
-          ) : (
-            <Empty>ليس لديك أي فواتير حتى الآن.</Empty>
-          )}
-        </Card>
+          </Card>
+        ) : null}
 
-        <Card title="العقود" href={href("contracts")}>
-          {data.contracts.length ? (
+        <Card title="المطلوب منك" href={href("resources")} count={awaiting.length ? String(awaiting.length) : undefined}>
+          {awaiting.length ? (
             <ul className="p-mini">
-              {data.contracts.slice(0, 3).map((c) => (
-                <li key={c.id}>
-                  <span>{[contractKind(c.kind), c.name].filter(Boolean).join(": ")}</span>
-                  <Status label={contractStatus(c.status)[0]} tone={contractStatus(c.status)[1]} />
+              {awaiting.slice(0, 4).map((r) => (
+                <li key={r.id}>
+                  <span>{r.name}</span>
+                  {r.due ? <span className="p-meta">{formatDate(r.due)}</span> : null}
                 </li>
               ))}
             </ul>
           ) : (
-            <Empty>لا توجد عقود حتى الآن.</Empty>
+            <Empty>لا يوجد شيء مطلوب منك الآن.</Empty>
           )}
         </Card>
+
+        <Card title="الاجتماعات" href={href("meetings")}>
+          {data.meetings.length ? (
+            <ul className="p-mini">
+              {data.meetings.slice(0, 3).map((m) => (
+                <li key={m.id}>
+                  <span>{m.name}</span>
+                  <span className="p-meta">{formatDate(m.date)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Empty>لا توجد اجتماعات بعد.</Empty>
+          )}
+        </Card>
+
+        <Card title="الدعم الفني" href={href("support")}>
+          {data.tickets.length ? (
+            <ul className="p-mini">
+              {data.tickets.slice(0, 3).map((t) => (
+                <li key={t.id}>
+                  <span>{t.subject}</span>
+                  <Status label={TICKET_STATUS[t.status][0]} tone={TICKET_STATUS[t.status][1]} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Empty>لا توجد تذاكر حتى الآن. إذا احتجت أي شيء، افتح تذكرة.</Empty>
+          )}
+        </Card>
+
+        {isSoon("deliverables") ? null : (
+          <Card title="التسليمات" href={href("deliverables")}>
+            {data.deliverables.length ? (
+              <ul className="p-mini">
+                {data.deliverables.slice(0, 4).map((d) => (
+                  <li key={d.id}>
+                    <span>{d.name}</span>
+                    <Status label={deliverableStatus(d.status)[0]} tone={deliverableStatus(d.status)[1]} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <Empty>لا توجد تسليمات حتى الآن.</Empty>
+            )}
+          </Card>
+        )}
+
+        {isSoon("invoices") ? null : (
+          <Card title="الفواتير" href={href("invoices")}>
+            {data.invoices.length ? (
+              <p className="p-figure">
+                {due.length ? (
+                  due.map(([cur, sum]) => (
+                    <span key={cur} className="num">
+                      {formatMoney(sum, cur)}
+                    </span>
+                  ))
+                ) : (
+                  <span style={{ fontSize: 17 }}>لا توجد مبالغ مستحقة</span>
+                )}
+              </p>
+            ) : (
+              <Empty>ليس لديك أي فواتير حتى الآن.</Empty>
+            )}
+          </Card>
+        )}
+
+        {isSoon("contracts") ? null : (
+          <Card title="العقود" href={href("contracts")}>
+            {data.contracts.length ? (
+              <ul className="p-mini">
+                {data.contracts.slice(0, 3).map((c) => (
+                  <li key={c.id}>
+                    <span>{[contractKind(c.kind), c.name].filter(Boolean).join(": ")}</span>
+                    <Status label={contractStatus(c.status)[0]} tone={contractStatus(c.status)[1]} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <Empty>لا توجد عقود حتى الآن.</Empty>
+            )}
+          </Card>
+        )}
       </div>
 
-      <p className="p-soon-strip">
-        <span className="p-soon-badge">قريبًا</span>
-        التقارير اللحظية، والمطلوب منك، والاجتماعات، والدعم الفني.
-      </p>
+      {soon.length ? (
+        <p className="p-soon-strip">
+          <span className="p-soon-badge">قريبًا</span>
+          {soon.map((label, i) => (i === 0 ? label : `و${label}`)).join("، ")}.
+        </p>
+      ) : null}
     </>
   );
 }
@@ -315,7 +383,7 @@ export function MeetingsView({ data }: { data: PortalData }) {
                 <h2>{m.name}</h2>
                 <span className="p-meta">{formatDate(m.date)}</span>
               </div>
-              <Status label={meetingStatus(m.status)[0]} tone={meetingStatus(m.status)[1]} />
+              <Status label={meetingLabel(m.status, m.date)[0]} tone={meetingLabel(m.status, m.date)[1]} />
             </article>
           ))}
         </div>
