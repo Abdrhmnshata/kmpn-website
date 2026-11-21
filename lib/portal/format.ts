@@ -81,6 +81,18 @@ export const contractKind = (kind: "contract" | "proposal" | null) =>
 
 export const projectStatus = (raw: string) => lookup(PROJECT, raw);
 export const meetingStatus = (raw: string) => lookup(MEETING, raw);
+
+/**
+ * A meeting's label for the client. The team often leaves a meeting that
+ * already took place as "Planning", so a past date never reads «قادم».
+ */
+export const meetingLabel = (raw: string, date: string | null): Label => {
+  const label = meetingStatus(raw);
+  if (!date || label[0] !== "قادم") return label;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(date) < today ? ["انتهى", "off"] : label;
+};
 export const resourceStatus = (raw: string) => lookup(RESOURCE, raw);
 
 /** Resources still waiting on the client. */

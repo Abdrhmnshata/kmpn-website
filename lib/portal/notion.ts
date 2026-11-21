@@ -1,6 +1,6 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
-import { CATEGORIES, NEVER, categoryOf, isSoon, type Category } from "./layer";
+import { CATEGORIES, NEVER, SOON, categoryOf, isSoon, type Category } from "./layer";
 
 /**
  * Client-portal data, read live from Notion through the layer in ./layer.ts.
@@ -630,10 +630,12 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
       const walk = await sourcesOf(c);
       if (!walk.complete) fail();
       const src = walk.sources;
-      // V2 sections (SOON) are not read until they open.
+      // Sections not open yet (SOON) are not read until they open.
       const [projects, deliverables, meetings, resources] = await Promise.all([
         safely(`projects ${c.company}`, [], () => readProjects(src.projects, c.company), fail),
-        safely(`deliverables ${c.company}`, [], () => readDeliverables(src.deliverables, c.company), fail),
+        isSoon("deliverables")
+          ? Promise.resolve([] as Deliverable[])
+          : safely(`deliverables ${c.company}`, [], () => readDeliverables(src.deliverables, c.company), fail),
         isSoon("meetings")
           ? Promise.resolve([] as Meeting[])
           : safely(`meetings ${c.company}`, [], () => readMeetings(src.meetings, c.company), fail),
@@ -645,8 +647,10 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     }),
   );
   const [invoices, contracts, tickets] = await Promise.all([
-    safely("invoices", [], () => readInvoices(customers), fail),
-    safely("contracts", [], () => readContracts(customers), fail),
+    isSoon("invoices") ? Promise.resolve([] as Invoice[]) : safely("invoices", [], () => readInvoices(customers), fail),
+    isSoon("contracts")
+      ? Promise.resolve([] as Contract[])
+      : safely("contracts", [], () => readContracts(customers), fail),
     ticketFilter && !isSoon("support")
       ? safely("tickets", [], () => readTickets(ticketFilter), fail)
       : Promise.resolve([] as Ticket[]),
@@ -680,7 +684,7 @@ function remembered(
 ): Promise<PortalData> {
   const running = inflight.get(key);
   if (running) return running;
-  const read = keepComplete(["portal-data", key], DATA_SECONDS, async () => {
+  const read = keepComplete(["portal-data", SOON.join(","), key], DATA_SECONDS, async () => {
     const { data, complete } = await load();
     return { value: data, complete };
   })

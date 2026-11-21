@@ -1,7 +1,8 @@
 import { currentClient, portalData } from "@/lib/portal/session";
 import { getEditThreads } from "@/lib/portal/notion";
 import { NotLinked } from "@/components/portal/Bits";
-import { DeliverablesView } from "@/components/portal/V1Views";
+import { ComingSoon, DeliverablesView } from "@/components/portal/V1Views";
+import { isSoon } from "@/lib/portal/layer";
 
 export const metadata = { title: "التسليمات · بوابة العملاء" };
 
@@ -10,6 +11,7 @@ export default async function DeliverablesPage({
 }: {
   searchParams: Promise<{ type?: string }>;
 }) {
+  if (isSoon("deliverables")) return <ComingSoon title="التسليمات" />;
   const [client, data, { type }] = await Promise.all([currentClient(), portalData(), searchParams]);
   const threads = await getEditThreads(data.deliverables.map((d) => d.id));
   return (
