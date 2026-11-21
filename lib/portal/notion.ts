@@ -684,7 +684,7 @@ function remembered(
 ): Promise<PortalData> {
   const running = inflight.get(key);
   if (running) return running;
-  const read = keepComplete(["portal-data", SOON.join(","), key], DATA_SECONDS, async () => {
+  const read = keepComplete(["portal-data-v2", SOON.join(","), key], DATA_SECONDS, async () => {
     const { data, complete } = await load();
     return { value: data, complete };
   })
@@ -707,7 +707,9 @@ export async function getPortalData(email: string): Promise<PortalData> {
       found = false;
     });
     const result = await build(rows.map(toCustomer), { property: "Email", email: { equals: address } });
-    return { data: result.data, complete: found && result.complete };
+    // An address not linked to any client yet is never kept, so a client the
+    // team links in Notion sees their data on the very next visit.
+    return { data: result.data, complete: found && result.complete && rows.length > 0 };
   });
 }
 
