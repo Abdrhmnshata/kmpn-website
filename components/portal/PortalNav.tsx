@@ -33,7 +33,14 @@ export function PortalNav({
           );
         }
         return (
-          <Link key={item.key} href={item.href} aria-current={current ? "page" : undefined}>
+          // No prefetch: each portal page reads Notion, and prefetching every
+          // tab at once used to run into Notion's rate limit.
+          <Link
+            key={item.key}
+            href={item.href}
+            prefetch={false}
+            aria-current={current ? "page" : undefined}
+          >
             {item.label}
           </Link>
         );

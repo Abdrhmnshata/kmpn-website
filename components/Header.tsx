@@ -70,7 +70,13 @@ export function Header({ ctaHref = "#contact" }: { ctaHref?: string }) {
             {/* Client login, or "أهلاً، …" once signed in: icon and words from
                 900px, the icon alone on phones. The free-consultation CTA stays
                 in the phone menu and on the pages themselves. */}
-            <Link href={accountHref} className="btn-primary hdr-login" aria-label={accountLabel} title={accountLabel}>
+            <Link
+              href={accountHref}
+              prefetch={false}
+              className="btn-primary hdr-login"
+              aria-label={accountLabel}
+              title={accountLabel}
+            >
               <PersonIcon />
               <span className="hdr-login-text">{accountLabel}</span>
             </Link>
