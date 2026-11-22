@@ -342,33 +342,48 @@ async function safely<T>(
  * shares, for `seconds`; after that the cached copy is still served at once
  * while a fresh read runs in the background. A read that hit a passing
  * failure is returned to this request but never kept.
+ *
+ * `maxAgeMs`: if those background refreshes keep failing, the old copy
+ * would be served for good (it happened: data stuck for hours). A copy older
+ * than this is read again now, under a key of its own, before answering.
  */
 async function keepComplete<T>(
   keyParts: string[],
   seconds: number,
   load: () => Promise<{ value: T; complete: boolean }>,
   tags: string[] = ["portal"],
+  maxAgeMs?: number,
 ): Promise<{ value: T; complete: boolean }> {
-  let partial: { value: T } | null = null;
-  const cached = unstable_cache(
-    async () => {
+  const read = async (parts: string[]) => {
+    let partial: { value: T } | null = null;
+    const loader = async () => {
       const result = await load();
       if (!result.complete) {
         partial = { value: result.value };
         throw new Error("[portal] incomplete Notion read, not cached");
       }
-      return result.value;
-    },
-    keyParts,
-    { revalidate: seconds, tags },
-  );
-  try {
-    return { value: await cached(), complete: true };
-  } catch (err) {
-    const read = partial as { value: T } | null;
-    if (read) return { value: read.value, complete: false };
-    throw err;
+      return { value: result.value, at: Date.now() };
+    };
+    // Next keys this cache by the loader's source text as well as the key parts, and
+    // the built text changes with every deploy (minified names): each deploy
+    // started cold, and the first visitor waited for a full walk of Notion.
+    // The key parts already name the data with a version, so pin the text.
+    loader.toString = () => "kmpn-portal";
+    const cached = unstable_cache(loader, parts, { revalidate: seconds, tags });
+    try {
+      return { ...(await cached()), complete: true };
+    } catch (err) {
+      const got = partial as { value: T } | null;
+      if (got) return { value: got.value, at: Date.now(), complete: false };
+      throw err;
+    }
+  };
+  const hit = await read(keyParts);
+  if (maxAgeMs && Date.now() - hit.at > maxAgeMs) {
+    const fresh = await read([...keyParts, String(Math.floor(Date.now() / maxAgeMs))]);
+    return { value: fresh.value, complete: fresh.complete };
   }
+  return { value: hit.value, complete: hit.complete };
 }
 
 /** Some property names in these databases end in a space; match trimmed. */
@@ -451,31 +466,80 @@ type Sources = Record<Category, string[]>;
 // dozens of API calls, so a complete walk is kept for six hours.
 const SOURCES_SECONDS = 6 * 60 * 60;
 
-async function childDatabases(pageId: string, depth = 0, found: { id: string; title: string }[] = []) {
+/**
+ * Below the client's own pages, only these blocks are opened. Opening every
+ * text block with children (list items, paragraphs, to-dos) of every sub-page
+ * took about 150 calls, and Notion allows about 3 a second: 46 seconds.
+ */
+const CONTAINERS = new Set([
+  "column_list",
+  "column",
+  "toggle",
+  "callout",
+  "synced_block",
+  "heading_1",
+  "heading_2",
+  "heading_3",
+  "tab",
+]);
+
+/** At most this many Notion calls at once during a walk (Notion allows about 3 a second). */
+function limiter(max: number) {
+  let active = 0;
+  const queue: (() => void)[] = [];
+  return async <T,>(run: () => Promise<T>): Promise<T> => {
+    if (active >= max) await new Promise<void>((resolve) => queue.push(resolve));
+    active++;
+    try {
+      return await run();
+    } finally {
+      active--;
+      queue.shift()?.();
+    }
+  };
+}
+
+type Limit = ReturnType<typeof limiter>;
+
+async function childDatabases(
+  pageId: string,
+  limit: Limit,
+  onError: (err: unknown) => void,
+  depth = 0,
+  found: { id: string; title: string }[] = [],
+) {
   if (depth > 3) return found;
+  const inside: Promise<unknown>[] = [];
   let cursor: string | undefined;
   do {
-    const res = await notion<{ results: Block[]; has_more: boolean; next_cursor: string | null }>(
-      `blocks/${pageId}/children?page_size=100${cursor ? `&start_cursor=${cursor}` : ""}`,
+    const res = await limit(() =>
+      notion<{ results: Block[]; has_more: boolean; next_cursor: string | null }>(
+        `blocks/${pageId}/children?page_size=100${cursor ? `&start_cursor=${cursor}` : ""}`,
+      ),
     );
     for (const b of res.results) {
       if (b.type === "child_database") {
         found.push({ id: b.id, title: b.child_database?.title ?? "" });
       } else if (b.type === "child_page") {
-        if (!NEVER.test(b.child_page?.title ?? "")) await childDatabases(b.id, depth + 1, found);
-      } else if (b.has_children) {
-        // Columns, callouts, toggles: same page, look inside.
-        await childDatabases(b.id, depth, found);
+        if (!NEVER.test(b.child_page?.title ?? "")) {
+          inside.push(childDatabases(b.id, limit, onError, depth + 1, found).catch(onError));
+        }
+      } else if (b.has_children && (depth === 0 || CONTAINERS.has(b.type))) {
+        // Same page, look inside: anything on the client's own pages (Ottroga's
+        // databases sit in a page under a numbered list item), only layout
+        // blocks deeper down, where pages are long notes and docs.
+        inside.push(childDatabases(b.id, limit, onError, depth, found).catch(onError));
       }
     }
     cursor = res.has_more && res.next_cursor ? res.next_cursor : undefined;
   } while (cursor);
+  await Promise.all(inside);
   return found;
 }
 
 async function sourcesOf(customer: Customer): Promise<{ sources: Sources; complete: boolean }> {
   const { value, complete } = await keepComplete(
-    ["portal-sources", customer.id, customer.dashboardId ?? ""],
+    ["portal-sources-v6", customer.id, customer.dashboardId ?? ""],
     SOURCES_SECONDS,
     () => walkSources(customer),
     ["portal-sources"],
@@ -493,19 +557,24 @@ async function walkSources(customer: Customer): Promise<{ value: Sources; comple
     if (isTransient(err)) complete = false;
     console.error(`[portal] ${label}:`, err instanceof Error ? err.message : err);
   };
-  for (const root of roots) {
-    let dbs: { id: string; title: string }[] = [];
-    try {
-      dbs = await childDatabases(root);
-    } catch (err) {
-      failed(`walk ${root}`, err);
-    }
-    for (const db of dbs) {
+  const limit = limiter(3);
+  // A failed call marks the walk incomplete (so it is not kept) but keeps
+  // what the other calls found, instead of dropping the whole page.
+  const found = await Promise.all(
+    roots.map(async (root) => {
+      const dbs: { id: string; title: string }[] = [];
+      const onError = (err: unknown) => failed(`walk ${root}`, err);
+      await childDatabases(root, limit, onError, 0, dbs).catch(onError);
+      return dbs;
+    }),
+  );
+  await Promise.all(
+    found.flat().map(async (db) => {
       const cat = categoryOf(db.title);
-      if (!cat) continue;
+      if (!cat) return;
       try {
-        const info = await notion<{ data_sources?: { id: string; name: string }[] }>(
-          `databases/${db.id}`,
+        const info = await limit(() =>
+          notion<{ data_sources?: { id: string; name: string }[] }>(`databases/${db.id}`),
         );
         for (const ds of info.data_sources ?? []) {
           if (!sources[cat].includes(ds.id)) sources[cat].push(ds.id);
@@ -513,8 +582,8 @@ async function walkSources(customer: Customer): Promise<{ value: Sources; comple
       } catch (err) {
         failed(`database ${db.id}`, err);
       }
-    }
-  }
+    }),
+  );
   return { value: sources, complete };
 }
 
@@ -939,13 +1008,8 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
  */
 const DATA_SECONDS = 60;
 
-/**
- * Part of the data's cache key that changes every five minutes. A cached
- * entry is refreshed in the background after DATA_SECONDS, but if those
- * refreshes keep failing the old entry would be served for good; a new key
- * every five minutes bounds how old the data can ever be.
- */
-const ageBucket = () => String(Math.floor(Date.now() / (5 * 60 * 1000)));
+/** No client ever sees data older than this, even if background refreshes fail. */
+const DATA_MAX_AGE_MS = 5 * 60 * 1000;
 const inflight = new Map<string, Promise<PortalData>>();
 
 function remembered(
@@ -955,13 +1019,14 @@ function remembered(
   const running = inflight.get(key);
   if (running) return running;
   const read = keepComplete(
-    ["portal-data-v5", key, ageBucket()],
+    ["portal-data-v10", key],
     DATA_SECONDS,
     async () => {
       const { data, complete } = await load();
       return { value: data, complete };
     },
     ["portal", "portal-data"],
+    DATA_MAX_AGE_MS,
   )
     .then((r) => r.value)
     .finally(() => inflight.delete(key));
@@ -980,7 +1045,7 @@ export async function getPortalAccess(email: string): Promise<PortalAccess> {
   if (!isNotionConfigured() || !email) return { linked: false, open: DEFAULT_OPEN };
   const address = email.toLowerCase();
   const { value } = await keepComplete(
-    ["portal-access-v1", address, ageBucket()],
+    ["portal-access-v2", address],
     DATA_SECONDS,
     async () => {
       let found = true;
@@ -994,6 +1059,7 @@ export async function getPortalAccess(email: string): Promise<PortalAccess> {
       };
     },
     ["portal", "portal-access"],
+    DATA_MAX_AGE_MS,
   );
   return value;
 }
