@@ -28,7 +28,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Only same-site portal paths are allowed as a post-login destination. */
 const safeNext = (v: FormDataEntryValue | null) => {
   const next = clean(v, 300);
-  return next.startsWith("/portal") ? next : "/portal";
+  return next.startsWith("/portal") || next.startsWith("/admin") ? next : "/portal";
 };
 
 async function origin() {

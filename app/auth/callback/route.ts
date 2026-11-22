@@ -11,7 +11,7 @@ import { getAuthClient } from "@/lib/supabase/auth";
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const nextParam = searchParams.get("next") ?? "/portal";
-  const next = nextParam.startsWith("/portal") ? nextParam : "/portal";
+  const next = nextParam.startsWith("/portal") || nextParam.startsWith("/admin") ? nextParam : "/portal";
 
   // Supabase sends ?error=… instead of a code when the link was already used
   // or expired; nothing was confirmed then.

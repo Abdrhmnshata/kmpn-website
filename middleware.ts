@@ -56,7 +56,7 @@ export async function middleware(request: NextRequest) {
     return res;
   };
 
-  if (!user && path.startsWith("/portal")) {
+  if (!user && (path.startsWith("/portal") || path.startsWith("/admin"))) {
     const target = new URL("/login", request.url);
     target.searchParams.set("next", path + request.nextUrl.search);
     const res = redirectTo(target);
@@ -66,7 +66,8 @@ export async function middleware(request: NextRequest) {
 
   if (user && GUEST_ONLY.includes(path)) {
     const next = request.nextUrl.searchParams.get("next");
-    return redirectTo(new URL(next?.startsWith("/portal") ? next : "/portal", request.url));
+    const back = next?.startsWith("/portal") || next?.startsWith("/admin") ? next : "/portal";
+    return redirectTo(new URL(back, request.url));
   }
 
   if (user) {
@@ -87,5 +88,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/portal/:path*", "/login", "/signup", "/forgot-password", "/auth/:path*"],
+  matcher: ["/", "/portal/:path*", "/admin/:path*", "/login", "/signup", "/forgot-password", "/auth/:path*"],
 };
