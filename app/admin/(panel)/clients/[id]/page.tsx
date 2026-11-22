@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getClient } from "@/lib/portal/notion";
+import { adminSnapshot } from "@/lib/admin/data";
 import { Status } from "@/components/portal/Bits";
 import { AddEmail, EmailChip, SectionsForm } from "@/components/admin/AdminForms";
 import { customerStatus, serviceLabel } from "@/lib/portal/format";
@@ -11,7 +12,8 @@ export const metadata = { title: "العميل · لوحة المدير" };
 /** One KC row: who opens its portal, and which sections it gets. */
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const c = await getClient(id);
+  // From the dashboard's shared cache; a row added in the last 30 seconds is read fresh.
+  const c = (await adminSnapshot({ signups: false, tickets: false })).clientById(id) ?? (await getClient(id));
   if (!c) notFound();
   const [label, tone] = customerStatus(c.status);
   const back = c.internal

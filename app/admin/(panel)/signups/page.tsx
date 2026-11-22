@@ -11,7 +11,7 @@ export const metadata = { title: "المسجّلين · لوحة المدير" }
 export default async function SignupsPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
   const [{ filter = "all" }, { clients, signups, errors, clientsOf }] = await Promise.all([
     searchParams,
-    adminSnapshot(),
+    adminSnapshot({ tickets: false }),
   ]);
   const all = signups ?? [];
   const groups = {

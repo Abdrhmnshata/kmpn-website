@@ -11,7 +11,10 @@ export const metadata = { title: "الدعم الفني · لوحة المدير
 const ORDER: TicketStatus[] = ["new", "progress", "answered", "closed"];
 
 export default async function AdminSupportPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
-  const [{ status = "open" }, { tickets, errors, clientById }] = await Promise.all([searchParams, adminSnapshot()]);
+  const [{ status = "open" }, { tickets, errors, clientById }] = await Promise.all([
+    searchParams,
+    adminSnapshot({ signups: false }),
+  ]);
   const isOpen = (s: TicketStatus) => s === "new" || s === "progress";
   const active = status === "all" || ORDER.includes(status as TicketStatus) ? status : "open";
   const list = tickets.filter((t) =>

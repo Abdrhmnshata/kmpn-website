@@ -9,7 +9,10 @@ export const metadata = { title: "العملاء والصلاحيات · لوح�
 
 /** Active contracts only; the rest of KC stays one click away (?all=1). */
 export default async function ClientsPage({ searchParams }: { searchParams: Promise<{ all?: string }> }) {
-  const [{ all }, { clients, errors }] = await Promise.all([searchParams, adminSnapshot()]);
+  const [{ all }, { clients, errors }] = await Promise.all([
+    searchParams,
+    adminSnapshot({ signups: false, tickets: false }),
+  ]);
   const active = clients.filter((c) => c.status.trim().toLowerCase() === "active");
   const showAll = all === "1";
   const list = showAll ? clients : active;

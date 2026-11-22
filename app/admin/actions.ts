@@ -36,6 +36,7 @@ function failure(err: unknown): AdminState {
 
 /** Clients see a change on their next visit, and /admin shows it at once. */
 function refresh() {
+  revalidateTag("admin");
   revalidateTag("portal-access");
   revalidateTag("portal-data");
   revalidatePath("/admin", "layout");
@@ -44,7 +45,7 @@ function refresh() {
 const field = (form: FormData, name: string) => String(form.get(name) ?? "").trim();
 
 export async function linkEmail(_: AdminState, form: FormData): Promise<AdminState> {
-  await requireAdmin();
+  await requireAdmin({ strict: true });
   const id = field(form, "client");
   const email = field(form, "email").toLowerCase();
   if (!id) return { error: "اختار العميل." };
@@ -62,7 +63,7 @@ export async function linkEmail(_: AdminState, form: FormData): Promise<AdminSta
 }
 
 export async function unlinkEmail(_: AdminState, form: FormData): Promise<AdminState> {
-  await requireAdmin();
+  await requireAdmin({ strict: true });
   const id = field(form, "client");
   const email = field(form, "email").toLowerCase();
   try {
@@ -80,7 +81,7 @@ export async function unlinkEmail(_: AdminState, form: FormData): Promise<AdminS
 }
 
 export async function saveSections(_: AdminState, form: FormData): Promise<AdminState> {
-  await requireAdmin();
+  await requireAdmin({ strict: true });
   const id = field(form, "client");
   const reset = field(form, "reset") === "1";
   const sections = form.getAll("section").map(String).filter(isSection);
@@ -97,7 +98,7 @@ export async function saveSections(_: AdminState, form: FormData): Promise<Admin
 }
 
 export async function updateTicket(_: AdminState, form: FormData): Promise<AdminState> {
-  await requireAdmin();
+  await requireAdmin({ strict: true });
   const id = field(form, "ticket");
   const status = field(form, "status") as TicketStatus;
   const reply = field(form, "reply").slice(0, 2000);

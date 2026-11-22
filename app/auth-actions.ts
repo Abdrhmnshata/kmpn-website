@@ -2,9 +2,9 @@
 
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getAuthClient, getUser, profileOf, GREETING_COOKIE } from "@/lib/supabase/auth";
-import { addEditRequest, createTicket, getPortalData } from "@/lib/portal/notion";
+import { addEditRequest, createTicket, getPortalData, threadsTag } from "@/lib/portal/notion";
 
 export type FormState = {
   ok?: boolean;
@@ -89,6 +89,7 @@ export async function signUp(_: FormState, form: FormData): Promise<FormState> {
     },
   });
   if (error) return fail(arabic(error));
+  revalidateTag("admin-signups"); // the director sees the new account at once
 
   // Email confirmation on: no session until the link is clicked.
   if (!data.session) return { ok: true, email };
@@ -185,6 +186,9 @@ export async function updateProfile(_: FormState, form: FormData): Promise<FormS
 
   const { error } = await supabase.auth.updateUser({ data: { full_name: name, company, phone } });
   if (error) return fail(arabic(error));
+  // Pages read the name from the access token, so get one that carries it.
+  await supabase.auth.refreshSession();
+  revalidateTag("admin-signups");
   (await cookies()).set(GREETING_COOKIE, encodeURIComponent(name.split(/\s+/)[0]), {
     path: "/",
     sameSite: "lax",
@@ -221,6 +225,7 @@ export async function openTicket(_: FormState, form: FormData): Promise<FormStat
 
   const ok = await createTicket({ email: profile.email, name: profile.name, subject, message });
   if (!ok) return fail("تعذّر إرسال التذكرة الآن. راسلنا على a@kmpn.agency.");
+  revalidateTag("admin-tickets");
   revalidatePath("/portal", "layout");
   return { ok: true, message: "تم استلام تذكرتك، وسيرد عليك فريقنا قريبًا." };
 }
@@ -246,6 +251,7 @@ export async function requestEdit(_: FormState, form: FormData): Promise<FormSta
 
   const ok = await addEditRequest({ deliverableId, name: profile.name, email: profile.email, message });
   if (!ok) return fail("تعذّر إرسال الطلب الآن. راسلنا على a@kmpn.agency.");
+  revalidateTag(threadsTag(deliverableId));
   revalidatePath("/portal/deliverables");
   return { ok: true, message: "وصل طلبك لفريق كامبين، وسيظهر ردهم هنا." };
 }

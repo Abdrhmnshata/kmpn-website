@@ -853,7 +853,9 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
   };
   const open = openFor(customers.map((c) => c.sections));
   const closed = (s: Section) => !open.includes(s);
-  const perCustomer = await Promise.all(
+  // The client's own databases and the shared ones are read side by side:
+  // neither needs the other, and waiting cost up to a second.
+  const perCustomerRead = Promise.all(
     customers.map(async (c) => {
       const walk = await sourcesOf(c);
       if (!walk.complete) fail();
@@ -876,7 +878,7 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
       return { projects, deliverables, meetings, resources };
     }),
   );
-  const [invoices, contracts, tickets, library, copywrite] = await Promise.all([
+  const sharedRead = Promise.all([
     closed("invoices") ? Promise.resolve([] as Invoice[]) : safely("invoices", [], () => readInvoices(customers), fail),
     closed("contracts")
       ? Promise.resolve([] as Contract[])
@@ -891,6 +893,10 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     closed("deliverables")
       ? Promise.resolve([] as LibraryItem[])
       : safely("copywrite", [], () => readCopywrite(customers), fail),
+  ]);
+  const [perCustomer, [invoices, contracts, tickets, library, copywrite]] = await Promise.all([
+    perCustomerRead,
+    sharedRead,
   ]);
   const data = {
     linked: customers.length > 0,
@@ -989,13 +995,21 @@ export async function getPortalData(email: string): Promise<PortalData> {
 
 /**
  * What one KC customer sees: for the director's "view as client" page
- * (/admin/clients/<id>) and the team's local preview (app/preview).
+ * (/admin/view/<id>) and the team's local preview (app/preview). Kept for a
+ * minute like a client's own data, so moving between its tabs answers at
+ * once; the director's changes clear it ("portal-data").
  */
 export async function getPortalDataForCustomer(id: string): Promise<PortalData> {
   if (!isNotionConfigured()) return EMPTY;
-  const row = await safely("customer", null, () => customerById(id));
-  if (!row) return EMPTY;
-  return (await build([toCustomer(row)], { property: "Customer", relation: { contains: row.id } })).data;
+  return remembered(`customer:${id.replace(/-/g, "")}`, async () => {
+    let found = true;
+    const row = await safely("customer", null, () => customerById(id), () => {
+      found = false;
+    });
+    if (!row) return { data: EMPTY, complete: false };
+    const result = await build([toCustomer(row)], { property: "Customer", relation: { contains: row.id } });
+    return { data: result.data, complete: found && result.complete };
+  });
 }
 
 /** KC customers with a Dashboard link — for the local preview's index. */
@@ -1075,32 +1089,16 @@ export async function getEditThreads(deliverableIds: string[]): Promise<Record<s
   try {
     const me = await integrationId();
     const out: Record<string, EditThread[]> = {};
-    // A few at a time: Notion allows about 3 requests a second.
+    // A few at a time: Notion allows about 3 requests a second. Each
+    // deliverable's threads are kept for a minute, so only the first visit
+    // reads them, and a new request clears its own (threadsTag).
     for (let i = 0; i < deliverableIds.length; i += 3) {
       await Promise.all(
         deliverableIds.slice(i, i + 3).map(async (id) => {
-          const res = await notion<{ results: NotionComment[] }>(`comments?block_id=${id}&page_size=100`);
-          const threads = new Map<string, NotionComment[]>();
-          for (const c of res.results) {
-            threads.set(c.discussion_id, [...(threads.get(c.discussion_id) ?? []), c]);
-          }
-          out[id] = [...threads.values()]
-            .map((list) => list.sort((a, b) => a.created_time.localeCompare(b.created_time)))
-            .filter((list) => list[0].created_by.id === me)
-            .map((list) => ({
-              id: list[0].discussion_id,
-              messages: list.map((c) => {
-                const fromClient = c.created_by.id === me;
-                const body = c.rich_text.map((t) => t.plain_text).join("");
-                return {
-                  fromClient,
-                  // The portal's header line names the client for the team.
-                  text: fromClient ? body.split("\n").slice(1).join("\n").trim() || body : body,
-                  created: c.created_time,
-                };
-              }),
-            }))
-            .sort((a, b) => b.messages[0].created.localeCompare(a.messages[0].created));
+          out[id] = await unstable_cache(() => readThreads(id, me), ["portal-threads-v1", id], {
+            revalidate: DATA_SECONDS,
+            tags: ["portal", threadsTag(id)],
+          })();
         }),
       );
     }
@@ -1109,6 +1107,34 @@ export async function getEditThreads(deliverableIds: string[]): Promise<Record<s
     console.error("[portal] edit threads:", err instanceof Error ? err.message : err);
     return {};
   }
+}
+
+/** The cache tag of one deliverable's edit threads. */
+export const threadsTag = (deliverableId: string) => `portal-threads-${deliverableId.replace(/-/g, "")}`;
+
+async function readThreads(id: string, me: string): Promise<EditThread[]> {
+  const res = await notion<{ results: NotionComment[] }>(`comments?block_id=${id}&page_size=100`);
+  const threads = new Map<string, NotionComment[]>();
+  for (const c of res.results) {
+    threads.set(c.discussion_id, [...(threads.get(c.discussion_id) ?? []), c]);
+  }
+  return [...threads.values()]
+    .map((list) => list.sort((a, b) => a.created_time.localeCompare(b.created_time)))
+    .filter((list) => list[0].created_by.id === me)
+    .map((list) => ({
+      id: list[0].discussion_id,
+      messages: list.map((c) => {
+        const fromClient = c.created_by.id === me;
+        const body = c.rich_text.map((t) => t.plain_text).join("");
+        return {
+          fromClient,
+          // The portal's header line names the client for the team.
+          text: fromClient ? body.split("\n").slice(1).join("\n").trim() || body : body,
+          created: c.created_time,
+        };
+      }),
+    }))
+    .sort((a, b) => b.messages[0].created.localeCompare(a.messages[0].created));
 }
 
 /**

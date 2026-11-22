@@ -19,7 +19,7 @@ export function AdminNav() {
       {ITEMS.map((item) => {
         const current = item.href === "/admin" ? path === "/admin" : path.startsWith(item.href);
         return (
-          <Link key={item.href} href={item.href} prefetch={false} aria-current={current ? "page" : undefined}>
+          <Link key={item.href} href={item.href} aria-current={current ? "page" : undefined}>
             {item.label}
           </Link>
         );
