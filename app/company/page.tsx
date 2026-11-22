@@ -65,28 +65,24 @@ const TEAM = [
   {
     name: "عبدالرحمن شطا",
     role: "المؤسس والمدير التنفيذي",
-    rgb: "140,140,140",
     photo:
       "https://assets.lightfunnels.com/account-7766/images_library/ccfc296e-dd5f-4abb-a9f8-1210b6f424d5.ak93GsWsX1xTHlZZ5sHcY.webp",
   },
   {
     name: "محمد الجاويش",
     role: "مدير المحتوى",
-    rgb: "29,180,216",
     photo:
       "https://assets.lightfunnels.com/cdn-cgi/image/width=1080,quality=80,format=auto/https://assets.lightfunnels.com/account-7766/images_library/65f8ab68-2fed-42c6-a5e0-c4594c2489e0.Gawish.png",
   },
   {
     name: "عمر حسين",
     role: "مدير فريق التصميم",
-    rgb: "238,64,55",
     photo:
       "https://assets.lightfunnels.com/cdn-cgi/image/width=1080,quality=80,format=auto/https://assets.lightfunnels.com/account-7766/images_library/0e988725-52f3-4c34-82c7-8899b952e55b.Omar.png",
   },
   {
     name: "معاذ حمدي",
     role: "مدير تسويق",
-    rgb: "50,172,99",
     photo: "/assets/team-moaaz.png",
   },
 ];
@@ -499,7 +495,7 @@ export default function CompanyPage() {
                     borderRadius: 20,
                     overflow: "hidden",
                     background: "#0B0B0B",
-                    border: `1.5px solid rgba(${m.rgb},.55)`,
+                    border: "1.5px solid rgba(140,140,140,.55)",
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -524,7 +520,8 @@ export default function CompanyPage() {
                     style={{
                       position: "absolute",
                       inset: 0,
-                      background: `linear-gradient(180deg, rgba(${m.rgb},.28) 0%, rgba(${m.rgb},.08) 45%, rgba(11,11,11,.85) 100%)`,
+                      background:
+                        "linear-gradient(180deg, rgba(140,140,140,.28) 0%, rgba(140,140,140,.08) 45%, rgba(11,11,11,.85) 100%)",
                     }}
                   />
                   <div
