@@ -1611,6 +1611,139 @@ li.a-tr:hover {
   font-weight: 700;
 }
 
+.lib-journey li.is-now {
+  background: var(--accent);
+  color: #fff;
+}
+
+.lib-journey li.is-now::before {
+  content: "●";
+  color: #fff;
+  font-size: 9px;
+}
+
+.lib-journey li.is-todo {
+  background: var(--sunk);
+  color: var(--muted);
+}
+
+.lib-journey li.is-todo::before {
+  content: "○";
+  color: var(--line2);
+}
+
+/* A piece on its way: its stage instead of a cover. */
+.lib-cover-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.lib-text-title {
+  display: -webkit-box;
+  flex: 1;
+  overflow: hidden;
+  color: var(--fg);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.lib-stage-chip {
+  align-self: flex-start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--sunk);
+  color: var(--fg2);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.lib-at-done .lib-stage-chip,
+.lib-tag-done {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.lib-at-script .lib-stage-chip,
+.lib-tag-script {
+  background: #e5eefc;
+  color: #1d4f9e;
+}
+
+.lib-at-shoot .lib-stage-chip,
+.lib-at-edit .lib-stage-chip,
+.lib-at-design .lib-stage-chip,
+.lib-at-review .lib-stage-chip,
+.lib-tag-shoot,
+.lib-tag-edit,
+.lib-tag-design,
+.lib-tag-review {
+  background: #fdf0d5;
+  color: #7a5000;
+}
+
+[data-tw="dark"] .lib-at-script .lib-stage-chip,
+[data-tw="dark"] .lib-tag-script {
+  background: rgba(80, 140, 240, 0.16);
+  color: #9cc0ff;
+}
+
+[data-tw="dark"] .lib-at-shoot .lib-stage-chip,
+[data-tw="dark"] .lib-at-edit .lib-stage-chip,
+[data-tw="dark"] .lib-at-design .lib-stage-chip,
+[data-tw="dark"] .lib-at-review .lib-stage-chip,
+[data-tw="dark"] .lib-tag-shoot,
+[data-tw="dark"] .lib-tag-edit,
+[data-tw="dark"] .lib-tag-design,
+[data-tw="dark"] .lib-tag-review {
+  background: rgba(245, 170, 40, 0.16);
+  color: #f3c36b;
+}
+
+.lib-progress {
+  display: flex;
+  gap: 4px;
+}
+
+.lib-progress i {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.lib-progress i.is-done {
+  background: var(--ok-fg);
+}
+
+.lib-progress i.is-now {
+  background: var(--accent);
+}
+
+.lib-stage-text {
+  background: var(--tint-soft);
+}
+
+.lib-script {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 28px;
+}
+
+.lib-script strong {
+  font-size: 24px;
+  line-height: 1.55;
+}
+
 .lib-caption {
   padding: 10px 12px;
   border: 1px solid var(--line);

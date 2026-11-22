@@ -214,20 +214,22 @@ export function DashboardView({
           >
             {data.library.length ? (
               <>
-                <div className="lib-strip" aria-hidden="true">
-                  {data.library.slice(0, 4).map((item) =>
-                    item.cover ? (
-                      // Notion covers are external and short-lived; no next/image.
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img key={item.id} src={item.cover} alt="" loading="lazy" />
-                    ) : (
-                      <span key={item.id} className="lib-strip-none" />
-                    ),
-                  )}
-                </div>
+                {data.library.some((item) => item.cover) ? (
+                  <div className="lib-strip" aria-hidden="true">
+                    {data.library
+                      .filter((item) => item.cover)
+                      .slice(0, 4)
+                      .map((item) => (
+                        // Notion covers are external and short-lived; no next/image.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img key={item.id} src={item.cover ?? ""} alt="" loading="lazy" />
+                      ))}
+                  </div>
+                ) : null}
                 <p className="p-meta" style={{ margin: 0 }}>
-                  مكتبة المحتوى: <span className="num">{data.library.length}</span> قطعة إعلانية، منها{" "}
-                  <span className="num">{data.library.filter((i) => i.format === "video").length}</span> فيديو.
+                  مكتبة المحتوى: <span className="num">{data.library.length}</span> قطعة، تم تسليم{" "}
+                  <span className="num">{data.library.filter((i) => i.stage === "done").length}</span> منها، والباقي
+                  في مراحل التنفيذ.
                 </p>
               </>
             ) : null}
