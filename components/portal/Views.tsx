@@ -17,7 +17,7 @@ import {
   resourceStatus,
   serviceLabel,
 } from "@/lib/portal/format";
-import { isSoon } from "@/lib/portal/layer";
+import { isSection, type Section } from "@/lib/portal/layer";
 import { PORTAL_NAV } from "@/lib/portal/nav";
 import { reportForCustomers } from "@/lib/reports/clients";
 import { Empty, NotLinked, PageHead, Status } from "./Bits";
@@ -64,13 +64,17 @@ function Card({
   title,
   href,
   count,
+  hidden,
   children,
 }: {
   title: string;
   href: string;
   count?: string;
+  /** For a section closed for this client. */
+  hidden?: boolean;
   children: React.ReactNode;
 }) {
+  if (hidden) return null;
   return (
     <section className="card p-card">
       <div className="p-card-head">
@@ -104,7 +108,8 @@ export function DashboardView({
   const openProjects = top.filter((p) => !isDoneProject(p.status));
   const awaiting = data.resources.filter((r) => isAwaiting(r.status));
   const report = reportForCustomers(data.customers.map((c) => c.id));
-  const soon = PORTAL_NAV.filter((item) => isSoon(item.key)).map((item) => item.label);
+  const show = (s: Section) => data.open.includes(s);
+  const soon = PORTAL_NAV.filter((item) => isSection(item.key) && !show(item.key)).map((item) => item.label);
   const unpaid = data.invoices.filter((i) => i.status === "unpaid" || i.status === "overdue");
   const due = Object.entries(
     unpaid.reduce<Record<string, number>>((acc, i) => {
@@ -133,7 +138,7 @@ export function DashboardView({
       {!data.linked ? <NotLinked verified={verified} /> : null}
 
       <div className="p-grid">
-        <Card title="المشاريع" href={href("projects")} count={openProjects.length ? String(openProjects.length) : undefined}>
+        <Card title="المشاريع" href={href("projects")} hidden={!show("projects")} count={openProjects.length ? String(openProjects.length) : undefined}>
           {openProjects.length ? (
             <ul className="p-mini">
               {openProjects.slice(0, 4).map((p) => (
@@ -148,7 +153,7 @@ export function DashboardView({
           )}
         </Card>
 
-        {report ? (
+        {report && show("reports") ? (
           <Card title="التقارير" href={href("reports")}>
             <p className="p-meta" style={{ margin: 0 }}>
               أداء حملات {report.name} يومًا بيوم، من شيت الأداء الذي يتابعه فريق كامبين.
@@ -156,7 +161,7 @@ export function DashboardView({
           </Card>
         ) : null}
 
-        <Card title="المطلوب منك" href={href("resources")} count={awaiting.length ? String(awaiting.length) : undefined}>
+        <Card title="المطلوب منك" href={href("resources")} hidden={!show("resources")} count={awaiting.length ? String(awaiting.length) : undefined}>
           {awaiting.length ? (
             <ul className="p-mini">
               {awaiting.slice(0, 4).map((r) => (
@@ -171,7 +176,7 @@ export function DashboardView({
           )}
         </Card>
 
-        <Card title="الاجتماعات" href={href("meetings")}>
+        <Card title="الاجتماعات" href={href("meetings")} hidden={!show("meetings")}>
           {data.meetings.length ? (
             <ul className="p-mini">
               {data.meetings.slice(0, 3).map((m) => (
@@ -186,7 +191,7 @@ export function DashboardView({
           )}
         </Card>
 
-        <Card title="الدعم الفني" href={href("support")}>
+        <Card title="الدعم الفني" href={href("support")} hidden={!show("support")}>
           {data.tickets.length ? (
             <ul className="p-mini">
               {data.tickets.slice(0, 3).map((t) => (
@@ -201,7 +206,7 @@ export function DashboardView({
           )}
         </Card>
 
-        {isSoon("deliverables") ? null : (
+        {!show("deliverables") ? null : (
           <Card title="التسليمات" href={href("deliverables")}>
             {data.deliverables.length ? (
               <ul className="p-mini">
@@ -218,7 +223,7 @@ export function DashboardView({
           </Card>
         )}
 
-        {isSoon("invoices") ? null : (
+        {!show("invoices") ? null : (
           <Card title="الفواتير" href={href("invoices")}>
             {data.invoices.length ? (
               <p className="p-figure">
@@ -238,7 +243,7 @@ export function DashboardView({
           </Card>
         )}
 
-        {isSoon("contracts") ? null : (
+        {!show("contracts") ? null : (
           <Card title="العقود" href={href("contracts")}>
             {data.contracts.length ? (
               <ul className="p-mini">

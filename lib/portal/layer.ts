@@ -22,13 +22,51 @@ export const NEVER = /credential|password|passwords|\bpass\b|باسورد|intern
 
 export type Category = "deliverables" | "projects" | "meetings" | "resources";
 
+/** The portal sections a client can be given, in menu order. */
+export const SECTIONS = [
+  "projects",
+  "reports",
+  "resources",
+  "meetings",
+  "support",
+  "deliverables",
+  "invoices",
+  "contracts",
+] as const;
+export type Section = (typeof SECTIONS)[number];
+export const isSection = (key: string): key is Section => (SECTIONS as readonly string[]).includes(key);
+
+/** Each section's option in the KC "Portal Sections" multi-select. */
+export const SECTION_OPTION: Record<Section, string> = {
+  projects: "Projects",
+  reports: "Reports",
+  resources: "Resources",
+  meetings: "Meetings",
+  support: "Support",
+  deliverables: "Deliverables",
+  invoices: "Invoices",
+  contracts: "Contracts",
+};
+
 /**
- * Portal sections not open yet: listed in the menu and on the dashboard as
- * «قريبًا», and not read from Notion until they open.
+ * Sections closed by default: a client whose KC row has nothing picked in
+ * "Portal Sections" sees them as «قريبًا». The director opens or closes
+ * sections per client from /admin/clients.
  */
-export const SOON = ["deliverables", "invoices", "contracts"] as const;
-export type SoonSection = (typeof SOON)[number];
-export const isSoon = (key: string) => (SOON as readonly string[]).includes(key);
+export const SOON: readonly Section[] = ["deliverables", "invoices", "contracts"];
+export const DEFAULT_OPEN: Section[] = SECTIONS.filter((s) => !SOON.includes(s));
+
+/**
+ * The sections open for a signed-in client: everything their KC rows picked,
+ * and the default set for a row with nothing picked. A section not open is
+ * shown as «قريبًا» and never read from Notion.
+ */
+export function openFor(picked: (Section[] | null)[]): Section[] {
+  if (!picked.length) return DEFAULT_OPEN;
+  const open = new Set<Section>();
+  for (const sections of picked) for (const s of sections ?? DEFAULT_OPEN) open.add(s);
+  return SECTIONS.filter((s) => open.has(s));
+}
 
 /**
  * Contracts & proposals: rows of "KMPN Dev Tasks" (Business Dev.) with

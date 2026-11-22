@@ -1,6 +1,16 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
-import { CATEGORIES, NEVER, SOON, categoryOf, isSoon, type Category } from "./layer";
+import {
+  CATEGORIES,
+  DEFAULT_OPEN,
+  NEVER,
+  SECTIONS,
+  SECTION_OPTION,
+  categoryOf,
+  openFor,
+  type Category,
+  type Section,
+} from "./layer";
 
 /**
  * Client-portal data, read live from Notion through the layer in ./layer.ts.
@@ -10,7 +20,8 @@ import { CATEGORIES, NEVER, SOON, categoryOf, isSoon, type Category } from "./la
  *   projects,     databases found under the client's KC page and on the page
  *   deliverables, in its "Dashboard" field, sorted into categories by title,
  *   meetings,     with only the fields the layer allows (meetings, resources
- *   resources     and tickets wait for V2, see SOON in ./layer.ts);
+ *   resources     and tickets are read only when open for the client, see
+ *                 openFor in ./layer.ts);
  *   invoices      "Portal - Invoices" rows related to the customer, not Draft;
  *   contracts     "KMPN Dev Tasks" rows with Portal ticked and the customer;
  *   edit requests Notion comments on a deliverable's page (getEditThreads);
@@ -47,6 +58,8 @@ export type Customer = {
   start: string | null;
   end: string | null;
   dashboardId: string | null;
+  /** KC "Portal Sections", or null when nothing is picked (the default set). */
+  sections: Section[] | null;
 };
 
 export type Project = {
@@ -143,6 +156,8 @@ export type Ticket = {
 export type PortalData = {
   /** True when the email is listed on at least one customer in Notion. */
   linked: boolean;
+  /** Sections this client may open; the rest show as «قريبًا». */
+  open: Section[];
   customers: Customer[];
   projects: Project[];
   deliverables: Deliverable[];
@@ -155,6 +170,7 @@ export type PortalData = {
 
 const EMPTY: PortalData = {
   linked: false,
+  open: DEFAULT_OPEN,
   customers: [],
   projects: [],
   deliverables: [],
@@ -200,10 +216,10 @@ type Block = {
   child_database?: { title: string };
 };
 
-async function notion<T>(path: string, body?: unknown): Promise<T> {
+async function notion<T>(path: string, body?: unknown, method?: "PATCH"): Promise<T> {
   for (let attempt = 0; ; attempt++) {
     const res = await fetch(`https://api.notion.com/v1/${path}`, {
-      method: body === undefined ? "GET" : "POST",
+      method: method ?? (body === undefined ? "GET" : "POST"),
       headers: {
         Authorization: `Bearer ${token()}`,
         "Notion-Version": NOTION_VERSION,
@@ -277,6 +293,7 @@ async function keepComplete<T>(
   keyParts: string[],
   seconds: number,
   load: () => Promise<{ value: T; complete: boolean }>,
+  tags: string[] = ["portal"],
 ): Promise<{ value: T; complete: boolean }> {
   let partial: { value: T } | null = null;
   const cached = unstable_cache(
@@ -289,7 +306,7 @@ async function keepComplete<T>(
       return result.value;
     },
     keyParts,
-    { revalidate: seconds, tags: ["portal"] },
+    { revalidate: seconds, tags },
   );
   try {
     return { value: await cached(), complete: true };
@@ -347,7 +364,14 @@ function toCustomer(row: NotionPage): Customer {
     start: date?.start ?? null,
     end: date?.end ?? null,
     dashboardId: idFromUrl(prop(row, "Dashboard")?.url),
+    sections: sectionsOf(prop(row, "Portal Sections")),
   };
+}
+
+function sectionsOf(p?: NotionProp): Section[] | null {
+  const names = new Set((p?.multi_select ?? []).map((o) => o.name.trim().toLowerCase()));
+  if (!names.size) return null;
+  return SECTIONS.filter((s) => names.has(SECTION_OPTION[s].toLowerCase()));
 }
 
 async function customersFor(email: string) {
@@ -400,6 +424,7 @@ async function sourcesOf(customer: Customer): Promise<{ sources: Sources; comple
     ["portal-sources", customer.id, customer.dashboardId ?? ""],
     SOURCES_SECONDS,
     () => walkSources(customer),
+    ["portal-sources"],
   );
   return { sources: value, complete };
 }
@@ -625,21 +650,25 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
   const fail = () => {
     complete = false;
   };
+  const open = openFor(customers.map((c) => c.sections));
+  const closed = (s: Section) => !open.includes(s);
   const perCustomer = await Promise.all(
     customers.map(async (c) => {
       const walk = await sourcesOf(c);
       if (!walk.complete) fail();
       const src = walk.sources;
-      // Sections not open yet (SOON) are not read until they open.
+      // A section closed for this client is not read at all.
       const [projects, deliverables, meetings, resources] = await Promise.all([
-        safely(`projects ${c.company}`, [], () => readProjects(src.projects, c.company), fail),
-        isSoon("deliverables")
+        closed("projects")
+          ? Promise.resolve([] as Project[])
+          : safely(`projects ${c.company}`, [], () => readProjects(src.projects, c.company), fail),
+        closed("deliverables")
           ? Promise.resolve([] as Deliverable[])
           : safely(`deliverables ${c.company}`, [], () => readDeliverables(src.deliverables, c.company), fail),
-        isSoon("meetings")
+        closed("meetings")
           ? Promise.resolve([] as Meeting[])
           : safely(`meetings ${c.company}`, [], () => readMeetings(src.meetings, c.company), fail),
-        isSoon("resources")
+        closed("resources")
           ? Promise.resolve([] as Resource[])
           : safely(`resources ${c.company}`, [], () => readResources(src.resources, c.company), fail),
       ]);
@@ -647,16 +676,17 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     }),
   );
   const [invoices, contracts, tickets] = await Promise.all([
-    isSoon("invoices") ? Promise.resolve([] as Invoice[]) : safely("invoices", [], () => readInvoices(customers), fail),
-    isSoon("contracts")
+    closed("invoices") ? Promise.resolve([] as Invoice[]) : safely("invoices", [], () => readInvoices(customers), fail),
+    closed("contracts")
       ? Promise.resolve([] as Contract[])
       : safely("contracts", [], () => readContracts(customers), fail),
-    ticketFilter && !isSoon("support")
+    ticketFilter && !closed("support")
       ? safely("tickets", [], () => readTickets(ticketFilter), fail)
       : Promise.resolve([] as Ticket[]),
   ]);
   const data = {
     linked: customers.length > 0,
+    open,
     customers,
     projects: perCustomer.flatMap((x) => x.projects),
     deliverables: perCustomer.flatMap((x) => x.deliverables),
@@ -684,14 +714,48 @@ function remembered(
 ): Promise<PortalData> {
   const running = inflight.get(key);
   if (running) return running;
-  const read = keepComplete(["portal-data-v2", SOON.join(","), key], DATA_SECONDS, async () => {
-    const { data, complete } = await load();
-    return { value: data, complete };
-  })
+  const read = keepComplete(
+    ["portal-data-v3", key],
+    DATA_SECONDS,
+    async () => {
+      const { data, complete } = await load();
+      return { value: data, complete };
+    },
+    ["portal", "portal-data"],
+  )
     .then((r) => r.value)
     .finally(() => inflight.delete(key));
   inflight.set(key, read);
   return read;
+}
+
+export type PortalAccess = { linked: boolean; open: Section[] };
+
+/**
+ * Which sections a client may open: one query on KC, kept for a minute like
+ * the data (never for an address not linked yet). The menu and the page
+ * guards use it, so a closed section costs no further Notion calls.
+ */
+export async function getPortalAccess(email: string): Promise<PortalAccess> {
+  if (!isNotionConfigured() || !email) return { linked: false, open: DEFAULT_OPEN };
+  const address = email.toLowerCase();
+  const { value } = await keepComplete(
+    ["portal-access-v1", address],
+    DATA_SECONDS,
+    async () => {
+      let found = true;
+      const rows = await safely("customers", [], () => customersFor(address), () => {
+        found = false;
+      });
+      const customers = rows.map(toCustomer);
+      return {
+        value: { linked: customers.length > 0, open: openFor(customers.map((c) => c.sections)) },
+        complete: found && customers.length > 0,
+      };
+    },
+    ["portal", "portal-access"],
+  );
+  return value;
 }
 
 /**
@@ -714,8 +778,8 @@ export async function getPortalData(email: string): Promise<PortalData> {
 }
 
 /**
- * What one KC customer would see — for the team's local preview only
- * (app/preview), never reachable in production.
+ * What one KC customer sees: for the director's "view as client" page
+ * (/admin/clients/<id>) and the team's local preview (app/preview).
  */
 export async function getPortalDataForCustomer(id: string): Promise<PortalData> {
   if (!isNotionConfigured()) return EMPTY;
@@ -865,4 +929,98 @@ export async function addEditRequest(input: {
     console.error("[portal] edit request:", err instanceof Error ? err.message : err);
     return false;
   }
+}
+
+/* --------------------------------------------------------------- admin ---- */
+
+/** A KC customer as the director's dashboard (/admin) shows it. */
+export type AdminClient = {
+  id: string;
+  company: string;
+  status: string;
+  emails: string[];
+  /** What KC "Portal Sections" picked, or null for the default set. */
+  sections: Section[] | null;
+  /** The sections this client actually gets. */
+  open: Section[];
+  hasDashboard: boolean;
+};
+
+function toAdminClient(row: NotionPage): AdminClient {
+  const c = toCustomer(row);
+  return {
+    id: c.id,
+    company: c.company,
+    status: c.status,
+    emails: emailsOf(prop(row, "Portal Emails")),
+    sections: c.sections,
+    open: openFor([c.sections]),
+    hasDashboard: Boolean(c.dashboardId),
+  };
+}
+
+const STATUS_RANK: Record<string, number> = { Active: 0, "In Pipeline": 1, "Not started": 2, Paused: 3 };
+
+/** Every KC customer, read fresh: active ones first. */
+export async function listClients(): Promise<AdminClient[]> {
+  if (!isNotionConfigured()) return [];
+  const rows = await query(DS.customers);
+  return rows
+    .map(toAdminClient)
+    .sort((a, b) => (STATUS_RANK[a.status] ?? 4) - (STATUS_RANK[b.status] ?? 4) || a.company.localeCompare(b.company));
+}
+
+/** One KC customer, read fresh; null when it is not a KC row. */
+export async function getClient(id: string): Promise<AdminClient | null> {
+  const row = await customerById(id).catch(() => null);
+  return row ? toAdminClient(row) : null;
+}
+
+export type AdminTicket = Ticket & { email: string; name: string; customerIds: string[] };
+
+/** Every support ticket, newest first, with who opened it. */
+export async function listAllTickets(): Promise<AdminTicket[]> {
+  if (!isNotionConfigured() || !DS.tickets) return [];
+  const rows = await query(DS.tickets, { sorts: [{ timestamp: "created_time", direction: "descending" }] });
+  return rows.map((row) => ({
+    id: row.id,
+    subject: text(prop(row, "Subject")),
+    message: text(prop(row, "Message")),
+    reply: text(prop(row, "Reply")),
+    status: TICKET_STATUS[choice(prop(row, "Status"))] ?? "new",
+    created: row.created_time,
+    email: prop(row, "Email")?.email ?? "",
+    name: text(prop(row, "Name")),
+    customerIds: (prop(row, "Customer")?.relation ?? []).map((r) => r.id),
+  }));
+}
+
+// These writes need the "Update content" capability on the KMPN Portal
+// integration; without it Notion answers 403.
+
+/** Replaces a customer's "Portal Emails". */
+export async function setClientEmails(id: string, emails: string[]) {
+  await notion(`pages/${id}`, { properties: { "Portal Emails": rich(emails.join(", ")) } }, "PATCH");
+}
+
+/** Replaces a customer's "Portal Sections"; null clears it (the default set). */
+export async function setClientSections(id: string, sections: Section[] | null) {
+  const multi = (sections ?? []).map((s) => ({ name: SECTION_OPTION[s] }));
+  await notion(`pages/${id}`, { properties: { "Portal Sections": { multi_select: multi } } }, "PATCH");
+}
+
+const TICKET_OPTION: Record<TicketStatus, string> = {
+  new: "New",
+  progress: "In progress",
+  answered: "Answered",
+  closed: "Closed",
+};
+
+/** The team's reply and status on a ticket; the client sees both. */
+export async function saveTicket(id: string, input: { status: TicketStatus; reply: string }) {
+  await notion(
+    `pages/${id}`,
+    { properties: { Status: { select: { name: TICKET_OPTION[input.status] } }, Reply: rich(input.reply) } },
+    "PATCH",
+  );
 }

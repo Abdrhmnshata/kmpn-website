@@ -15,7 +15,7 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string; link?: string }>;
 }) {
   const { next, link } = await searchParams;
-  const target = next?.startsWith("/portal") ? next : "/portal";
+  const target = next?.startsWith("/portal") || next?.startsWith("/admin") ? next : "/portal";
   const notice =
     link === "invalid"
       ? "الرابط انتهت صلاحيته أو استُخدم من قبل. سجّل دخولك، أو اطلب كودًا جديدًا من تبويب «بكود على البريد»."
