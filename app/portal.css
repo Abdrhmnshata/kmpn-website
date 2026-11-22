@@ -1834,3 +1834,203 @@ li.a-tr:hover {
   background: var(--sunk);
   object-fit: cover;
 }
+
+/* ---------- portal menu in the site header ------------------ */
+
+/* The portal pages have no side menu: the content takes the full width. */
+.portal.portal-wide {
+  display: block;
+}
+
+.pm {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.pm-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.page .pm-link[aria-current="page"],
+.page .pm-toggle[data-current] {
+  color: var(--accent);
+}
+
+.pm-caret {
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  /* Physical sides on purpose: rotated, they point down in either direction. */
+  border-bottom: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+}
+
+.pm-toggle[aria-expanded="true"] .pm-caret {
+  margin-top: 3px;
+  transform: rotate(-135deg);
+}
+
+.pm-group {
+  position: relative;
+}
+
+/* The padding bridges the gap to the box, so hovering down keeps it open. */
+.pm-drop {
+  display: none;
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  z-index: 40;
+  min-width: 220px;
+  padding-top: 10px;
+}
+
+.pm-drop[data-open] {
+  display: block;
+}
+
+@media (hover: hover) {
+  .pm-group:hover .pm-drop {
+    display: block;
+  }
+}
+
+.pm-drop-box {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--hdr);
+  box-shadow: 0 18px 40px -16px rgba(11, 11, 11, 0.3);
+}
+
+.pm-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--fg2);
+  font-size: 14.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.page a.pm-item {
+  color: var(--fg2);
+}
+
+.page a.pm-item:hover {
+  background: var(--bg);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.page a.pm-item[aria-current="page"] {
+  background: var(--tint-soft);
+  color: var(--accent);
+}
+
+.pm-soon {
+  color: var(--muted);
+  cursor: default;
+}
+
+.pm-soon small {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--sunk);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.page .pm-admin {
+  color: var(--muted);
+}
+
+/* The phone menu: groups as headed lists. The portal's is long, so it scrolls
+   inside the screen (the header is sticky; the page behind cannot carry it). */
+.mob-menu {
+  max-height: calc(100dvh - 110px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.pm-stack-group {
+  display: grid;
+  padding: 6px 0 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pm-stack-head {
+  padding: 10px 8px 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mob-menu a.pm-stack-item,
+.mob-menu .pm-stack-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 8px;
+  padding-inline-start: 20px;
+  border-bottom: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.mob-menu .pm-stack-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--line);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.page .mob-menu a[aria-current="page"] {
+  color: var(--accent);
+}
+
+.mob-out {
+  width: 100%;
+  height: 54px;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* The director's "view as client": the client's menu as a bar. */
+.pm-bar {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--hdr);
+}
+
+.pm-bar .pm {
+  flex-wrap: wrap;
+}

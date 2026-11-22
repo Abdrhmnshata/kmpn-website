@@ -4,10 +4,10 @@ import { ResourcesView } from "@/components/portal/Views";
 
 import { ComingSoon } from "@/components/portal/V1Views";
 
-export const metadata = { title: "المطلوب منك · بوابة العملاء" };
+export const metadata = { title: "الموارد المطلوبة · بوابة العملاء" };
 
 export default async function ResourcesPage() {
-  if (!(await sectionOpen("resources"))) return <ComingSoon title="المطلوب منك" />;
+  if (!(await sectionOpen("resources"))) return <ComingSoon title="الموارد المطلوبة" />;
   const [client, data] = await Promise.all([currentClient(), portalData()]);
   return (
     <>

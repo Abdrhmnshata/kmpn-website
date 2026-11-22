@@ -161,7 +161,7 @@ export function DashboardView({
           </Card>
         ) : null}
 
-        <Card title="المطلوب منك" href={href("resources")} hidden={!show("resources")} count={awaiting.length ? String(awaiting.length) : undefined}>
+        <Card title="الموارد المطلوبة" href={href("resources")} hidden={!show("resources")} count={awaiting.length ? String(awaiting.length) : undefined}>
           {awaiting.length ? (
             <ul className="p-mini">
               {awaiting.slice(0, 4).map((r) => (
@@ -359,7 +359,7 @@ export function ResourcesView({ data }: { data: PortalData }) {
   return (
     <>
       <PageHead
-        title="المطلوب منك"
+        title="الموارد المطلوبة"
         lead="الملفات والبيانات التي نحتاجها منك لاستكمال العمل، وكل ما استلمناه."
       />
       {awaiting.length ? (
