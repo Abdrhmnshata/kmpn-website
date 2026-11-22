@@ -1,5 +1,5 @@
-import { PortalNav } from "@/components/portal/PortalNav";
-import { PORTAL_NAV, type NavItem } from "@/lib/portal/nav";
+import { PortalMenu } from "@/components/portal/PortalMenu";
+import { PORTAL_NAV } from "@/lib/portal/nav";
 import {
   DashboardView,
   InvoicesView,
@@ -39,11 +39,6 @@ export async function ClientView({
 }) {
   const tab = (TABS.some((t) => t.key === rawTab) ? rawTab : "dashboard") as Key;
   const href = (t: Tab) => `${base}?tab=${t}`;
-  const items: NavItem[] = TABS.map((t) => ({
-    key: t.key,
-    label: t.label,
-    href: t.key === "dashboard" ? base : `${base}?tab=${t.key}`,
-  }));
   const company = data.customers.map((c) => c.company).join("، ");
   const label = TABS.find((t) => t.key === tab)?.label ?? "";
   const closed = isSection(tab) && !data.open.includes(tab);
@@ -51,8 +46,10 @@ export async function ClientView({
     tab === "deliverables" && !closed ? await getEditThreads(data.deliverables.map((d) => d.id)) : {};
 
   return (
-    <main className="container portal">
-      <PortalNav items={items} active={tab} open={data.open} signOutButton={false} />
+    <main className="container portal portal-wide">
+      <nav className="pm-bar" aria-label="بوابة العميل">
+        <PortalMenu open={data.open} tabBase={base} active={tab} hide={["account", "site"]} />
+      </nav>
       <div className="portal-main">
         {closed ? (
           <ComingSoon title={label} />

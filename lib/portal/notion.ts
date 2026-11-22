@@ -256,20 +256,36 @@ type Block = {
 
 async function notion<T>(path: string, body?: unknown, method?: "PATCH"): Promise<T> {
   for (let attempt = 0; ; attempt++) {
-    const res = await fetch(`https://api.notion.com/v1/${path}`, {
-      method: method ?? (body === undefined ? "GET" : "POST"),
-      headers: {
-        Authorization: `Bearer ${token()}`,
-        "Notion-Version": NOTION_VERSION,
-        "Content-Type": "application/json",
-      },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      cache: "no-store",
-    });
+    let res: Response;
+    try {
+      res = await fetch(`https://api.notion.com/v1/${path}`, {
+        method: method ?? (body === undefined ? "GET" : "POST"),
+        headers: {
+          Authorization: `Bearer ${token()}`,
+          "Notion-Version": NOTION_VERSION,
+          "Content-Type": "application/json",
+        },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        cache: "no-store",
+      });
+    } catch (err) {
+      // "fetch failed": a dropped connection, typically a socket reused after
+      // the function slept. It failed every background refresh of the cache,
+      // which then kept serving old data; a second try gets a new connection.
+      if (attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+        continue;
+      }
+      throw err;
+    }
     // Notion allows about 3 requests a second and says how long to wait.
     if (res.status === 429 && attempt < 3) {
       const wait = Math.min(Number(res.headers.get("retry-after")) || 1, 5);
       await new Promise((resolve) => setTimeout(resolve, wait * 1000));
+      continue;
+    }
+    if (res.status >= 500 && attempt < 2) {
+      await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
       continue;
     }
     if (!res.ok) {
@@ -922,6 +938,14 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
  * that read instead of starting their own.
  */
 const DATA_SECONDS = 60;
+
+/**
+ * Part of the data's cache key that changes every five minutes. A cached
+ * entry is refreshed in the background after DATA_SECONDS, but if those
+ * refreshes keep failing the old entry would be served for good; a new key
+ * every five minutes bounds how old the data can ever be.
+ */
+const ageBucket = () => String(Math.floor(Date.now() / (5 * 60 * 1000)));
 const inflight = new Map<string, Promise<PortalData>>();
 
 function remembered(
@@ -931,7 +955,7 @@ function remembered(
   const running = inflight.get(key);
   if (running) return running;
   const read = keepComplete(
-    ["portal-data-v5", key],
+    ["portal-data-v5", key, ageBucket()],
     DATA_SECONDS,
     async () => {
       const { data, complete } = await load();
@@ -956,7 +980,7 @@ export async function getPortalAccess(email: string): Promise<PortalAccess> {
   if (!isNotionConfigured() || !email) return { linked: false, open: DEFAULT_OPEN };
   const address = email.toLowerCase();
   const { value } = await keepComplete(
-    ["portal-access-v1", address],
+    ["portal-access-v1", address, ageBucket()],
     DATA_SECONDS,
     async () => {
       let found = true;
