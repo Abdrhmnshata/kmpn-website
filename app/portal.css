@@ -1317,3 +1317,387 @@ li.a-tr:hover {
   color: var(--muted);
   margin-bottom: 14px;
 }
+
+/* ---------- content library («مكتبة المحتوى») ------------- */
+
+.lib-section {
+  display: grid;
+  gap: 14px;
+}
+
+.lib {
+  display: grid;
+  gap: 24px;
+}
+
+.lib-filters .work-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lib-month {
+  display: grid;
+  gap: 12px;
+}
+
+.lib-month-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+  gap: 18px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lib-card {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.lib-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #111;
+}
+
+.lib-cover-static,
+.lib-cover-carousel {
+  background: var(--sunk);
+}
+
+.lib-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.lib-cover img.lib-img-fill {
+  object-fit: cover;
+}
+
+.lib-card:hover .lib-cover img {
+  transform: scale(1.03);
+}
+
+.lib-card:focus-visible {
+  outline: none;
+}
+
+.lib-card:focus-visible .lib-cover {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.lib-cover-none {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.lib-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.lib-play::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -8px 0 0 -5px;
+  border-style: solid;
+  border-width: 8px 0 8px 13px;
+  border-color: transparent transparent transparent #fff;
+}
+
+.lib-live {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.lib-dur {
+  position: absolute;
+  bottom: 8px;
+  inset-inline-end: 8px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 11.5px;
+}
+
+.lib-name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.lib-meta {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A piece, opened. */
+.lib-dialog {
+  /* The global reset zeroes margins; a modal dialog centres with margin: auto. */
+  margin: auto;
+  width: min(980px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 20px;
+  background: var(--page);
+  color: var(--fg);
+}
+
+.lib-dialog::backdrop {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.lib-dialog-box {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.lib-stage {
+  display: grid;
+  place-items: center;
+  min-height: 420px;
+  background: #0b0b0b;
+}
+
+.lib-stage-static,
+.lib-stage-carousel {
+  background: var(--sunk);
+}
+
+.lib-stage iframe {
+  width: 100%;
+  height: min(78vh, 640px);
+  border: 0;
+}
+
+.lib-stage img {
+  max-width: 100%;
+  max-height: min(78vh, 640px);
+  object-fit: contain;
+}
+
+.lib-info {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 28px 24px;
+}
+
+.lib-info h2 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.lib-info .p-meta {
+  margin: -8px 0 0;
+}
+
+.lib-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lib-tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--sunk);
+  color: var(--fg2);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.lib-tag-live {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.lib-field {
+  display: grid;
+  gap: 6px;
+}
+
+.lib-field strong {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.lib-field p {
+  margin: 0;
+}
+
+.lib-journey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lib-journey li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--tint-soft);
+  color: var(--fg2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.lib-journey li::before {
+  content: "✓";
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.lib-caption {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 14px;
+  white-space: pre-line;
+}
+
+.lib-copy {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lib-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.lib-btn {
+  height: 44px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
+.lib-hint {
+  font-size: 12.5px;
+}
+
+.lib-close {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .lib-dialog-box {
+    grid-template-columns: 1fr;
+  }
+
+  .lib-stage {
+    min-height: 0;
+  }
+
+  .lib-stage iframe {
+    height: 62vh;
+  }
+
+  .lib-stage img {
+    max-height: 62vh;
+  }
+
+  .lib-info {
+    padding: 20px 18px;
+  }
+}
+
+/* Dashboard: the latest covers. */
+.lib-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lib-strip img,
+.lib-strip-none {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+  background: var(--sunk);
+  object-fit: cover;
+}

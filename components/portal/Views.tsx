@@ -207,7 +207,30 @@ export function DashboardView({
         </Card>
 
         {!show("deliverables") ? null : (
-          <Card title="التسليمات" href={href("deliverables")}>
+          <Card
+            title="التسليمات"
+            href={href("deliverables")}
+            count={data.library.length + data.deliverables.length ? String(data.library.length + data.deliverables.length) : undefined}
+          >
+            {data.library.length ? (
+              <>
+                <div className="lib-strip" aria-hidden="true">
+                  {data.library.slice(0, 4).map((item) =>
+                    item.cover ? (
+                      // Notion covers are external and short-lived; no next/image.
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={item.id} src={item.cover} alt="" loading="lazy" />
+                    ) : (
+                      <span key={item.id} className="lib-strip-none" />
+                    ),
+                  )}
+                </div>
+                <p className="p-meta" style={{ margin: 0 }}>
+                  مكتبة المحتوى: <span className="num">{data.library.length}</span> قطعة إعلانية، منها{" "}
+                  <span className="num">{data.library.filter((i) => i.format === "video").length}</span> فيديو.
+                </p>
+              </>
+            ) : null}
             {data.deliverables.length ? (
               <ul className="p-mini">
                 {data.deliverables.slice(0, 4).map((d) => (
@@ -217,7 +240,7 @@ export function DashboardView({
                   </li>
                 ))}
               </ul>
-            ) : (
+            ) : data.library.length ? null : (
               <Empty>لا توجد تسليمات حتى الآن.</Empty>
             )}
           </Card>
