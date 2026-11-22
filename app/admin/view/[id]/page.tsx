@@ -24,8 +24,8 @@ export default async function ViewAsClient({
       <div className="container">
         <p className="p-preview">
           إنت شايف البوابة زي ما <strong>{company}</strong> بيشوفها بالظبط (للقراءة بس).{" "}
-          <Link href="/admin/clients" prefetch={false} className="p-link">
-            رجوع للعملاء
+          <Link href={`/admin/clients/${id}`} prefetch={false} className="p-link">
+            رجوع لصفحة العميل
           </Link>
         </p>
       </div>

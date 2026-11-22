@@ -938,6 +938,8 @@ export type AdminClient = {
   id: string;
   company: string;
   status: string;
+  /** KC "Active Projects": the services KMPN runs for them. */
+  services: string[];
   emails: string[];
   /** What KC "Portal Sections" picked, or null for the default set. */
   sections: Section[] | null;
@@ -954,6 +956,7 @@ function toAdminClient(row: NotionPage): AdminClient {
     id: c.id,
     company: c.company,
     status: c.status,
+    services: c.services,
     emails: emailsOf(prop(row, "Portal Emails")),
     sections: c.sections,
     open: openFor([c.sections]),
