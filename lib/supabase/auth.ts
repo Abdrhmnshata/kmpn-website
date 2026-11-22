@@ -1,8 +1,10 @@
 import "server-only";
+import { createClient, type User } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
+import { unstable_cache } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import type { User } from "@supabase/supabase-js";
+import { sessionClaims } from "./claims";
 
 /**
  * Supabase client bound to the visitor's session cookies, for the client
@@ -31,6 +33,11 @@ export async function getAuthClient() {
   });
 }
 
+/**
+ * The signed-in user, asked from Supabase's auth server (a round trip to
+ * Tokyo). For server actions, which write: it also notices a session that
+ * was signed out elsewhere. Pages use requireUser(), which is local.
+ */
 export async function getUser(): Promise<User | null> {
   const supabase = await getAuthClient();
   if (!supabase) return null;
@@ -38,11 +45,30 @@ export async function getUser(): Promise<User | null> {
   return data.user ?? null;
 }
 
-/** For portal pages: the signed-in user, or a redirect to /login. */
-export async function requireUser(next = "/portal"): Promise<User> {
-  const user = await getUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent(next)}`);
-  return user;
+/**
+ * Whether this account's address is confirmed. Only a confirmed address may
+ * see the Notion data linked to it, and the access token does not say, so
+ * the auth server is asked once per account and address; a "yes" is kept
+ * (a confirmation never goes back), a "no" is asked again next time.
+ */
+async function emailConfirmed(id: string, email: string, token: string): Promise<boolean> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key || !email) return false;
+  const check = unstable_cache(
+    async () => {
+      const plain = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+      const { data } = await plain.auth.getUser(token);
+      const user = data.user;
+      if (user?.id !== id || (user.email ?? "").toLowerCase() !== email || !user.email_confirmed_at) {
+        throw new Error("[auth] not confirmed, not kept");
+      }
+      return true;
+    },
+    ["email-confirmed-v1", id, email],
+    { revalidate: false },
+  );
+  return check().catch(() => false);
 }
 
 export type Profile = {
@@ -55,10 +81,8 @@ export type Profile = {
   verified: boolean;
 };
 
-export function profileOf(user: User): Profile {
-  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+function toProfile(email: string, meta: Record<string, unknown>, verified: boolean): Profile {
   const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
-  const email = (user.email ?? "").toLowerCase();
   const name = str(meta.full_name) || email.split("@")[0];
   return {
     name,
@@ -66,8 +90,35 @@ export function profileOf(user: User): Profile {
     company: str(meta.company),
     phone: str(meta.phone),
     email,
-    verified: Boolean(user.email_confirmed_at),
+    verified,
   };
+}
+
+/** A user from the auth server (server actions) as the portal shows it. */
+export function profileOf(user: User): Profile {
+  return toProfile(
+    (user.email ?? "").toLowerCase(),
+    (user.user_metadata ?? {}) as Record<string, unknown>,
+    Boolean(user.email_confirmed_at),
+  );
+}
+
+/** For pages: the signed-in visitor, verified locally; null when signed out. */
+export async function getProfile(): Promise<Profile | null> {
+  const supabase = await getAuthClient();
+  if (!supabase) return null;
+  const claims = await sessionClaims(supabase);
+  if (!claims) return null;
+  const token = (await supabase.auth.getSession()).data.session?.access_token ?? "";
+  const verified = await emailConfirmed(claims.id, claims.email, token);
+  return toProfile(claims.email, claims.meta, verified);
+}
+
+/** For portal pages: the signed-in visitor, or a redirect to /login. */
+export async function requireUser(next = "/portal"): Promise<Profile> {
+  const profile = await getProfile();
+  if (!profile) redirect(`/login?next=${encodeURIComponent(next)}`);
+  return profile;
 }
 
 /** The non-secret cookie the public header reads to greet a signed-in client. */

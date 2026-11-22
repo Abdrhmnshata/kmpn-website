@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { sessionClaims } from "@/lib/supabase/claims";
 
 /**
  * Keeps the client-portal session fresh and guards /portal.
@@ -43,10 +44,10 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // getUser() revalidates the token with Supabase; do not trust getSession() here.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() verifies the token's signature here, without a round trip to
+  // Supabase (Tokyo); it still refreshes an expired session. Never trust
+  // getSession() alone.
+  const user = await sessionClaims(supabase);
 
   const path = request.nextUrl.pathname;
 
@@ -71,8 +72,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    const meta = (user.user_metadata ?? {}) as { full_name?: string };
-    const first = (meta.full_name || user.email?.split("@")[0] || "").trim().split(/\s+/)[0];
+    const fullName = typeof user.meta.full_name === "string" ? user.meta.full_name : "";
+    const first = (fullName || user.email.split("@")[0] || "").trim().split(/\s+/)[0];
     if (first && request.cookies.get(GREETING_COOKIE)?.value !== encodeURIComponent(first)) {
       response.cookies.set(GREETING_COOKIE, encodeURIComponent(first), {
         path: "/",

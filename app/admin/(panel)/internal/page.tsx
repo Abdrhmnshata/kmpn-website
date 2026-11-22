@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "مشاريع داخلية · لوحة المدير" };
 
 export default async function InternalPage() {
-  const { internal, errors } = await adminSnapshot();
+  const { internal, errors } = await adminSnapshot({ signups: false, tickets: false });
 
   return (
     <>

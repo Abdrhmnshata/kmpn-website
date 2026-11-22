@@ -1,11 +1,11 @@
 import "server-only";
 import { cache } from "react";
-import { requireUser, profileOf } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/supabase/auth";
 import type { Section } from "./layer";
 import { getPortalAccess, getPortalData } from "./notion";
 
 /** The signed-in client, once per request (layout and page share it). */
-export const currentClient = cache(async () => profileOf(await requireUser()));
+export const currentClient = cache(() => requireUser());
 
 /**
  * The client's Notion data, once per request. An unconfirmed email sees

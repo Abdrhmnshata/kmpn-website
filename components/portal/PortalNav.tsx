@@ -38,14 +38,11 @@ export function PortalNav({
           );
         }
         return (
-          // No prefetch: each portal page reads Notion, and prefetching every
-          // tab at once used to run into Notion's rate limit.
-          <Link
-            key={item.key}
-            href={item.href}
-            prefetch={false}
-            aria-current={current ? "page" : undefined}
-          >
+          // Default prefetch: for these dynamic pages Next fetches only the
+          // shell down to loading.tsx, never the page's Notion reads, so a
+          // click shows the page frame at once. (Full prefetch of every tab
+          // used to run into Notion's rate limit.)
+          <Link key={item.key} href={item.href} aria-current={current ? "page" : undefined}>
             {item.label}
           </Link>
         );
