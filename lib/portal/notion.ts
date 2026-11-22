@@ -42,6 +42,9 @@ const DS = {
   tickets: process.env.NOTION_PORTAL_TICKETS_DS ?? "41ac45aa-cc37-81c4-86ba-000b898f3b43",
   // "Portal - Content Library": the paid creatives delivered to each client.
   library: process.env.NOTION_PORTAL_LIBRARY_DS ?? "420c45aa-cc37-81c0-b40f-000bad3b8584",
+  // "Copywrite -Tasks": the content team's pieces; rows marked Client Dashboard = Yes
+  // show in the client's library with the stage they are at.
+  copywrite: process.env.NOTION_PORTAL_COPYWRITE_DS ?? "1d5c45aa-cc37-8170-b1d0-000b4f3cfa38",
   // "KMPN Dev Tasks" under Business Dev.
   contracts: process.env.NOTION_PORTAL_CONTRACTS_DS ?? "267c45aa-cc37-81c6-b4d9-000b23cc93b0",
 };
@@ -159,9 +162,15 @@ export type Ticket = {
  * One paid creative in the client's content library («مكتبة المحتوى»):
  * a finished video or design KMPN made, from idea to final cut.
  */
+/** Where a piece is on its way to the client, idea to final cut. */
+export type LibraryStage = "idea" | "script" | "shoot" | "edit" | "design" | "review" | "done" | "paused";
+
 export type LibraryItem = {
   id: string;
   name: string;
+  stage: LibraryStage;
+  /** The script, the files folder…: links the client can open. */
+  links: { label: string; url: string }[];
   /** "YYYY-MM" from the Month select, for grouping and sorting; null when unset. */
   month: string | null;
   /** Running in the client's ads right now. */
@@ -697,6 +706,8 @@ async function readLibrary(customers: Customer[]): Promise<LibraryItem[]> {
       return {
         id: row.id,
         name: text(prop(row, "Name")),
+        stage: "done" as const,
+        links: [],
         month: monthKey(choice(prop(row, "Month"))),
         live: choice(prop(row, "Status")).toLowerCase() === "live",
         format: FORMAT[choice(prop(row, "Format")).toLowerCase()] ?? "video",
@@ -713,6 +724,105 @@ async function readLibrary(customers: Customer[]): Promise<LibraryItem[]> {
     })
     .filter((item) => item.name)
     // Newest month first; within a month, in the order the team added them.
+    .sort((a, b) => (b.month ?? "").localeCompare(a.month ?? ""));
+}
+
+/** Copywrite -Tasks "Status" → the stage the client reads. Archived rows are not read. */
+const COPY_STAGE: Record<string, LibraryStage> = {
+  backlog: "idea",
+  ideation: "idea",
+  "in scriptwriting": "script",
+  "in copywriting": "script",
+  "rf shooting": "shoot",
+  "rf video editing": "edit",
+  "in video editing": "edit",
+  "rf design": "design",
+  "in design": "design",
+  "ready for revision": "review",
+  delivered: "done",
+  published: "done",
+  paused: "paused",
+};
+
+/** The Copywrite "Brand" option spelled differently from the KC company. */
+const BRAND_ALIASES: Record<string, string[]> = { ottroga: ["ottroja"] };
+
+/** "Bader - بادر" → ["bader - بادر", "bader"], plus any alias. */
+function brandsOf(company: string): string[] {
+  const full = company.trim().toLowerCase();
+  const head = company.split(/\s+[-–—]\s+/)[0].trim().toLowerCase();
+  return [...new Set([full, head, ...(BRAND_ALIASES[head] ?? [])])];
+}
+
+/** What a link is, for its button. */
+function linkLabel(url: string): string {
+  if (/docs\.google\.com\/document/.test(url)) return "السكريبت";
+  if (/docs\.google\.com\/spreadsheets/.test(url)) return "الشيت";
+  if (/docs\.google\.com\/presentation/.test(url)) return "العرض";
+  if (/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders/.test(url)) return "فولدر الملفات";
+  if (DRIVE_FILE.test(url)) return "الملف على درايف";
+  return "رابط";
+}
+
+const IMAGE_FILE = /\.(png|jpe?g|webp|gif|avif)(\?|$)/i;
+
+async function readCopywrite(customers: Customer[]): Promise<LibraryItem[]> {
+  if (!DS.copywrite || customers.length === 0) return [];
+  const companyOf = new Map<string, string>();
+  for (const c of customers) for (const b of brandsOf(c.company)) companyOf.set(b, c.company);
+  // Every brand's flagged rows (a few dozen), matched to this client's brand here:
+  // a select filter on an option that does not exist would fail the whole query.
+  const rows = await query(DS.copywrite, {
+    filter: {
+      and: [
+        { property: "Client Dashboard", select: { equals: "Yes" } },
+        { property: "Status", status: { does_not_equal: "Archived" } },
+      ],
+    },
+    sorts: [{ timestamp: "created_time", direction: "ascending" }],
+  });
+  return rows
+    .flatMap((row) => {
+      const company = companyOf.get(choice(prop(row, "Brand")).trim().toLowerCase());
+      // A row with sub-tasks is a batch ("October Copywrite"); its pieces are the rows.
+      if (!company || (prop(row, "Sub-tasks")?.relation ?? []).length) return [];
+      const status = choice(prop(row, "Status")).trim().toLowerCase();
+      const stage = COPY_STAGE[status] ?? "idea";
+      const files = [
+        ...filesOf(prop(row, "Delivery")),
+        ...filesOf(prop(row, "Creatives")),
+        ...filesOf(prop(row, "Files & media")),
+      ];
+      const thumbs = filesOf(prop(row, "Thumbnails"));
+      const driveFile = files.find((f) => DRIVE_FILE.test(f.url));
+      const links = files
+        .filter((f) => !IMAGE_FILE.test(f.url.split("?")[0]))
+        .map((f) => ({ label: linkLabel(f.url), url: f.url }));
+      const when =
+        prop(row, "Publish Date")?.date?.start ??
+        prop(row, "Completed on")?.date?.start ??
+        prop(row, "Due")?.date?.start ??
+        row.created_time;
+      const item: LibraryItem = {
+        id: row.id,
+        name: text(prop(row, "Task name")),
+        stage,
+        links: links.filter((l, i) => links.findIndex((x) => x.url === l.url) === i),
+        month: when ? monthKey(when) : null,
+        live: status === "published",
+        format: stage === "design" ? "static" : "video",
+        aspect: "",
+        duration: "",
+        angle: "",
+        platforms: [],
+        url: driveFile?.url ?? null,
+        driveId: driveFile?.url.match(DRIVE_FILE)?.[1] ?? null,
+        cover: thumbs[0]?.url ?? files.find((f) => IMAGE_FILE.test(f.url.split("?")[0]))?.url ?? null,
+        caption: "",
+        company,
+      };
+      return item.name ? [item] : [];
+    })
     .sort((a, b) => (b.month ?? "").localeCompare(a.month ?? ""));
 }
 
@@ -766,7 +876,7 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
       return { projects, deliverables, meetings, resources };
     }),
   );
-  const [invoices, contracts, tickets, library] = await Promise.all([
+  const [invoices, contracts, tickets, library, copywrite] = await Promise.all([
     closed("invoices") ? Promise.resolve([] as Invoice[]) : safely("invoices", [], () => readInvoices(customers), fail),
     closed("contracts")
       ? Promise.resolve([] as Contract[])
@@ -778,6 +888,9 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     closed("deliverables")
       ? Promise.resolve([] as LibraryItem[])
       : safely("library", [], () => readLibrary(customers), fail),
+    closed("deliverables")
+      ? Promise.resolve([] as LibraryItem[])
+      : safely("copywrite", [], () => readCopywrite(customers), fail),
   ]);
   const data = {
     linked: customers.length > 0,
@@ -790,7 +903,8 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     resources: perCustomer.flatMap((x) => x.resources),
     invoices,
     tickets,
-    library,
+    // Newest month first; a stable sort keeps each source's order within a month.
+    library: [...library, ...copywrite].sort((a, b) => (b.month ?? "").localeCompare(a.month ?? "")),
   } satisfies PortalData;
   return { data, complete };
 }
@@ -811,7 +925,7 @@ function remembered(
   const running = inflight.get(key);
   if (running) return running;
   const read = keepComplete(
-    ["portal-data-v4", key],
+    ["portal-data-v5", key],
     DATA_SECONDS,
     async () => {
       const { data, complete } = await load();
