@@ -103,6 +103,7 @@ export const isDoneProject = (raw: string) =>
 export const CUSTOMER_STATUS: Record<string, Label> = {
   active: ["تعاقد ساري", "ok"],
   "in pipeline": ["قيد التجهيز", "info"],
+  "not started": ["لم يبدأ بعد", "info"],
   paused: ["متوقف مؤقتًا", "off"],
   delivered: ["تم التسليم", "ok"],
 };

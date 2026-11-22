@@ -1001,6 +1001,194 @@
   font-size: 14px;
 }
 
+.a-client > .a-block:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* ---------- admin: client page ---------------------------- */
+
+.a-back {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.a-detail-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.a-detail-services {
+  margin: -4px 0 18px;
+}
+
+/* ---------- admin: clients table (all of KC on one screen) - */
+
+.a-table {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.a-tr {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.1fr) 104px minmax(0, 1.4fr) minmax(0, 1.4fr)
+    minmax(0, 0.8fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.a-th {
+  padding-block: 6px;
+  border-bottom-color: var(--line2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.a-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li.a-tr {
+  border-radius: 8px;
+  transition: background 0.12s ease;
+}
+
+li.a-tr:hover {
+  background: var(--sunk);
+}
+
+.a-tr-name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The whole row opens the client's page. */
+.a-tr-name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.a-tr-name:focus-visible {
+  outline: none;
+}
+
+.a-tr:has(.a-tr-name:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.a-tr-status .p-status {
+  padding: 2px 9px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.a-tr-services,
+.a-tr-emails,
+.a-tr-sections {
+  min-width: 0;
+  color: var(--fg2);
+  font-size: 13px;
+}
+
+.a-th > span {
+  color: inherit;
+  font-size: inherit;
+}
+
+.a-tr-services {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.a-tr-emails {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.a-tr-emails [dir="ltr"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.a-more {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--sunk);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.a-none {
+  color: var(--muted);
+}
+
+.a-tr-sections {
+  white-space: nowrap;
+}
+
+.a-tr-view {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.page .a-tr-view:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .a-tr {
+    grid-template-columns: minmax(0, 1.2fr) 104px minmax(0, 1.4fr) minmax(0, 0.8fr) auto;
+  }
+
+  .a-tr-services {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .a-th,
+  .a-tr-status {
+    display: none;
+  }
+
+  .a-tr {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3px 12px;
+    padding-block: 8px;
+  }
+
+  .a-tr-view {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .a-tr-sections {
+    justify-self: end;
+  }
+}
+
 .a-block {
   display: grid;
   gap: 10px;
