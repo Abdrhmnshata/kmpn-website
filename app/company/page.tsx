@@ -511,8 +511,6 @@ export default function CompanyPage() {
                       objectFit: "cover",
                       objectPosition: "50% 20%",
                       filter: "grayscale(1) contrast(1.05)",
-                      transform: "scale(.78)",
-                      transformOrigin: "50% 25%",
                     }}
                   />
                   <span
@@ -521,7 +519,7 @@ export default function CompanyPage() {
                       position: "absolute",
                       inset: 0,
                       background:
-                        "linear-gradient(180deg, rgba(140,140,140,.28) 0%, rgba(140,140,140,.08) 45%, rgba(11,11,11,.85) 100%)",
+                        "linear-gradient(180deg, rgba(11,11,11,0) 50%, rgba(11,11,11,.6) 74%, rgba(11,11,11,.95) 100%)",
                     }}
                   />
                   <div
