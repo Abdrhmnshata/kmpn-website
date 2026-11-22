@@ -18,18 +18,20 @@ export async function adminSnapshot() {
       return fallback;
     }
   };
-  const [clients, signups, tickets] = await Promise.all([
+  const [all, signups, tickets] = await Promise.all([
     guard("العملاء من نوشن", [] as AdminClient[], listClients),
     guard("الحسابات من Supabase", null, listSignups),
     guard("التذاكر من نوشن", [], listAllTickets),
   ]);
 
   const byEmail = new Map<string, AdminClient[]>();
-  for (const c of clients) for (const e of c.emails) byEmail.set(e, [...(byEmail.get(e) ?? []), c]);
-  const byId = new Map(clients.map((c) => [c.id.replace(/-/g, ""), c]));
+  for (const c of all) for (const e of c.emails) byEmail.set(e, [...(byEmail.get(e) ?? []), c]);
+  const byId = new Map(all.map((c) => [c.id.replace(/-/g, ""), c]));
 
   return {
-    clients,
+    /** Real clients only; KMPN's own projects are in `internal`. */
+    clients: all.filter((c) => !c.internal),
+    internal: all.filter((c) => c.internal),
     /** null when SUPABASE_SERVICE_ROLE_KEY is not set. */
     signups,
     tickets,

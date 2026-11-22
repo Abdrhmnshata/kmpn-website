@@ -8,6 +8,7 @@ const ITEMS = [
   { href: "/admin", label: "اللوحة" },
   { href: "/admin/signups", label: "المسجّلين" },
   { href: "/admin/clients", label: "العملاء والصلاحيات" },
+  { href: "/admin/internal", label: "مشاريع داخلية" },
   { href: "/admin/support", label: "الدعم الفني" },
 ];
 
