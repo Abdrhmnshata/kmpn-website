@@ -40,7 +40,7 @@ export default async function AdminHome() {
           href="/admin/support"
           alert={open.some((t) => t.status === "new")}
         />
-        <Stat label="عملاء على البوابة" value={onPortal.length} sub={`من ${clients.length} في KC`} href="/admin/clients" />
+        <Stat label="عملاء على البوابة" value={onPortal.length} sub={`من ${clients.length} عميل في KC`} href="/admin/clients" />
       </div>
 
       <div className="p-grid">

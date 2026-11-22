@@ -944,6 +944,8 @@ export type AdminClient = {
   /** The sections this client actually gets. */
   open: Section[];
   hasDashboard: boolean;
+  /** KMPN's own projects, not clients: KC Relation "Internal", or KMPN/كامبين in the name. */
+  internal: boolean;
 };
 
 function toAdminClient(row: NotionPage): AdminClient {
@@ -956,6 +958,7 @@ function toAdminClient(row: NotionPage): AdminClient {
     sections: c.sections,
     open: openFor([c.sections]),
     hasDashboard: Boolean(c.dashboardId),
+    internal: choice(prop(row, "Relation")) === "Internal" || /kmpn|كامبين/i.test(c.company),
   };
 }
 

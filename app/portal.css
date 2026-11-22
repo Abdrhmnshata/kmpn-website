@@ -876,10 +876,40 @@
 
 /* ------------------------------------------- director dashboard (/admin) ---- */
 
+/* The switch between the client portal and the director's dashboard:
+   set apart from the menu, quieter than its items, with a "go" arrow. */
 .page .portal-nav a.portal-admin {
-  color: var(--accent);
-  border: 1px dashed var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
   background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: color 0.15s ease;
+}
+
+.page .portal-nav a.portal-admin::after {
+  content: "←";
+  font-weight: 400;
+  transition: transform 0.15s ease;
+}
+
+.page .portal-nav a.portal-admin:hover {
+  color: var(--accent);
+}
+
+.page .portal-nav a.portal-admin:hover::after {
+  transform: translateX(-3px);
+}
+
+@media (min-width: 900px) {
+  .page .portal-nav a.portal-admin {
+    box-shadow: none;
+    margin-top: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+  }
 }
 
 .a-stats {
