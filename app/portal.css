@@ -1058,6 +1058,12 @@
   list-style: none;
 }
 
+.a-toggle {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
 li.a-tr {
   border-radius: 8px;
   transition: background 0.12s ease;
