@@ -11,6 +11,7 @@ import {
 } from "@/lib/portal/format";
 import { Empty, PageHead, Status } from "./Bits";
 import { EditRequest } from "./EditRequest";
+import { LibraryGrid } from "./Library";
 
 /**
  * Portal V1 sections (Notion page "Sign Up System"): deliverables with edit
@@ -142,6 +143,8 @@ function DeliverableCard({
 
 /* -------------------------------------------------------- deliverables ---- */
 
+const LIBRARY = "Creative library";
+
 export function DeliverablesView({
   data,
   threads,
@@ -156,8 +159,13 @@ export function DeliverablesView({
   canRequest: boolean;
 }) {
   const active = DELIVERABLE_TYPES.find((t) => t.key.toLowerCase() === type?.toLowerCase())?.key ?? null;
-  const count = (key: string) => data.deliverables.filter((d) => d.types.includes(key)).length;
+  // The content library («مكتبة المحتوى») is its own Notion database; it fills the
+  // "Creative library" chip, beside any older deliverables of that type.
+  const library = data.library;
+  const count = (key: string) =>
+    data.deliverables.filter((d) => d.types.includes(key)).length + (key === LIBRARY ? library.length : 0);
   const list = active ? data.deliverables.filter((d) => d.types.includes(active)) : data.deliverables;
+  const showLibrary = library.length > 0 && (active === null || active === LIBRARY);
 
   // Newest month first; rows are already newest first.
   const months = new Map<string, Deliverable[]>();
@@ -170,36 +178,49 @@ export function DeliverablesView({
     <>
       <PageHead
         title="التسليمات"
-        lead="كل ما سلّمناه لك: المكتبة الإبداعية والمستندات والأدلة الإرشادية والشيتات. وإذا احتجت تعديلًا على أي تسليم، اطلبه من أسفله."
+        lead="كل ما سلّمناه لك: مكتبة المحتوى الإعلاني من الفكرة حتى النسخة النهائية، والمستندات والأدلة الإرشادية والشيتات."
       />
-      <div className="work-chips">
-        <Link href={hrefFor(null)} className="work-chip" aria-current={active ? undefined : "page"}>
-          الكل <span className="work-chip-count num">{data.deliverables.length}</span>
-        </Link>
-        {DELIVERABLE_TYPES.map((t) => (
-          <Link
-            key={t.key}
-            href={hrefFor(t.key)}
-            className="work-chip"
-            aria-current={active === t.key ? "page" : undefined}
-          >
-            {t.label} <span className="work-chip-count num">{count(t.key)}</span>
+      {/* Only the library so far: its own filters are enough. */}
+      {data.deliverables.length || !library.length ? (
+        <div className="work-chips">
+          <Link href={hrefFor(null)} className="work-chip" aria-current={active ? undefined : "page"}>
+            الكل <span className="work-chip-count num">{data.deliverables.length + library.length}</span>
           </Link>
-        ))}
-      </div>
+          {DELIVERABLE_TYPES.map((t) => (
+            <Link
+              key={t.key}
+              href={hrefFor(t.key)}
+              className="work-chip"
+              aria-current={active === t.key ? "page" : undefined}
+            >
+              {t.label} <span className="work-chip-count num">{count(t.key)}</span>
+            </Link>
+          ))}
+        </div>
+      ) : null}
+
+      {showLibrary ? (
+        <section className="lib-section">
+          {list.length ? <h2 className="p-sub">مكتبة المحتوى</h2> : null}
+          <LibraryGrid items={library} />
+        </section>
+      ) : null}
 
       {list.length ? (
-        [...months.entries()].map(([month, items]) => (
-          <section key={month} className="d-month">
-            <h2 className="p-sub">{month}</h2>
-            <div className="p-list">
-              {items.map((d) => (
-                <DeliverableCard key={d.id} d={d} threads={threads[d.id] ?? []} canRequest={canRequest} />
-              ))}
-            </div>
-          </section>
-        ))
-      ) : (
+        <>
+          {showLibrary ? <h2 className="p-sub">تسليمات أخرى</h2> : null}
+          {[...months.entries()].map(([month, items]) => (
+            <section key={month} className="d-month">
+              <h2 className="p-sub">{month}</h2>
+              <div className="p-list">
+                {items.map((d) => (
+                  <DeliverableCard key={d.id} d={d} threads={threads[d.id] ?? []} canRequest={canRequest} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </>
+      ) : showLibrary ? null : (
         <Empty>لا توجد تسليمات {active ? "في هذا القسم" : ""} حتى الآن.</Empty>
       )}
     </>

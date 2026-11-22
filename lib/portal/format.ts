@@ -65,7 +65,7 @@ const CONTRACT: Record<string, Label> = {
 
 /** "Type" options of a client's Deliverables database. */
 export const DELIVERABLE_TYPES: { key: string; label: string }[] = [
-  { key: "Creative library", label: "المكتبة الإبداعية" },
+  { key: "Creative library", label: "مكتبة المحتوى" },
   { key: "Documents", label: "المستندات" },
   { key: "Guidelines", label: "الأدلة الإرشادية" },
   { key: "Sheets", label: "الشيتات" },

@@ -40,6 +40,8 @@ const DS = {
   // Tickets: on "Operation Master Page" (Account Management), for the team.
   invoices: process.env.NOTION_PORTAL_INVOICES_DS ?? "41ac45aa-cc37-818c-9130-000b6f844124",
   tickets: process.env.NOTION_PORTAL_TICKETS_DS ?? "41ac45aa-cc37-81c4-86ba-000b898f3b43",
+  // "Portal - Content Library": the paid creatives delivered to each client.
+  library: process.env.NOTION_PORTAL_LIBRARY_DS ?? "420c45aa-cc37-81c0-b40f-000bad3b8584",
   // "KMPN Dev Tasks" under Business Dev.
   contracts: process.env.NOTION_PORTAL_CONTRACTS_DS ?? "267c45aa-cc37-81c6-b4d9-000b23cc93b0",
 };
@@ -153,6 +155,31 @@ export type Ticket = {
   created: string;
 };
 
+/**
+ * One paid creative in the client's content library («مكتبة المحتوى»):
+ * a finished video or design KMPN made, from idea to final cut.
+ */
+export type LibraryItem = {
+  id: string;
+  name: string;
+  /** "YYYY-MM" from the Month select, for grouping and sorting; null when unset. */
+  month: string | null;
+  /** Running in the client's ads right now. */
+  live: boolean;
+  format: "video" | "static" | "carousel";
+  aspect: string;
+  duration: string;
+  angle: string;
+  platforms: string[];
+  /** The final file on Google Drive. */
+  url: string | null;
+  driveId: string | null;
+  /** Notion-hosted cover (short-lived URL), else null: the view falls back to Drive's thumbnail. */
+  cover: string | null;
+  caption: string;
+  company: string;
+};
+
 export type PortalData = {
   /** True when the email is listed on at least one customer in Notion. */
   linked: boolean;
@@ -166,6 +193,7 @@ export type PortalData = {
   resources: Resource[];
   invoices: Invoice[];
   tickets: Ticket[];
+  library: LibraryItem[];
 };
 
 const EMPTY: PortalData = {
@@ -179,6 +207,7 @@ const EMPTY: PortalData = {
   resources: [],
   invoices: [],
   tickets: [],
+  library: [],
 };
 
 /* ------------------------------------------------------------ helpers ---- */
@@ -625,6 +654,68 @@ async function readInvoices(customers: Customer[]): Promise<Invoice[]> {
   });
 }
 
+/* ---------------------------------------------------- content library ---- */
+
+const MONTHS: Record<string, number> = {
+  jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12,
+  يناير: 1, فبراير: 2, مارس: 3, أبريل: 4, ابريل: 4, مايو: 5, يونيو: 6, يوليو: 7, أغسطس: 8, اغسطس: 8,
+  سبتمبر: 9, أكتوبر: 10, اكتوبر: 10, نوفمبر: 11, ديسمبر: 12,
+};
+
+/** "October 2026", "Oct 2026", "أكتوبر 2026" or "2026-10" → "2026-10". */
+function monthKey(raw: string): string | null {
+  const s = raw.trim().toLowerCase();
+  const iso = s.match(/^(\d{4})-(\d{1,2})/);
+  if (iso) return `${iso[1]}-${iso[2].padStart(2, "0")}`;
+  const year = s.match(/\d{4}/)?.[0];
+  const word = s.replace(/\d+/g, "").trim();
+  const month = MONTHS[word] ?? MONTHS[word.slice(0, 3)];
+  return year && month ? `${year}-${String(month).padStart(2, "0")}` : null;
+}
+
+const DRIVE_FILE = /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{10,})/;
+
+const FORMAT: Record<string, LibraryItem["format"]> = { video: "video", static: "static", carousel: "carousel" };
+
+async function readLibrary(customers: Customer[]): Promise<LibraryItem[]> {
+  if (!DS.library || customers.length === 0) return [];
+  const names = new Map(customers.map((c) => [c.id.replace(/-/g, ""), c.company]));
+  const rows = await query(DS.library, {
+    filter: {
+      and: [
+        { or: customers.map((c) => ({ property: "Customer", relation: { contains: c.id } })) },
+        { property: "Status", select: { does_not_equal: "In Production" } },
+        { property: "Status", select: { is_not_empty: true } },
+      ],
+    },
+    sorts: [{ timestamp: "created_time", direction: "ascending" }],
+  });
+  return rows
+    .map((row) => {
+      const url = prop(row, "Drive Link")?.url ?? null;
+      const customerId = (prop(row, "Customer")?.relation?.[0]?.id ?? "").replace(/-/g, "");
+      return {
+        id: row.id,
+        name: text(prop(row, "Name")),
+        month: monthKey(choice(prop(row, "Month"))),
+        live: choice(prop(row, "Status")).toLowerCase() === "live",
+        format: FORMAT[choice(prop(row, "Format")).toLowerCase()] ?? "video",
+        aspect: choice(prop(row, "Aspect")),
+        duration: text(prop(row, "Duration")),
+        angle: text(prop(row, "Angle")),
+        platforms: (prop(row, "Platform")?.multi_select ?? []).map((o) => o.name),
+        url,
+        driveId: url?.match(DRIVE_FILE)?.[1] ?? null,
+        cover: filesOf(prop(row, "Cover"))[0]?.url ?? null,
+        caption: text(prop(row, "Caption")),
+        company: names.get(customerId) ?? "",
+      } satisfies LibraryItem;
+    })
+    .filter((item) => item.name)
+    // Newest month first; within a month, in the order the team added them.
+    .sort((a, b) => (b.month ?? "").localeCompare(a.month ?? ""));
+}
+
 async function readTickets(filter: Record<string, unknown>): Promise<Ticket[]> {
   if (!DS.tickets) return [];
   const rows = await query(DS.tickets, {
@@ -675,7 +766,7 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
       return { projects, deliverables, meetings, resources };
     }),
   );
-  const [invoices, contracts, tickets] = await Promise.all([
+  const [invoices, contracts, tickets, library] = await Promise.all([
     closed("invoices") ? Promise.resolve([] as Invoice[]) : safely("invoices", [], () => readInvoices(customers), fail),
     closed("contracts")
       ? Promise.resolve([] as Contract[])
@@ -683,6 +774,10 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     ticketFilter && !closed("support")
       ? safely("tickets", [], () => readTickets(ticketFilter), fail)
       : Promise.resolve([] as Ticket[]),
+    // The content library lives under «التسليمات».
+    closed("deliverables")
+      ? Promise.resolve([] as LibraryItem[])
+      : safely("library", [], () => readLibrary(customers), fail),
   ]);
   const data = {
     linked: customers.length > 0,
@@ -695,6 +790,7 @@ async function build(customers: Customer[], ticketFilter: Record<string, unknown
     resources: perCustomer.flatMap((x) => x.resources),
     invoices,
     tickets,
+    library,
   } satisfies PortalData;
   return { data, complete };
 }
@@ -715,7 +811,7 @@ function remembered(
   const running = inflight.get(key);
   if (running) return running;
   const read = keepComplete(
-    ["portal-data-v3", key],
+    ["portal-data-v4", key],
     DATA_SECONDS,
     async () => {
       const { data, complete } = await load();
