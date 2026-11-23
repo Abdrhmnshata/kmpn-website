@@ -100,7 +100,7 @@ export function EmployeeForm({ employee = {} }: { employee?: EmployeeFields }) {
           <input name="allowance" className="field num" inputMode="numeric" defaultValue={e.allowance ?? 21} dir="ltr" />
         </Labelled>
         <Labelled label="نوع التعاقد">
-          <select name="contract" className="field" defaultValue={e.contract ?? ""}>
+          <select name="contract" className="field" defaultValue={e.id ? (e.contract ?? "") : "Full-time"}>
             <Options map={CONTRACT} empty="—" />
           </select>
         </Labelled>
@@ -257,6 +257,8 @@ export type PayrollFields = {
   name: string;
   position: string;
   bank: string;
+  /** Employment type label (دوام كامل / دوام جزئي / متعاقد). */
+  type: string;
   base: number;
   bonus: number;
   overtime: number;
@@ -306,7 +308,7 @@ export function PayrollRowForm({ row }: { row: PayrollFields }) {
       <div className="h-pr-who">
         <strong>{row.name}</strong>
         <span className="p-meta">
-          {[row.position, row.bank].filter(Boolean).join(" · ")}
+          {[row.type, row.position, row.bank].filter(Boolean).join(" · ")}
           {row.unpaidDays ? (
             <span className="h-hint">
               {" "}

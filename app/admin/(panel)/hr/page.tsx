@@ -4,7 +4,8 @@ import { Empty, Status } from "@/components/portal/Bits";
 import { SourceErrors, Stat } from "@/components/admin/AdminBits";
 import { LeaveAnswer } from "@/components/admin/HrForms";
 import { Money } from "@/components/admin/HrBits";
-import { LEAVE_TYPE, dayRange, daysLabel, departmentLabel, egp, monthLabel, shortDate } from "@/lib/hr/labels";
+import { CONTRACT, LEAVE_TYPE, dayRange, daysLabel, departmentLabel, egp, monthLabel, shortDate } from "@/lib/hr/labels";
+import { CONTRACTS } from "@/lib/hr/notion";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,16 @@ export default async function HrHome() {
   const totalNet = monthRows.reduce((s, r) => s + r.net, 0);
   const transferred = monthRows.filter((r) => r.transfer === "Done").length;
   const baseTotal = current.reduce((s, e) => s + e.salary, 0);
+
+  const byType = CONTRACTS.map((t) => [t, current.filter((e) => e.contract === t).length] as const);
+  const untyped = current.filter((e) => !(CONTRACTS as readonly string[]).includes(e.contract)).length;
+  const typeSummary =
+    [
+      ...byType.filter(([, n]) => n).map(([t, n]) => `${n} ${CONTRACT[t]}`),
+      untyped ? `${untyped} مش متحدد` : "",
+    ]
+      .filter(Boolean)
+      .join(" · ") || "—";
 
   const departments = new Map<string, number>();
   for (const e of current) departments.set(e.department, (departments.get(e.department) ?? 0) + 1);
@@ -30,11 +41,21 @@ export default async function HrHome() {
   return (
     <>
       <SourceErrors errors={errors} />
+      {untyped ? (
+        <div className="p-banner h-banner">
+          <strong>{untyped === current.length ? "نوع التعاقد لسه مش متحدد لحد." : `${untyped} من الفريق نوع تعاقدهم مش متحدد.`}</strong>{" "}
+          حدد كل واحد دوام كامل ولا جزئي ولا متعاقد من{" "}
+          <Link href="/admin/hr/team?type=none" className="p-link">
+            صفحة الفريق
+          </Link>
+          .
+        </div>
+      ) : null}
       <div className="a-stats h-stats">
         <Stat
           label="الفريق"
           value={current.length}
-          sub={`${deptList.filter(([d]) => d).length} أقسام`}
+          sub={typeSummary}
           href="/admin/hr/team"
         />
         <Stat

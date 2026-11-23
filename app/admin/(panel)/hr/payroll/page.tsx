@@ -5,7 +5,7 @@ import { SourceErrors } from "@/components/admin/AdminBits";
 import { MarkMonth, PayrollRowForm, PrepareMonth } from "@/components/admin/HrForms";
 import { Money } from "@/components/admin/HrBits";
 import { workingDays } from "@/lib/hr/notion";
-import { egp, monthLabel, shiftMonth } from "@/lib/hr/labels";
+import { contractLabel, egp, monthLabel, shiftMonth } from "@/lib/hr/labels";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "المرتبات · الموارد البشرية" };
@@ -91,6 +91,7 @@ export default async function HrPayrollPage({ searchParams }: { searchParams: Pr
                   name: e?.name ?? "—",
                   position: e?.position ?? "",
                   bank: e?.bank ?? "",
+                  type: e?.contract ? contractLabel(e.contract) : "",
                   base: r.base,
                   bonus: r.bonus,
                   overtime: r.overtime,

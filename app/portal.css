@@ -2452,3 +2452,82 @@ li.a-tr:hover {
     font-size: 20px;
   }
 }
+
+/* Employment type: full-time, part-time, contract. */
+.h-tr {
+  grid-template-columns:
+    minmax(0, 1fr) minmax(0, 1.1fr) 92px minmax(0, 0.9fr) 104px
+    minmax(0, 0.8fr) minmax(0, 0.9fr) 64px;
+}
+
+.h-type {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.h-type-full {
+  background: #e5eefc;
+  color: #1d4f9e;
+}
+
+.h-type-part {
+  background: #efe7fb;
+  color: #5b3596;
+}
+
+.h-type-contract {
+  background: #fdf0d5;
+  color: #7a5000;
+}
+
+.h-type-none {
+  background: var(--sunk);
+  color: var(--muted);
+}
+
+[data-tw="dark"] .h-type-full {
+  background: rgba(80, 140, 240, 0.16);
+  color: #9cc0ff;
+}
+
+[data-tw="dark"] .h-type-part {
+  background: rgba(150, 100, 230, 0.18);
+  color: #c9b0f5;
+}
+
+[data-tw="dark"] .h-type-contract {
+  background: rgba(245, 170, 40, 0.16);
+  color: #f3c36b;
+}
+
+.h-banner {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1100px) {
+  .h-tr {
+    grid-template-columns:
+      minmax(0, 1fr) minmax(0, 1fr) 92px minmax(0, 0.9fr) 96px
+      max-content 56px;
+  }
+
+  .h-tr .h-col-tenure {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .h-tr {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 92px 104px minmax(0, 0.9fr) 56px;
+  }
+}
+
+@media (max-width: 560px) {
+  .h-tr {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+  }
+}

@@ -22,12 +22,17 @@ export const EMPLOYEE_STATUS: Record<string, Label> = {
   Left: ["ساب الشركة", "off"],
 };
 
+/** Employment type: full-time, part-time or on a contract. */
 export const CONTRACT: Record<string, string> = {
   "Full-time": "دوام كامل",
   "Part-time": "دوام جزئي",
-  Freelance: "فريلانس",
-  Intern: "تدريب",
+  Contract: "متعاقد",
 };
+
+/** Filter keys for ?type= on the team page. */
+export const CONTRACT_KEY: Record<string, string> = { "Full-time": "full", "Part-time": "part", Contract: "contract" };
+
+export const contractLabel = (raw: string) => CONTRACT[raw] ?? "مش متحدد";
 
 export const LEAVE_TYPE: Record<string, string> = {
   Annual: "سنوية",

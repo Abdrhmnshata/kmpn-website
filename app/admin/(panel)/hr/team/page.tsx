@@ -1,18 +1,23 @@
 import Link from "next/link";
 import { hrSnapshot, isCurrent } from "@/lib/hr/data";
 import { Empty, Status } from "@/components/portal/Bits";
-import { SourceErrors } from "@/components/admin/AdminBits";
+import { Filters, SourceErrors } from "@/components/admin/AdminBits";
 import { EmployeeForm } from "@/components/admin/HrForms";
-import { EMPLOYEE_STATUS, departmentLabel, egp, tenure } from "@/lib/hr/labels";
+import { CONTRACT, CONTRACT_KEY, EMPLOYEE_STATUS, contractLabel, departmentLabel, egp, tenure } from "@/lib/hr/labels";
+import { CONTRACTS } from "@/lib/hr/notion";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "الفريق · الموارد البشرية" };
 
 /** Everyone on the team, one line each; a line opens its edit form. */
-export default async function HrTeamPage({ searchParams }: { searchParams: Promise<{ all?: string }> }) {
-  const [{ all }, hr] = await Promise.all([searchParams, hrSnapshot({ payroll: false })]);
+export default async function HrTeamPage({ searchParams }: { searchParams: Promise<{ all?: string; type?: string }> }) {
+  const [{ all, type = "all" }, hr] = await Promise.all([searchParams, hrSnapshot({ payroll: false })]);
   const showAll = all === "1";
-  const list = showAll ? hr.team : hr.team.filter(isCurrent);
+  const people = showAll ? hr.team : hr.team.filter(isCurrent);
+  const keyOf = (contract: string) => CONTRACT_KEY[contract] ?? "none";
+  const active = [...Object.values(CONTRACT_KEY), "none"].includes(type) ? type : "all";
+  const list = active === "all" ? people : people.filter((e) => keyOf(e.contract) === active);
+  const untyped = people.filter((e) => keyOf(e.contract) === "none").length;
   const hidden = hr.team.length - hr.current.length;
   const total = list.filter(isCurrent).reduce((s, e) => s + e.salary, 0);
 
@@ -25,11 +30,27 @@ export default async function HrTeamPage({ searchParams }: { searchParams: Promi
         <EmployeeForm />
       </details>
 
+      <Filters
+        base="/admin/hr/team"
+        param="type"
+        active={active}
+        items={[
+          { key: "all", label: "الكل", count: people.length },
+          ...CONTRACTS.map((t) => ({
+            key: CONTRACT_KEY[t],
+            label: CONTRACT[t],
+            count: people.filter((e) => e.contract === t).length,
+          })),
+          ...(untyped ? [{ key: "none", label: "مش متحدد", count: untyped }] : []),
+        ]}
+      />
+
       {list.length ? (
         <div className="a-table h-table">
           <div className="h-tr a-th" aria-hidden="true">
             <span>الاسم</span>
             <span>الوظيفة</span>
+            <span className="h-col-type">النوع</span>
             <span className="h-col-dept">القسم</span>
             <span className="h-col-status">الحالة</span>
             <span className="h-col-tenure">معانا من</span>
@@ -46,6 +67,9 @@ export default async function HrTeamPage({ searchParams }: { searchParams: Promi
                     <summary className="h-tr">
                       <span className="h-name">{e.name}</span>
                       <span className="h-col-pos" dir="auto">{e.position || "—"}</span>
+                      <span className="h-col-type">
+                        <span className={`h-type h-type-${keyOf(e.contract)}`}>{contractLabel(e.contract)}</span>
+                      </span>
                       <span className="h-col-dept">{departmentLabel(e.department)}</span>
                       <span className="h-col-status">
                         <Status label={label} tone={tone} />
@@ -72,6 +96,7 @@ export default async function HrTeamPage({ searchParams }: { searchParams: Promi
             <span className="p-meta">
               <span className="num">{list.filter(isCurrent).length}</span> شخص
             </span>
+            <span className="h-col-type" />
             <span className="h-col-dept" />
             <span className="h-col-status" />
             <span className="h-col-tenure" />

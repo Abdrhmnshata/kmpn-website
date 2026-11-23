@@ -31,7 +31,8 @@ export const DEPARTMENTS = [
   "Accounting",
 ] as const;
 export const EMPLOYEE_STATUSES = ["Active", "Probation", "On hold", "Left"] as const;
-export const CONTRACTS = ["Full-time", "Part-time", "Freelance", "Intern"] as const;
+/** Employment type (the "Contract" select): the only three KMPN distinguishes. */
+export const CONTRACTS = ["Full-time", "Part-time", "Contract"] as const;
 export const LEAVE_TYPES = ["Annual", "Sick", "Unpaid", "Emergency", "Remote"] as const;
 export const LEAVE_STATUSES = ["Pending", "Approved", "Rejected"] as const;
 export const TRANSFERS = ["Not started", "Submitted to bank", "Done"] as const;
