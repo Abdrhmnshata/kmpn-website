@@ -505,12 +505,17 @@ export default function CompanyPage() {
                     loading="lazy"
                     style={{
                       position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
+                      bottom: 0,
+                      left: "50%",
+                      width: "115%",
+                      maxWidth: "none",
+                      height: "auto",
+                      aspectRatio: "1 / 1",
+                      transform: "translateX(-50%)",
                       objectFit: "cover",
-                      objectPosition: "50% 20%",
                       filter: "grayscale(1) contrast(1.05)",
+                      maskImage: "linear-gradient(180deg, transparent 0%, #000 18%)",
+                      WebkitMaskImage: "linear-gradient(180deg, transparent 0%, #000 18%)",
                     }}
                   />
                   <span
