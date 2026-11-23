@@ -10,6 +10,7 @@ const ITEMS = [
   { href: "/admin/clients", label: "العملاء والصلاحيات" },
   { href: "/admin/internal", label: "مشاريع داخلية" },
   { href: "/admin/support", label: "الدعم الفني" },
+  { href: "/admin/hr", label: "الموارد البشرية" },
 ];
 
 export function AdminNav() {

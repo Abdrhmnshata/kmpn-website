@@ -1356,3 +1356,9 @@ export async function saveTicket(id: string, input: { status: TicketStatus; repl
     "PATCH",
   );
 }
+
+/* ---------------------------------------------------------- shared ---- */
+
+// The director's HR pages (lib/hr) use the same token, retries and paging.
+export { notion as notionCall, query as notionQuery };
+export type { NotionPage, NotionProp };
