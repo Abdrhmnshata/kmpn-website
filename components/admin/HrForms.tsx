@@ -33,7 +33,11 @@ export type EmployeeFields = {
   email?: string;
   salary?: number;
   bank?: string;
-  allowance?: number;
+  /** This year's annual leave as worked out (law or set by hand). */
+  allowance?: number | null;
+  allowanceWhy?: string;
+  /** The number set by hand in Notion; empty = follow the law. */
+  allowanceSet?: number | null;
   contract?: string;
   notes?: string;
 };
@@ -97,7 +101,15 @@ export function EmployeeForm({ employee = {} }: { employee?: EmployeeFields }) {
           <input name="birthday" type="date" className="field" defaultValue={e.birthday ?? ""} />
         </Labelled>
         <Labelled label="رصيد الإجازات السنوي">
-          <input name="allowance" className="field num" inputMode="numeric" defaultValue={e.allowance ?? 21} dir="ltr" />
+          <input
+            name="allowance"
+            className="field num"
+            inputMode="numeric"
+            defaultValue={e.allowanceSet ?? ""}
+            placeholder={e.allowanceSet == null && e.allowance != null ? `حسب القانون: ${e.allowance}` : "حسب القانون"}
+            title="سيبه فاضي يتحسب من تاريخ التعيين (قانون العمل م 124). اكتب رقم أكبر بس لو متفق على أكتر، أو 45 لذوي الإعاقة."
+            dir="auto"
+          />
         </Labelled>
         <Labelled label="نوع التعاقد">
           <select name="contract" className="field" defaultValue={e.id ? (e.contract ?? "") : "Full-time"}>
@@ -136,7 +148,13 @@ function countDays(start: string, end: string) {
 }
 
 /** Record a leave for someone; ticked «وافق علطول» saves it as approved. */
-export function LeaveForm({ team, today }: { team: { id: string; name: string; balance: number }[]; today: string }) {
+export function LeaveForm({
+  team,
+  today,
+}: {
+  team: { id: string; name: string; balance: number | null; note: string }[];
+  today: string;
+}) {
   const [state, action] = useActionState<AdminState, FormData>(addLeave, {});
   const [start, setStart] = useState(today);
   const [end, setEnd] = useState(today);
@@ -188,7 +206,14 @@ export function LeaveForm({ team, today }: { team: { id: string; name: string; b
         {person ? (
           <>
             {" "}
-            · رصيد {person.name}: <span className="num">{person.balance}</span> يوم
+            · رصيد {person.name}:{" "}
+            {person.balance === null ? (
+              person.note
+            ) : (
+              <>
+                <span className="num">{person.balance}</span> يوم
+              </>
+            )}
           </>
         ) : null}
       </p>

@@ -12,7 +12,8 @@ export default async function HrLeavesPage({ searchParams }: { searchParams: Pro
   const [{ status = "all" }, hr] = await Promise.all([searchParams, hrSnapshot({ payroll: false })]);
   const active = (LEAVE_STATUSES as readonly string[]).includes(status) ? status : "all";
   const list = hr.leaves.filter((l) => active === "all" || l.status === active);
-  const team = hr.current.map((e) => ({ id: e.id, name: e.name, balance: hr.balanceOf(e) }));
+  const team = hr.current.map((e) => ({ id: e.id, name: e.name, balance: hr.balanceOf(e), note: e.allowanceWhy }));
+  const withLeave = hr.current.filter((e) => e.getsLeave);
 
   return (
     <>
@@ -31,18 +32,22 @@ export default async function HrLeavesPage({ searchParams }: { searchParams: Pro
             <span className="p-meta">{hr.today.slice(0, 4)}</span>
           </div>
           <ul className="p-mini h-balance">
-            {hr.current.map((e) => {
+            {withLeave.map((e) => {
               const left = hr.balanceOf(e);
-              const pct = e.allowance ? Math.max(0, Math.min(100, (left / e.allowance) * 100)) : 0;
+              const pct = left !== null && e.allowance ? Math.max(0, Math.min(100, (left / e.allowance) * 100)) : 0;
               return (
-                <li key={e.id}>
+                <li key={e.id} title={e.allowanceWhy}>
                   <span>{e.name}</span>
                   <span className="h-bar" aria-hidden="true">
                     <span className={pct < 20 ? "h-bar-low" : pct < 50 ? "h-bar-mid" : ""} style={{ width: `${pct}%` }} />
                   </span>
-                  <span className="num p-meta">
-                    {left} / {e.allowance}
-                  </span>
+                  {left === null ? (
+                    <span className="p-meta">ناقص تاريخ التعيين</span>
+                  ) : (
+                    <span className="num p-meta">
+                      {left} / {e.allowance}
+                    </span>
+                  )}
                 </li>
               );
             })}

@@ -76,9 +76,18 @@ export default async function HrTeamPage({ searchParams }: { searchParams: Promi
                       </span>
                       <span className="h-col-tenure p-meta">{tenure(e.start, hr.today) || "—"}</span>
                       <span className="num">{e.salary ? egp(e.salary) : "—"}</span>
-                      <span className={balance < 3 ? "num h-low" : "num"} title={`${hr.usedBy(e)} من ${e.allowance} اتاخدوا`}>
-                        {balance} / {e.allowance}
-                      </span>
+                      {balance === null ? (
+                        <span className="p-meta" title={e.allowanceWhy}>
+                          —
+                        </span>
+                      ) : (
+                        <span
+                          className={balance < 3 ? "num h-low" : "num"}
+                          title={`${hr.usedBy(e)} من ${e.allowance} اتاخدوا · ${e.allowanceWhy}`}
+                        >
+                          {balance} / {e.allowance}
+                        </span>
+                      )}
                     </summary>
                     <div className="h-edit">
                       <EmployeeForm employee={e} />
@@ -114,7 +123,9 @@ export default async function HrTeamPage({ searchParams }: { searchParams: Promi
         </Link>
       ) : null}
       <p className="p-meta h-foot">
-        الإجازات = الرصيد المتبقي من السنوي لسنة {hr.today.slice(0, 4)}. دوس على أي سطر علشان تعدّله.
+        الإجازات = الرصيد المتبقي من السنوي لسنة {hr.today.slice(0, 4)} للدوام الكامل، محسوب من تاريخ التعيين حسب قانون
+        العمل (م 124): مفيش قبل 6 شهور، وبعدها بنسبة المدة من 15 يوم، و21 يوم من تاني سنة، و30 بعد 10 سنين أو فوق الـ 50.
+        العارضة بتتخصم منه. «—» يعني مش دوام كامل أو ناقص تاريخ التعيين. دوس على أي سطر علشان تعدّله.
       </p>
     </>
   );

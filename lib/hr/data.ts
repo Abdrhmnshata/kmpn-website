@@ -25,6 +25,7 @@ function kept<T>(key: string, load: () => Promise<T>): Promise<T> {
 }
 
 const ACTIVE = new Set(["Active", "Probation"]);
+const FROM_ANNUAL = new Set(["Annual", "Emergency"]);
 export const isCurrent = (e: Employee) => ACTIVE.has(e.status);
 
 export async function hrSnapshot({ payroll: withPayroll = true } = {}) {
@@ -39,7 +40,7 @@ export async function hrSnapshot({ payroll: withPayroll = true } = {}) {
     }
   };
   const [team, leaves, payroll] = await Promise.all([
-    guard("الفريق من نوشن", [] as Employee[], () => kept("hr-team-v1", listTeam)),
+    guard("الفريق من نوشن", [] as Employee[], () => kept("hr-team-v3", listTeam)),
     guard("الإجازات من نوشن", [] as Leave[], () => kept("hr-leaves-v1", listLeaves)),
     withPayroll ? guard("المرتبات من نوشن", [] as PayrollRow[], () => kept("hr-payroll-v1", listPayroll)) : [],
   ]);
@@ -50,10 +51,10 @@ export async function hrSnapshot({ payroll: withPayroll = true } = {}) {
   const employee = (id: string | null) => (id ? (byId.get(id.replace(/-/g, "")) ?? null) : null);
   const current = team.filter(isCurrent);
 
-  /** Approved annual leave taken this year, per person. */
+  /** Approved annual and casual (عارضة, art. 128 takes it from the annual) leave this year, per person. */
   const used = new Map<string, number>();
   for (const l of leaves) {
-    if (l.status !== "Approved" || l.type !== "Annual" || !l.employeeId || l.start?.slice(0, 4) !== year) continue;
+    if (l.status !== "Approved" || !FROM_ANNUAL.has(l.type) || !l.employeeId || l.start?.slice(0, 4) !== year) continue;
     const key = l.employeeId.replace(/-/g, "");
     used.set(key, (used.get(key) ?? 0) + l.days);
   }
@@ -73,7 +74,8 @@ export async function hrSnapshot({ payroll: withPayroll = true } = {}) {
     month: thisMonth(),
     employee,
     usedBy,
-    balanceOf: (e: Employee) => e.allowance - usedBy(e),
+    /** Annual leave left this year; null while the start date is missing. */
+    balanceOf: (e: Employee) => (e.allowance === null ? null : e.allowance - usedBy(e)),
     offToday,
     pending: leaves.filter((l) => l.status === "Pending"),
     birthdays: upcomingBirthdays(current, now, 30),

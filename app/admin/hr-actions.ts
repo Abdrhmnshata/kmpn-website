@@ -76,7 +76,7 @@ function employeeFrom(form: FormData): EmployeeInput | string {
     email,
     salary: Math.max(0, amount(form, "salary")),
     bank: field(form, "bank"),
-    allowance: field(form, "allowance") ? Math.max(0, amount(form, "allowance")) : 21,
+    allowance: field(form, "allowance") ? Math.max(0, amount(form, "allowance")) : null,
     contract: oneOf(CONTRACTS, field(form, "contract")),
     notes: field(form, "notes"),
   };

@@ -1,5 +1,6 @@
 import "server-only";
 import { notionCall, notionQuery, type NotionPage, type NotionProp } from "@/lib/portal/notion";
+import { entitlement } from "./leave-law";
 
 /**
  * KMPN's HR data, read and written in Notion ("KMPN HR" under the
@@ -53,8 +54,14 @@ export type Employee = {
   email: string;
   salary: number;
   bank: string;
-  /** Annual leave days a year; 21 when left empty. */
-  allowance: number;
+  /** This year's annual leave per Labour Law art. 124 (lib/hr/leave-law.ts); null without a start date. */
+  allowance: number | null;
+  /** How `allowance` was worked out, in Arabic. */
+  allowanceWhy: string;
+  /** False for people with no annual leave (not full-time). */
+  getsLeave: boolean;
+  /** The Notion "Annual leave" number, set by hand; null = follow the law. */
+  allowanceSet: number | null;
   contract: string;
   notes: string;
   url: string;
@@ -119,19 +126,26 @@ export const netPay = (r: Pick<PayrollRow, "base" | "bonus" | "overtime" | "pena
 /* --------------------------------------------------------------- read ---- */
 
 function toEmployee(row: NotionPage & { url?: string }): Employee {
+  const start = day(prop(row, "Start date"));
+  const birthday = day(prop(row, "Birthday"));
+  const set = typeof prop(row, "Annual leave")?.number === "number" ? num(prop(row, "Annual leave")) : null;
+  const leave = entitlement(set, start, birthday, today(), choice(prop(row, "Contract")));
   return {
     id: row.id,
     name: text(prop(row, "title")) || "بدون اسم",
     position: text(prop(row, "Position")),
     department: choice(prop(row, "Department")),
     status: choice(prop(row, "Status")) || "Active",
-    start: day(prop(row, "Start date")),
-    birthday: day(prop(row, "Birthday")),
+    start,
+    birthday,
     phone: (prop(row, "Phone") as { phone_number?: string | null } | undefined)?.phone_number ?? "",
     email: prop(row, "Email")?.email ?? "",
     salary: num(prop(row, "Base salary")),
     bank: text(prop(row, "Bank")),
-    allowance: typeof prop(row, "Annual leave")?.number === "number" ? num(prop(row, "Annual leave")) : 21,
+    allowance: leave.days,
+    allowanceWhy: leave.why,
+    getsLeave: leave.gets,
+    allowanceSet: set,
     contract: choice(prop(row, "Contract")),
     notes: text(prop(row, "Notes")),
     url: row.url ?? `https://www.notion.so/${row.id.replace(/-/g, "")}`,
@@ -235,7 +249,8 @@ export type EmployeeInput = {
   email: string;
   salary: number;
   bank: string;
-  allowance: number;
+  /** Annual leave set by hand; null leaves it to the law. */
+  allowance: number | null;
   contract: string;
   notes: string;
 };
