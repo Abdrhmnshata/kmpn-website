@@ -81,11 +81,11 @@ export default function Home() {
                   احجز استشارة مجانية
                 </Link>
                 <Link
-                  href="/success-stories"
+                  href="/portfolio"
                   className="btn-outline"
                   style={{ height: 52, padding: "0 24px", fontSize: 15 }}
                 >
-                  قصص النجاح
+                  أعمالنا
                 </Link>
               </div>
             </div>

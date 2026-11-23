@@ -48,6 +48,12 @@ export type DigitalCase = {
   id: string;
   slug: string;
   brand: string;
+  /** Notion "Brand AR" / "Monthly record AR" / "Performance AR": what the site shows. */
+  brandAr?: string | null;
+  monthlyAr?: string | null;
+  performanceAr?: string | null;
+  /** The Notion page's cover, when the team sets one. */
+  cover?: Img | null;
   solution: string | null;
   services: string[];
   industries: string[];
@@ -202,6 +208,17 @@ export const migrationLabel = (s: string | null) => (s ? MIGRATIONS[s] ?? s : nu
 export const countryLabel = (c: string | null) => (c ? COUNTRIES[c] ?? c : null);
 
 /** Hosts shown on store cards: "https://www.store.com/" → "store.com". */
+/** The case's store link, only when Notion holds a real address (not "New website" or "-"). */
+export const caseStore = (c: DigitalCase) => {
+  if (!c.store) return null;
+  try {
+    const host = new URL(c.store).hostname;
+    return host.includes(".") ? c.store : null;
+  } catch {
+    return null;
+  }
+};
+
 export const displayHost = (url: string) =>
   url.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
 
@@ -214,6 +231,46 @@ const CASE_PAGES: Record<string, string> = {
   "tawheed-wel-nour": "/success-stories/tawheed",
 };
 export const casePage = (c: DigitalCase) => CASE_PAGES[c.slug] ?? null;
+
+/** A case in Arabic, falling back to Notion's English where no Arabic is set yet. */
+export const caseName = (c: DigitalCase) => c.brandAr || c.brand;
+export const caseMonthly = (c: DigitalCase) => c.monthlyAr || c.monthly;
+export const casePerformance = (c: DigitalCase) => c.performanceAr || c.performance;
+
+/**
+ * The same brands' covers in their success stories (قصص النجاح,
+ * lib/stories.ts and public/assets/).
+ */
+const STORY_COVERS: Record<string, string> = {
+  "tawheed-wel-nour": "/assets/tawheed-wall-sign.jpg",
+  rugmorph: "/assets/slots/story-cover-s3.webp",
+  "surveying-experts": "/assets/slots/story-cover-s2.webp",
+  "smart-laptop": "/assets/slots/story-cover-smartlaptop.webp",
+  "oq-originals": "/assets/slots/story-cover-oq.webp",
+  xzone: "/assets/slots/story-cover-xzone.webp",
+  halley: "/assets/slots/story-cover-halley.webp",
+  "cairo-insulation": "/assets/slots/story-cover-cairoinsulation.webp",
+};
+
+const sameBrand = (a: string, b: string) => {
+  const x = a.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const y = b.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return Boolean(x && y) && (x.startsWith(y) || y.startsWith(x));
+};
+
+/**
+ * The cover a case card shows: the project's own cover wherever the site has
+ * one (its Notion page, its success story, its Studio identity or its
+ * Commerce store), else null and the card shows the brand's logo.
+ */
+export function caseCover(c: DigitalCase): { src: string; width?: number; height?: number } | null {
+  if (c.cover) return c.cover;
+  if (STORY_COVERS[c.slug]) return { src: STORY_COVERS[c.slug] };
+  const studio = STUDIO.find((p) => p.cover && sameBrand(p.name, c.brand));
+  if (studio?.cover) return studio.cover;
+  const store = COMMERCE.find((s) => s.image && sameBrand(s.name, c.brand));
+  return store?.image ?? null;
+}
 
 /* ------------------------------------------------------------ filters ---- */
 
