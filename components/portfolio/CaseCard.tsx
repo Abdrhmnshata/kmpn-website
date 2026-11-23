@@ -1,6 +1,11 @@
 import Link from "next/link";
 import {
+  caseCover,
+  caseMonthly,
+  caseName,
   casePage,
+  casePerformance,
+  caseStore,
   countryLabel,
   digitalServiceLabels,
   displayHost,
@@ -15,19 +20,30 @@ export function CaseCard({ item: c }: { item: DigitalCase }) {
   const solution = solutionLabel(c.solution);
   const country = countryLabel(c.country);
   const industries = industryLabels(c);
-  const hasNumbers = Boolean(c.roi || c.monthly || c.performance);
+  const name = caseName(c);
+  const monthly = caseMonthly(c);
+  const performance = casePerformance(c);
+  const cover = caseCover(c);
+  const store = caseStore(c);
+  const hasNumbers = Boolean(c.roi || monthly || performance);
 
   const inner = (
     <>
-      {c.logo ? (
-        <LogoMedia logo={c.logo} alt={`شعار ${c.brand}`} />
+      {cover ? (
+        <div className="work-media" style={{ background: "var(--sunk)" }}>
+          {/* Covers from the stories, Studio and Commerce: sizes vary, so a plain cropped image. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={cover.src} alt={name} loading="lazy" />
+        </div>
+      ) : c.logo ? (
+        <LogoMedia logo={c.logo} alt={`شعار ${name}`} />
       ) : (
         <div className="work-media" style={{ background: "var(--sunk)" }} />
       )}
 
       <div className="work-body">
         <div style={{ display: "grid", gap: 8 }}>
-          <h3 className="num work-title">{c.brand}</h3>
+          <h3 className="work-title">{name}</h3>
           <div className="work-meta">
             {solution && <span className="work-tag work-tag-accent">{solution}</span>}
             {industries.map((i) => (
@@ -52,20 +68,16 @@ export function CaseCard({ item: c }: { item: DigitalCase }) {
                 </dd>
               </div>
             )}
-            {c.monthly && (
+            {monthly && (
               <div>
                 <dt>الرقم الشهري</dt>
-                <dd>
-                  <bdi dir="ltr">{c.monthly}</bdi>
-                </dd>
+                <dd>{c.monthlyAr ? monthly : <bdi dir="ltr">{monthly}</bdi>}</dd>
               </div>
             )}
-            {c.performance && (
+            {performance && (
               <div>
                 <dt>الأداء</dt>
-                <dd>
-                  <bdi dir="ltr">{c.performance}</bdi>
-                </dd>
+                <dd>{c.performanceAr ? performance : <bdi dir="ltr">{performance}</bdi>}</dd>
               </div>
             )}
           </dl>
@@ -75,8 +87,8 @@ export function CaseCard({ item: c }: { item: DigitalCase }) {
 
         {page ? (
           <CardFooter label="اقرأ القصة كاملة" />
-        ) : c.store ? (
-          <CardFooter label={displayHost(c.store)} external />
+        ) : store ? (
+          <CardFooter label={displayHost(store)} external />
         ) : null}
       </div>
     </>
@@ -89,9 +101,9 @@ export function CaseCard({ item: c }: { item: DigitalCase }) {
       </Link>
     );
   }
-  if (c.store) {
+  if (store) {
     return (
-      <a href={c.store} target="_blank" rel="noopener noreferrer" className="story-card work-card">
+      <a href={store} target="_blank" rel="noopener noreferrer" className="story-card work-card">
         {inner}
       </a>
     );

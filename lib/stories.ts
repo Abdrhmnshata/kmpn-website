@@ -170,10 +170,11 @@ export function tagColors(tag: string): [string, string] {
 
 /**
  * Slugs that have a cover file in `public/assets/slots/`. The handoff shipped
- * no artwork for Kandil Tires or Cairo Insulation, so those fall back to a
- * placeholder rather than a broken image.
+ * no artwork for Kandil Tires, so it falls back to a placeholder rather than
+ * a broken image; Cairo Insulation's banner came from the team later.
  */
 const SLOT_COVERS = new Set([
+  "cairoinsulation",
   "halley",
   "oq",
   "s2",

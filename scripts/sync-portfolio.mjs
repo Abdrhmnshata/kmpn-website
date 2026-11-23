@@ -283,11 +283,16 @@ async function mapDigital(page, files, used) {
   if (!brand) return null;
   const slug = uniqueSlug(brand, page.id, used);
   const logo = iconUrl(page.icon);
+  const cover = fileOf(page.cover);
 
   return {
     id: page.id,
     slug,
     brand,
+    // What the site shows; the English fields stay the team's working copy.
+    brandAr: plain(prop(p, "Brand AR")) || null,
+    monthlyAr: plain(prop(p, "Monthly record AR")) || null,
+    performanceAr: plain(prop(p, "Performance AR")) || null,
     solution: selectName(prop(p, "Solution")),
     services: names(prop(p, "Services")),
     industries: names(prop(p, "Industry")),
@@ -298,6 +303,7 @@ async function mapDigital(page, files, used) {
     store: toUrl(plain(prop(p, "Shopify"))),
     priority: prop(p, "Priority")?.number ?? null,
     logo: logo ? await image(files, logo, `digital/${slug}-logo.webp`, 400) : null,
+    cover: cover?.url ? await image(files, cover.url, `digital/${slug}.webp`, 1200) : null,
   };
 }
 
