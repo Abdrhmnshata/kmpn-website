@@ -2034,3 +2034,421 @@ li.a-tr:hover {
 .pm-bar .pm {
   flex-wrap: wrap;
 }
+
+/* ---------- admin: HR (/admin/hr) ------------------------- */
+
+.h-tabs {
+  margin-top: 4px;
+}
+
+/* Forms: a grid of small labelled fields. */
+.h-form {
+  display: grid;
+  gap: 12px;
+}
+
+.h-fields {
+  display: grid;
+  gap: 10px 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+}
+
+.h-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.h-field-wide {
+  grid-column: 1 / -1;
+}
+
+.h-field .field,
+.h-cell .field {
+  padding: 9px 11px;
+  font-size: 14.5px;
+  border-radius: 10px;
+}
+
+.h-btn {
+  width: auto;
+  padding: 9px 16px;
+  font-size: 14px;
+}
+
+.h-answer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.h-answer .p-notice {
+  flex-basis: 100%;
+}
+
+.h-mini li {
+  flex-wrap: wrap;
+}
+
+/* "+ add someone" folded card. */
+.h-add {
+  margin-bottom: 16px;
+}
+
+.h-add > summary {
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+}
+
+.h-add > summary::-webkit-details-marker,
+.h-row > summary::-webkit-details-marker {
+  display: none;
+}
+
+.h-add[open] > summary {
+  margin-bottom: 14px;
+}
+
+/* Team table: one line per person, the line opens its edit form. */
+.h-tr {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr) 104px minmax(0, 0.9fr)
+    minmax(0, 0.9fr) 64px;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.h-row > summary {
+  cursor: pointer;
+  list-style: none;
+  border-radius: 8px;
+  transition: background 0.12s ease;
+}
+
+.h-row > summary:hover,
+.h-row[open] > summary {
+  background: var(--sunk);
+}
+
+.h-name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.h-col-pos {
+  overflow: hidden;
+  color: var(--fg2);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.h-col-dept {
+  color: var(--fg2);
+  font-size: 13px;
+}
+
+.h-col-status .p-status {
+  padding: 2px 9px;
+  font-size: 12px;
+}
+
+.h-low {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.h-edit {
+  display: grid;
+  gap: 10px;
+  padding: 16px 10px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.h-notion {
+  justify-self: start;
+  font-size: 13.5px;
+}
+
+.h-total {
+  border-bottom: 0;
+  font-weight: 700;
+}
+
+.h-foot {
+  margin-top: 14px;
+}
+
+@media (max-width: 760px) {
+  .h-tr {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) 104px minmax(0, 0.9fr) 56px;
+  }
+
+  .h-col-dept,
+  .h-col-tenure {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .h-tr {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 3px 12px;
+  }
+
+  .h-tr.a-th,
+  .h-col-status,
+  .h-col-pos {
+    display: none;
+  }
+}
+
+/* Bars: departments and leave balances. */
+.h-bars {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.h-bars li,
+.h-balance li {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.9fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.h-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--sunk);
+  overflow: hidden;
+}
+
+.h-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2e9d5b;
+}
+
+.h-bars .h-bar > span {
+  background: var(--fg);
+}
+
+.h-bar > .h-bar-mid {
+  background: #e09a1a;
+}
+
+.h-bar > .h-bar-low {
+  background: var(--accent);
+}
+
+.h-split {
+  margin-bottom: 28px;
+}
+
+.h-title {
+  margin-bottom: 12px;
+}
+
+.h-leave .p-row-main h2 {
+  font-size: 17px;
+}
+
+/* Payroll: month switcher and one form per person. */
+.h-month {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.h-month h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.h-pr-list {
+  display: grid;
+  gap: 8px;
+}
+
+.h-pr {
+  display: grid;
+  grid-template-columns:
+    minmax(140px, 1.5fr) minmax(0, 0.9fr) repeat(4, minmax(0, 0.75fr))
+    minmax(0, 0.95fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  background: var(--bg);
+}
+
+.h-pr-who {
+  display: grid;
+  gap: 2px;
+  align-self: center;
+  min-width: 0;
+}
+
+.h-pr-who strong {
+  font-size: 15.5px;
+}
+
+.h-cell {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.h-cell-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.h-base,
+.h-net {
+  padding: 9px 0;
+  font-size: 14.5px;
+  white-space: nowrap;
+}
+
+.h-net {
+  font-size: 15.5px;
+}
+
+.h-hint {
+  color: #b06d00;
+}
+
+[data-tw="dark"] .h-hint {
+  color: #f3c36b;
+}
+
+.h-pr-save {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.h-pr-save .p-submit {
+  width: auto;
+  padding: 9px 14px;
+  font-size: 14px;
+}
+
+.h-final {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.h-final input {
+  accent-color: #2e9d5b;
+  width: 16px;
+  height: 16px;
+}
+
+.h-pr-note {
+  grid-column: 1 / -1;
+}
+
+.h-pr-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.h-empty-month {
+  gap: 12px;
+}
+
+@media (max-width: 1100px) {
+  .h-pr {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .h-pr-who {
+    grid-column: 1 / -1;
+  }
+
+  .h-pr-save {
+    grid-column: span 2;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 560px) {
+  .h-pr {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .h-pr-save {
+    grid-column: 1 / -1;
+  }
+}
+
+.h-money {
+  font-size: 26px;
+  white-space: nowrap;
+}
+
+.h-money small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.h-tr .num {
+  white-space: nowrap;
+}
+
+.h-col-pos[dir="auto"] {
+  text-align: right;
+}
+
+.h-stats {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+
+@media (max-width: 560px) {
+  .h-stats .a-stat {
+    padding: 14px 16px;
+  }
+
+  .h-stats .a-stat strong {
+    font-size: 26px;
+  }
+
+  .h-money {
+    font-size: 20px;
+  }
+}

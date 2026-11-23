@@ -10,7 +10,7 @@ export function Stat({
   alert,
 }: {
   label: string;
-  value: string | number;
+  value: React.ReactNode;
   sub?: string;
   href: string;
   alert?: boolean;
