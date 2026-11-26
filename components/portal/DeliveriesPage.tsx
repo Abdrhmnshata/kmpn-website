@@ -12,11 +12,11 @@ export async function DeliveriesPage({
   searchParams,
 }: {
   view?: DeliveryView;
-  searchParams: Promise<{ tab?: string; type?: string }>;
+  searchParams: Promise<{ tab?: string; type?: string; range?: string }>;
 }) {
   const { open } = await portalAccess();
   if (!pageOpen("deliverables", open)) return <ComingSoon title="التسليمات" />;
-  const [client, data, { tab, type }] = await Promise.all([currentClient(), portalData(), searchParams]);
+  const [client, data, { tab, type, range }] = await Promise.all([currentClient(), portalData(), searchParams]);
   const view = deliveryView(asked, open);
   // The page itself opens its first open tab (the ad report, else the library).
   const href = (v: DeliveryView) => (v === "ads" ? BASE : `${BASE}/${v}`);
@@ -32,6 +32,8 @@ export async function DeliveriesPage({
         sheetHref={(title) => `${href("ads")}?tab=${encodeURIComponent(title)}`}
         type={type}
         typeHref={(t) => (t ? `${href("library")}?type=${encodeURIComponent(t)}` : href("library"))}
+        range={range}
+        rangeHref={(r) => `${href("content")}?range=${r}`}
         canRequest={client.verified}
       />
     </>

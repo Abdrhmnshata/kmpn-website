@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getEditThreads, type PortalData } from "@/lib/portal/notion";
 import { PortalReport } from "@/components/report/PortalReport";
+import { CreativeReport } from "@/components/report/CreativeReport";
 import { PageHead } from "./Bits";
 import { ComingSoon, DeliverablesView } from "./V1Views";
 
@@ -9,7 +10,7 @@ import { ComingSoon, DeliverablesView } from "./V1Views";
  *
  *   تقارير الإعلانات          section "reports", two reports:
  *     تقارير أداء الإعلانات         the live performance sheet (lib/reports)
- *     تقارير أداء المحتوى الإعلاني  how each creative performs (no source yet)
+ *     تقارير أداء المحتوى الإعلاني  how each creative performs (the creative-report artifact)
  *   مكتبة المحتوى الإعلاني     section "deliverables": the content library
  *
  * Shared by /portal/deliverables/* and the director's "view as client".
@@ -66,6 +67,8 @@ export async function Deliveries({
   sheetHref,
   type,
   typeHref,
+  range,
+  rangeHref,
   canRequest,
 }: {
   data: PortalData;
@@ -77,6 +80,9 @@ export async function Deliveries({
   /** The library's deliverable type filter and the link to another one. */
   type?: string;
   typeHref: (type: string | null) => string;
+  /** The creative report's date range (7d, 14d, …) and the link to another one. */
+  range?: string;
+  rangeHref: (range: string) => string;
   canRequest: boolean;
 }) {
   const reportsOpen = data.open.includes("reports");
@@ -130,10 +136,9 @@ export async function Deliveries({
           <PortalReport customerIds={data.customers.map((c) => c.id)} tab={sheet} hrefFor={sheetHref} />
         ) : null
       ) : view === "content" ? (
-        <ComingSoon>
-          هنا ستجد أداء كل محتوى إعلاني سلّمناه لك داخل الحملات: أي فيديو أو تصميم حقق أفضل النتائج. هذا التقرير
-          قادم قريبًا.
-        </ComingSoon>
+        data.linked ? (
+          <CreativeReport customerIds={data.customers.map((c) => c.id)} range={range} hrefFor={rangeHref} />
+        ) : null
       ) : (
         <DeliverablesView data={data} threads={threads} type={type} hrefFor={typeHref} canRequest={canRequest} />
       )}

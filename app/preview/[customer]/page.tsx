@@ -19,11 +19,11 @@ export default async function PreviewPage({
   searchParams,
 }: {
   params: Promise<{ customer: string }>;
-  searchParams: Promise<{ tab?: string; view?: string; sheet?: string; type?: string }>;
+  searchParams: Promise<{ tab?: string; view?: string; sheet?: string; type?: string; range?: string }>;
 }) {
   if (process.env.NODE_ENV === "production") notFound();
 
-  const [{ customer }, { tab, view, sheet, type }] = await Promise.all([params, searchParams]);
+  const [{ customer }, { tab, view, sheet, type, range }] = await Promise.all([params, searchParams]);
   const data = await getPortalDataForCustomer(customer);
   if (!data.linked) notFound();
   const company = data.customers[0]?.company ?? "";
@@ -39,7 +39,7 @@ export default async function PreviewPage({
           </Link>
         </p>
       </div>
-      <ClientView data={data} base={`/preview/${customer}`} tab={tab} view={view} sheet={sheet} type={type} />
+      <ClientView data={data} base={`/preview/${customer}`} tab={tab} view={view} sheet={sheet} type={type} range={range} />
     </div>
   );
 }

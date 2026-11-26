@@ -2535,3 +2535,362 @@ li.a-tr:hover {
   font-size: 11px;
   font-weight: 700;
 }
+
+/* ---------- «أداء المحتوى الإعلاني»: the creative report -- */
+
+.cr {
+  --cr-warn-bg: #fff2cc;
+  --cr-warn-fg: #6b4e00;
+  display: grid;
+  gap: 20px;
+}
+
+[data-tw="dark"] .cr {
+  --cr-warn-bg: rgba(240, 190, 60, 0.2);
+  --cr-warn-fg: #f3d68a;
+}
+
+.cr-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.cr-eyebrow {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cr-head h2 {
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.page .cr-asof {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.cr-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+  gap: 12px;
+}
+
+.cr-tile {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--sunk);
+}
+
+.cr-tile-label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cr-tile strong {
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.cr-tile strong small {
+  margin-inline-start: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cr-tile-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 20px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.cr-tile.is-good {
+  background: var(--ok-bg);
+}
+
+.cr-tile.is-ok {
+  background: var(--cr-warn-bg);
+}
+
+.cr-tile.is-bad {
+  background: var(--tint);
+}
+
+.cr-delta {
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.cr-delta.up {
+  color: var(--ok-fg);
+}
+
+.cr-delta.down {
+  color: var(--accent2);
+}
+
+.cr-board {
+  display: grid;
+  gap: 16px;
+}
+
+.cr-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cr-filters {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+.cr-filters .work-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cr-sort button {
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+  gap: 20px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cr-card {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.cr-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--sunk);
+}
+
+.cr-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.cr-card:hover .cr-cover img {
+  transform: scale(1.03);
+}
+
+.cr-card:focus-visible {
+  outline: none;
+}
+
+.cr-card:focus-visible .cr-cover {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cr-cover-none {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.lib-stage .cr-cover-none {
+  position: static;
+  min-height: 320px;
+}
+
+.cr-rank {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  min-width: 26px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: var(--page);
+  color: var(--fg);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cr-badge {
+  position: absolute;
+  bottom: 8px;
+  inset-inline-start: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.cr-live {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.cr-name {
+  display: -webkit-box;
+  min-height: 2.8em;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cr-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.cr-stats > span {
+  display: grid;
+  gap: 1px;
+  padding: 5px 6px;
+  border-radius: 10px;
+  background: var(--sunk);
+  text-align: center;
+}
+
+.cr-stats small {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.cr-stats b {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.cr-stats .cr-roas.is-good,
+.cr-tag-good {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.cr-stats .cr-roas.is-ok,
+.cr-tag-ok {
+  background: var(--cr-warn-bg);
+  color: var(--cr-warn-fg);
+}
+
+.cr-stats .cr-roas.is-bad,
+.cr-tag-bad {
+  background: var(--tint);
+  color: var(--accent2);
+}
+
+.cr-stats .cr-roas small {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.page .cr-more {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lib-stage video {
+  display: block;
+  width: 100%;
+  max-height: min(78vh, 640px);
+  background: #0b0b0b;
+}
+
+.cr-list {
+  display: grid;
+  margin: 0;
+}
+
+.cr-list > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.cr-list dt {
+  color: var(--fg2);
+  font-size: 14px;
+}
+
+.cr-list dd {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+}
+
+.cr-list b {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.page .cr-foot {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}

@@ -31,6 +31,7 @@ export async function ClientView({
   view,
   sheet,
   type,
+  range,
 }: {
   data: PortalData;
   base: string;
@@ -39,6 +40,7 @@ export async function ClientView({
   view?: string;
   sheet?: string;
   type?: string;
+  range?: string;
 }) {
   // The ad reports moved into «التسليمات»: old ?tab=reports links land there.
   const rawTab = asked === "reports" ? "deliverables" : asked;
@@ -70,6 +72,8 @@ export async function ClientView({
             sheetHref={(title) => `${deliveries}&view=ads&sheet=${encodeURIComponent(title)}`}
             type={type}
             typeHref={(t) => `${deliveries}&view=library${t ? `&type=${encodeURIComponent(t)}` : ""}`}
+            range={range}
+            rangeHref={(r) => `${deliveries}&view=content&range=${r}`}
             canRequest={false}
           />
         ) : tab === "contracts" ? (
