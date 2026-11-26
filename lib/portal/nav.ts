@@ -64,3 +64,83 @@ export const SECTION_LABEL: Record<Section, string> = {
   invoices: "الفواتير",
   contracts: "العقود",
 };
+
+/* ------------------------------------------------------------ rail ---- */
+
+/**
+ * The portal's own app shell (components/portal/PortalShell.tsx): a rail of
+ * icons on wide screens, each group opening a panel beside it, and a bottom
+ * bar with «الكل» on phones. A link whose section is closed shows «قريبًا»
+ * (pageOpen); a group with nothing open is dimmed.
+ */
+export type RailIcon = "home" | "projects" | "deliverables" | "finance" | "support";
+export type RailItem = { key: string; label: string; icon: RailIcon; href: string; children?: NavItem[] };
+
+export const PORTAL_RAIL: RailItem[] = [
+  { key: "dashboard", label: "الرئيسية", icon: "home", href: "/portal" },
+  {
+    key: "work",
+    label: "المشاريع",
+    icon: "projects",
+    href: "/portal/projects",
+    children: [
+      { key: "projects", href: "/portal/projects", label: "المشاريع الحالية" },
+      { key: "resources", href: "/portal/resources", label: "الموارد المطلوبة" },
+      { key: "meetings", href: "/portal/meetings", label: "الاجتماعات" },
+    ],
+  },
+  {
+    key: "deliver",
+    label: "التسليمات",
+    icon: "deliverables",
+    href: "/portal/deliverables",
+    children: [
+      { key: "reports", href: "/portal/deliverables", label: "تقارير أداء الإعلانات" },
+      { key: "reports", href: "/portal/deliverables/content", label: "تقارير أداء المحتوى الإعلاني" },
+      { key: "deliverables", href: "/portal/deliverables/library", label: "مكتبة المحتوى الإعلاني" },
+    ],
+  },
+  {
+    key: "money",
+    label: "المالية",
+    icon: "finance",
+    href: "/portal/invoices",
+    children: [
+      { key: "invoices", href: "/portal/invoices", label: "الفواتير" },
+      { key: "contracts", href: "/portal/contracts", label: "العقود" },
+    ],
+  },
+  { key: "support", label: "الدعم", icon: "support", href: "/portal/support" },
+];
+
+/** The rail item a path belongs to (its own page or one of its links). */
+export function railCurrent(item: RailItem, path: string) {
+  if (path === item.href) return true;
+  if (item.href !== "/portal" && path.startsWith(`${item.href}/`)) return true;
+  return (item.children ?? []).some((c) => c.href === path);
+}
+
+/* -------------------------------------- view as client / local preview */
+
+const DELIVERY_PATHS: Record<string, string> = {
+  ads: "/portal/deliverables",
+  content: "/portal/deliverables/content",
+  library: "/portal/deliverables/library",
+  ops: "/portal/deliverables/operations",
+};
+
+/** A portal path as the director's "view as client" (or the preview) addresses it: `${base}?tab=…`. */
+export function previewHref(base: string, href: string) {
+  if (href !== "/portal" && !href.startsWith("/portal/")) return href;
+  if (href === "/portal") return base;
+  const view = Object.entries(DELIVERY_PATHS).find(([, p]) => p === href)?.[0];
+  if (view) return `${base}?tab=deliverables&view=${view}`;
+  return `${base}?tab=${href.slice("/portal/".length)}`;
+}
+
+/** The portal path a preview tab stands for (what the client's address would be). */
+export function previewPath(tab: string, deliveryView?: string) {
+  if (tab === "dashboard") return "/portal";
+  if (tab === "deliverables") return DELIVERY_PATHS[deliveryView ?? "ads"] ?? "/portal/deliverables";
+  return `/portal/${tab}`;
+}

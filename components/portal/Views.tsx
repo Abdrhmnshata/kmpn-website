@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { PortalData, Project, Ticket } from "@/lib/portal/notion";
 import {
   INVOICE_STATUS,
@@ -21,6 +22,9 @@ import type { Section } from "@/lib/portal/layer";
 import { PORTAL_NAV, pageOpen } from "@/lib/portal/nav";
 import { reportForCustomers } from "@/lib/reports/clients";
 import { Empty, NotLinked, PageHead, Status } from "./Bits";
+import { Icon } from "./ShellIcons";
+import { AdsSnapshot, AdsSnapshotSkeleton } from "@/components/report/AdsSnapshot";
+import { hasCreativeReport } from "@/lib/reports/creative";
 
 /**
  * The portal's screens, fed only by PortalData (already filtered by the
@@ -98,17 +102,29 @@ export function DashboardView({
   data,
   verified,
   href,
+  reportHref,
 }: {
   name: string;
   data: PortalData;
   verified: boolean;
   href: HrefFor;
+  /** The creative report's page (the home's ad summary links there). */
+  reportHref: string;
 }) {
   const { top } = tree(data.projects);
   const openProjects = top.filter((p) => !isDoneProject(p.status));
   const awaiting = data.resources.filter((r) => isAwaiting(r.status));
   const report = reportForCustomers(data.customers.map((c) => c.id));
   const show = (s: Section) => data.open.includes(s);
+  const adsSummary = Boolean(report && show("reports") && hasCreativeReport(report.slug));
+  const inProgress = data.library.filter((i) => i.stage !== "done" && i.stage !== "paused");
+  const openTickets = data.tickets.filter((t) => t.status === "new" || t.status === "progress");
+  const stats = [
+    { key: "projects", show: show("projects"), icon: "projects", value: openProjects.length, label: "مشروع جارٍ", href: href("projects") },
+    { key: "resources", show: show("resources"), icon: "account", value: awaiting.length, label: "مطلوب منك", href: href("resources"), alert: awaiting.length > 0 },
+    { key: "library", show: show("deliverables"), icon: "deliverables", value: inProgress.length, label: "محتوى قيد التنفيذ", href: href("deliverables") },
+    { key: "support", show: show("support"), icon: "support", value: openTickets.length, label: "تذكرة مفتوحة", href: href("support") },
+  ] as const;
   const soon = PORTAL_NAV.filter((item) => !pageOpen(item.key, data.open)).map((item) => item.label);
   const unpaid = data.invoices.filter((i) => i.status === "unpaid" || i.status === "overdue");
   const due = Object.entries(
@@ -120,11 +136,7 @@ export function DashboardView({
 
   return (
     <>
-      <h1 className="p-hello">
-        مرحبًا،
-        <br />
-        {name}
-      </h1>
+      <h1 className="p-hello home-hello">مرحبًا، {name}</h1>
 
       {data.customers.map((c) => (
         <div key={c.id} className="p-client">
@@ -136,6 +148,30 @@ export function DashboardView({
         </div>
       ))}
       {!data.linked ? <NotLinked verified={verified} /> : null}
+
+      {adsSummary ? (
+        <Suspense fallback={<AdsSnapshotSkeleton />}>
+          <AdsSnapshot customerIds={data.customers.map((c) => c.id)} reportHref={reportHref} />
+        </Suspense>
+      ) : null}
+
+      {data.linked ? (
+        <div className="home-stats">
+          {stats
+            .filter((st) => st.show)
+            .map((st) => (
+              <Link key={st.key} href={st.href} prefetch={false} className={`home-stat${"alert" in st && st.alert ? " is-alert" : ""}`}>
+                <span className="home-stat-ico">
+                  <Icon name={st.icon} />
+                </span>
+                <span className="home-stat-text">
+                  <strong className="num">{st.value}</strong>
+                  <span>{st.label}</span>
+                </span>
+              </Link>
+            ))}
+        </div>
+      ) : null}
 
       <div className="p-grid">
         <Card title="المشاريع" href={href("projects")} hidden={!show("projects")} count={openProjects.length ? String(openProjects.length) : undefined}>
@@ -153,7 +189,7 @@ export function DashboardView({
           )}
         </Card>
 
-        {report && show("reports") ? (
+        {report && show("reports") && !adsSummary ? (
           <Card title="تقارير الإعلانات" href={href("deliverables")}>
             <p className="p-meta" style={{ margin: 0 }}>
               أداء حملات {report.name} يومًا بيوم، من شيت الأداء الذي يتابعه فريق كامبين.

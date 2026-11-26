@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { requireAdmin } from "@/lib/admin/auth";
 
 /**
@@ -13,13 +11,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/** The dashboard pages bring the site header (app/admin/(panel)/layout.tsx); "view as client" brings the portal's shell. */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireAdmin();
-  return (
-    <div className="page">
-      <Header ctaHref="/contact" />
-      {children}
-      <Footer />
-    </div>
-  );
+  return children;
 }

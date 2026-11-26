@@ -1,0 +1,747 @@
+/* ======================================================================
+   The portal's app shell (components/portal/PortalShell.tsx).
+   Wide: a black rail at the start edge and a panel for a group's links.
+   Phones: a top bar, a bottom bar and the «الكل» sheet.
+   ====================================================================== */
+
+.ps-page {
+  --rail: 92px;
+}
+
+.ps {
+  min-height: 100vh;
+}
+
+/* ---------- the rail ------------------------------------ */
+
+.ps-rail {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .ps {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .ps-rail {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100vh;
+    padding: 18px 10px;
+    overflow-y: auto;
+    background: #0b0b0b;
+    scrollbar-width: none;
+  }
+
+  [data-tw="dark"] .ps-rail {
+    background: var(--hdr);
+    border-inline-end: 1px solid var(--line);
+  }
+}
+
+.ps-logo {
+  display: block;
+  padding: 6px 4px 14px;
+}
+
+.ps-logo .logo-mask {
+  height: 22px;
+  margin-inline: auto;
+  background: #fff;
+}
+
+.ps-items {
+  display: grid;
+  gap: 4px;
+}
+
+.ps-bottom {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.page .ps-item {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 2px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: rgba(255, 255, 255, 0.68);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.page .ps-item:hover,
+.page .ps-item[aria-expanded="true"] {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.ps-ico {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 32px;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.page .ps-item[data-current] {
+  color: #fff;
+}
+
+.ps-item[data-current] .ps-ico {
+  background: var(--accent);
+}
+
+.page .ps-item.is-dim {
+  color: rgba(255, 255, 255, 0.32);
+  cursor: default;
+}
+
+.page .ps-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---------- a group's panel ----------------------------- */
+
+.ps-fly {
+  position: fixed;
+  top: 12px;
+  bottom: 12px;
+  inset-inline-start: calc(var(--rail) + 8px);
+  z-index: 45;
+  display: none;
+  align-content: start;
+  gap: 2px;
+  width: 270px;
+  padding: 18px 14px;
+  border-radius: 20px;
+  background: var(--page);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.18),
+    0 0 0 1px var(--line);
+  animation: ps-in 0.14s ease-out;
+}
+
+@media (min-width: 900px) {
+  .ps-fly {
+    display: grid;
+  }
+}
+
+@keyframes ps-in {
+  from {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+}
+
+.page .ps-fly-title {
+  margin: 0 8px 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.page .ps-fly-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.page a.ps-fly-link:hover {
+  background: var(--sunk);
+}
+
+.page .ps-fly-link[aria-current="page"] {
+  background: var(--tint);
+  color: var(--accent2);
+}
+
+.page .is-soon {
+  color: var(--muted);
+  cursor: default;
+}
+
+/* ---------- the page and its top bar -------------------- */
+
+.ps-main {
+  min-width: 0;
+}
+
+.ps-top {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px clamp(16px, 3vw, 32px);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.ps-top-logo {
+  height: 22px;
+}
+
+@media (min-width: 900px) {
+  .ps-top-logo {
+    display: none;
+  }
+}
+
+.page .ps-hello {
+  margin: 0;
+  color: var(--fg2);
+  font-size: 15px;
+}
+
+.ps-hello strong {
+  color: var(--fg);
+}
+
+@media (max-width: 899px) {
+  .ps-hello {
+    display: none;
+  }
+}
+
+.ps-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+.page .ps-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page .ps-btn:hover {
+  color: var(--fg);
+  border-color: var(--fg2);
+}
+
+.page .ps-icon-btn {
+  width: 38px;
+  padding: 0;
+  justify-content: center;
+}
+
+.page .ps-exit {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.page .ps-exit:hover {
+  border-color: var(--accent2);
+  background: var(--accent2);
+  color: #fff;
+}
+
+@media (max-width: 899px) {
+  .page .ps-site,
+  .page .ps-out {
+    display: none;
+  }
+}
+
+.ps-content .portal {
+  padding-block: clamp(24px, 4vw, 48px) clamp(48px, 6vw, 96px);
+}
+
+/* ---------- phones: the bottom bar ---------------------- */
+
+.ps-tabbar {
+  position: fixed;
+  inset-inline: 10px;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  padding: 6px;
+  border-radius: 22px;
+  background: var(--page);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.14),
+    0 0 0 1px var(--line);
+}
+
+@media (min-width: 900px) {
+  .ps-tabbar {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .ps-content {
+    padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.page .ps-tab {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.page .ps-tab[data-current] {
+  background: var(--tint);
+  color: var(--accent2);
+}
+
+/* ---------- phones: «الكل» ------------------------------- */
+
+.ps-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--page);
+  animation: ps-up 0.18s ease-out;
+}
+
+.ps-sheet[hidden] {
+  display: none;
+}
+
+@keyframes ps-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.ps-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ps-sheet-head h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.ps-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  color: var(--muted);
+}
+
+.ps-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: 16px;
+}
+
+.ps-list {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.page .ps-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 4px;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+
+.ps-row > svg {
+  color: var(--fg2);
+}
+
+.ps-chev {
+  margin-inline-start: auto;
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+
+.ps-row[aria-expanded="true"] .ps-chev {
+  transform: rotate(-90deg);
+}
+
+.ps-sub {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 8px;
+  padding-inline-start: 38px;
+}
+
+.page .ps-sub-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--fg2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.page .ps-sub-link[aria-current="page"] {
+  background: var(--tint);
+  color: var(--accent2);
+}
+
+.ps-sheet-foot {
+  display: grid;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.page .ps-row-out {
+  color: var(--accent2);
+}
+
+.ps-row-out > svg {
+  color: inherit;
+}
+
+/* ======================================================================
+   The home (components/portal/Views.tsx DashboardView)
+   ====================================================================== */
+
+.page .home-hello {
+  font-size: clamp(28px, 3.6vw, 40px);
+  line-height: 1.3;
+}
+
+/* ---------- the ad summary ------------------------------ */
+
+.home-ads {
+  display: grid;
+  gap: 16px;
+  padding: clamp(16px, 2.4vw, 24px);
+  border-radius: 22px;
+  background: #0b0b0b;
+  color: #fff;
+}
+
+[data-tw="dark"] .home-ads {
+  background: var(--hdr);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.home-ads-loading {
+  min-height: 230px;
+  opacity: 0.35;
+}
+
+.home-ads-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.home-ads-head h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.page .home-ads .p-meta {
+  margin: 2px 0 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.page .home-ads .p-link {
+  color: #ff7a72;
+}
+
+.home-ads-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 10px;
+}
+
+.home-ads-tile {
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.home-ads-label {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.home-ads-tile strong {
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.home-ads-tile strong small {
+  margin-inline-start: 4px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.home-ads-tile.is-good {
+  background: rgba(74, 186, 116, 0.2);
+}
+
+.home-ads-tile.is-ok {
+  background: rgba(240, 190, 60, 0.18);
+}
+
+.home-ads-tile.is-bad {
+  background: rgba(238, 64, 55, 0.22);
+}
+
+.home-ads .cr-delta {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.home-ads .cr-delta.up {
+  color: #7fd9a2;
+}
+
+.home-ads .cr-delta.down {
+  color: #ff8c84;
+}
+
+.home-best {
+  display: grid;
+  gap: 8px;
+}
+
+.home-best h3 {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.home-best ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page .home-best-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.page .home-best-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.home-best-cover {
+  flex: none;
+  width: 48px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.home-best-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-best-text {
+  display: grid;
+  min-width: 0;
+}
+
+/* Names are mostly English: two lines rather than an ellipsis at the wrong end. */
+.home-best-name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.page .home-best-text .p-meta {
+  margin: 0;
+  font-size: 12.5px;
+}
+
+.home-best-roas {
+  margin-inline-start: auto;
+  padding: 4px 9px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+}
+
+.home-best-roas.is-good {
+  background: rgba(74, 186, 116, 0.22);
+  color: #9fe3b7;
+}
+
+.home-best-roas.is-ok {
+  background: rgba(240, 190, 60, 0.2);
+  color: #f3d68a;
+}
+
+.home-best-roas.is-bad {
+  background: rgba(238, 64, 55, 0.24);
+  color: #ffb4ad;
+}
+
+/* ---------- the work at a glance ------------------------ */
+
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px;
+}
+
+.page .home-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--card-border);
+  color: var(--fg);
+  transition: transform 0.15s;
+}
+
+.page .home-stat:hover {
+  transform: translateY(-2px);
+}
+
+.home-stat-ico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--sunk);
+  color: var(--fg2);
+}
+
+.home-stat.is-alert .home-stat-ico {
+  background: var(--tint);
+  color: var(--accent2);
+}
+
+.home-stat-text {
+  display: grid;
+  line-height: 1.3;
+}
+
+.home-stat-text strong {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.home-stat-text span {
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .home-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page .home-stat {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px;
+  }
+}

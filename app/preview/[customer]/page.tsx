@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
 import { ClientView } from "@/components/portal/ClientView";
 import { getPortalDataForCustomer } from "@/lib/portal/notion";
 
@@ -29,17 +28,25 @@ export default async function PreviewPage({
   const company = data.customers[0]?.company ?? "";
 
   return (
-    <div className="page">
-      <Header ctaHref="/contact" />
-      <div className="container">
-        <p className="p-preview">
-          معاينة محلية: كده هيشوف <strong>{company}</strong> البوابة. مش موجودة على الموقع اللايف.{" "}
-          <Link href="/preview" className="p-link">
-            كل العملاء
-          </Link>
-        </p>
-      </div>
-      <ClientView data={data} base={`/preview/${customer}`} tab={tab} view={view} sheet={sheet} type={type} range={range} report={report} />
-    </div>
+    <ClientView
+      data={data}
+      base={`/preview/${customer}`}
+      tab={tab}
+      view={view}
+      sheet={sheet}
+      type={type}
+      range={range}
+      report={report}
+      banner={
+        <div className="container">
+          <p className="p-preview">
+            معاينة محلية: كده هيشوف <strong>{company}</strong> البوابة. مش موجودة على الموقع اللايف.{" "}
+            <Link href="/preview" className="p-link">
+              كل العملاء
+            </Link>
+          </p>
+        </div>
+      }
+    />
   );
 }
