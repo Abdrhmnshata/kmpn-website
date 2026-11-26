@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { DEFAULT_OPEN, isSection } from "@/lib/portal/layer";
-import { PORTAL_MENU, isGroup, type MenuEntry, type NavItem } from "@/lib/portal/nav";
+import { DEFAULT_OPEN } from "@/lib/portal/layer";
+import { PORTAL_MENU, isGroup, pageOpen, type MenuEntry, type NavItem } from "@/lib/portal/nav";
 import { NAV } from "@/lib/content";
 
 /** «كامبين»: the rest of the site, one click away from the portal. */
@@ -37,7 +37,11 @@ function useMenu({ tabBase, active }: Pick<MenuProps, "tabBase" | "active">) {
   const path = usePathname();
   const hrefOf = (item: NavItem) =>
     tabBase ? (item.key === "dashboard" ? tabBase : `${tabBase}?tab=${item.key}`) : item.href;
-  const isCurrent = (item: NavItem) => (active ? item.key === active : path === item.href);
+  // A page's own tabs live under it (/portal/deliverables/library).
+  const isCurrent = (item: NavItem) =>
+    active
+      ? item.key === active
+      : path === item.href || (item.href !== "/portal" && path.startsWith(`${item.href}/`));
   return { path, hrefOf, isCurrent };
 }
 
@@ -56,7 +60,7 @@ function Entry({
   className: string;
   onNavigate?: () => void;
 }) {
-  if (isSection(item.key) && !open.includes(item.key)) {
+  if (!pageOpen(item.key, open)) {
     return (
       <span className={`${className} pm-soon`} aria-disabled="true">
         {item.label}

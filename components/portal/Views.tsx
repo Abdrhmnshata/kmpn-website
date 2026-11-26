@@ -17,8 +17,8 @@ import {
   resourceStatus,
   serviceLabel,
 } from "@/lib/portal/format";
-import { isSection, type Section } from "@/lib/portal/layer";
-import { PORTAL_NAV } from "@/lib/portal/nav";
+import type { Section } from "@/lib/portal/layer";
+import { PORTAL_NAV, pageOpen } from "@/lib/portal/nav";
 import { reportForCustomers } from "@/lib/reports/clients";
 import { Empty, NotLinked, PageHead, Status } from "./Bits";
 
@@ -109,7 +109,7 @@ export function DashboardView({
   const awaiting = data.resources.filter((r) => isAwaiting(r.status));
   const report = reportForCustomers(data.customers.map((c) => c.id));
   const show = (s: Section) => data.open.includes(s);
-  const soon = PORTAL_NAV.filter((item) => isSection(item.key) && !show(item.key)).map((item) => item.label);
+  const soon = PORTAL_NAV.filter((item) => !pageOpen(item.key, data.open)).map((item) => item.label);
   const unpaid = data.invoices.filter((i) => i.status === "unpaid" || i.status === "overdue");
   const due = Object.entries(
     unpaid.reduce<Record<string, number>>((acc, i) => {
@@ -154,7 +154,7 @@ export function DashboardView({
         </Card>
 
         {report && show("reports") ? (
-          <Card title="التقارير" href={href("reports")}>
+          <Card title="تقارير الإعلانات" href={href("deliverables")}>
             <p className="p-meta" style={{ margin: 0 }}>
               أداء حملات {report.name} يومًا بيوم، من شيت الأداء الذي يتابعه فريق كامبين.
             </p>

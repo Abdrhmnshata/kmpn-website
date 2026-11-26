@@ -2452,3 +2452,86 @@ li.a-tr:hover {
     font-size: 20px;
   }
 }
+
+/* ---------- «التسليمات»: its tabs ----------------------- */
+
+/* Ad reports | content library: underlined tabs on one line. */
+.dl-tabs {
+  display: flex;
+  gap: clamp(18px, 3vw, 32px);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.page .dl-tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--fg2);
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.page a.dl-tab:hover {
+  color: var(--fg);
+}
+
+.page .dl-tab[aria-current="page"] {
+  color: var(--fg);
+  border-color: var(--accent);
+}
+
+/* The two ad reports: a segmented switch under the tabs. */
+.dl-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-self: start;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--sunk);
+}
+
+.page .dl-seg-item {
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: var(--fg2);
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.page a.dl-seg-item:hover {
+  color: var(--fg);
+}
+
+.page .dl-seg-item[aria-current="page"] {
+  background: var(--page);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.dl-tab.is-soon,
+.dl-seg-item.is-soon {
+  color: var(--muted);
+  cursor: default;
+}
+
+.is-soon small {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--sunk);
+  font-size: 11px;
+  font-weight: 700;
+}
