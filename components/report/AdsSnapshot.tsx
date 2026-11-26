@@ -1,11 +1,17 @@
 import Link from "next/link";
+
+const day = new Intl.DateTimeFormat("ar-EG-u-nu-latn", { day: "numeric", month: "long", timeZone: "UTC" });
+const fmtDay = (d: string) => day.format(new Date(`${d}T12:00:00Z`));
+const month = new Intl.DateTimeFormat("ar-EG-u-nu-latn", { month: "long", timeZone: "UTC" });
+const fmtMonth = (d: string) => month.format(new Date(`${d}T12:00:00Z`));
 import { reportForCustomers } from "@/lib/reports/clients";
 import { hasCreativeReport, loadCreativeSummary } from "@/lib/reports/creative";
 import { change, fmtInt, fmtMoney, fmtPct, fmtRoas, metrics, roasTone } from "@/lib/reports/creative-metrics";
 
 /**
- * The home's ad summary: the last 7 days against the 7 before, and the
- * creatives that sold best, from the creative report (lib/reports/creative.ts).
+ * The home's ad summary: this month so far against the same days of last
+ * month, and the creatives that sold best, from the creative report
+ * (lib/reports/creative.ts).
  * Nothing at all for a client without one, or when it can't be read.
  */
 export async function AdsSnapshot({ customerIds, reportHref }: { customerIds: string[]; reportHref: string }) {
@@ -14,7 +20,7 @@ export async function AdsSnapshot({ customerIds, reportHref }: { customerIds: st
 
   let s;
   try {
-    s = await loadCreativeSummary(client.slug, "7d");
+    s = await loadCreativeSummary(client.slug, "tm");
   } catch (err) {
     console.error(`[ads-snapshot:${client.slug}]`, err);
     return null;
@@ -43,7 +49,10 @@ export async function AdsSnapshot({ customerIds, reportHref }: { customerIds: st
       <div className="home-ads-head">
         <div>
           <h2>ملخص الإعلانات</h2>
-          <p className="p-meta">آخر 7 أيام، مقارنة بالأيام السبعة قبلها</p>
+          <p className="p-meta">
+            من أول الشهر حتى <bdi>{fmtDay(s.range.to)}</bdi>
+            {s.prevRange ? <>، مقارنة بالفترة نفسها من {fmtMonth(s.prevRange.from)}</> : null}
+          </p>
         </div>
         <Link href={reportHref} className="p-link">
           التقرير الكامل ←
@@ -74,7 +83,7 @@ export async function AdsSnapshot({ customerIds, reportHref }: { customerIds: st
       </div>
       {best.length ? (
         <div className="home-best">
-          <h3>الأعلى عائدًا هذا الأسبوع</h3>
+          <h3>الأعلى عائدًا هذا الشهر</h3>
           <ul>
             {best.map((c) => {
               const m = metrics(c.cur);

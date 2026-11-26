@@ -171,8 +171,12 @@ export async function loadCreativeSummary(slug: string, rangeId?: string): Promi
   const range =
     list.find((p) => p.id === rangeId) ?? list.find((p) => p.id === fallback) ?? list[list.length - 1];
   const days = daysBetween(range.from, range.to);
-  const prevFrom = addDays(range.from, -days);
-  const prevTo = addDays(range.from, -1);
+  // A calendar month (this month so far, last month) is set against the same
+  // days of the month before it; any other range against the days just before.
+  const monthly = (range.id === "tm" || range.id === "lm") && range.from.endsWith("-01");
+  const prevFrom = monthly ? `${addDays(range.from, -1).slice(0, 8)}01` : addDays(range.from, -days);
+  const monthEnd = addDays(range.from, -1);
+  const prevTo = monthly ? [addDays(prevFrom, days - 1), monthEnd].sort()[0] : monthEnd;
   const hasPrev = prevFrom >= dataFrom;
 
   const col = new Map(raw.cols.map((c, i) => [c, i + 2]));
