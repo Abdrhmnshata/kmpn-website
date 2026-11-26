@@ -234,7 +234,7 @@ export async function openTicket(_: FormState, form: FormData): Promise<FormStat
 
 export async function requestEdit(_: FormState, form: FormData): Promise<FormState> {
   const user = await getUser();
-  if (!user) redirect("/login?next=/portal/deliverables");
+  if (!user) redirect("/login?next=/portal/deliverables/library");
   const profile = profileOf(user);
 
   const deliverableId = clean(form.get("deliverable"), 64);
@@ -252,6 +252,6 @@ export async function requestEdit(_: FormState, form: FormData): Promise<FormSta
   const ok = await addEditRequest({ deliverableId, name: profile.name, email: profile.email, message });
   if (!ok) return fail("تعذّر إرسال الطلب الآن. راسلنا على a@kmpn.agency.");
   revalidateTag(threadsTag(deliverableId));
-  revalidatePath("/portal/deliverables");
+  revalidatePath("/portal/deliverables", "layout");
   return { ok: true, message: "وصل طلبك لفريق كامبين، وسيظهر ردهم هنا." };
 }

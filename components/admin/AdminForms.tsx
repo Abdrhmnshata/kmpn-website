@@ -9,14 +9,14 @@ import {
   type AdminState,
 } from "@/app/admin/actions";
 import { SECTIONS } from "@/lib/portal/layer";
-import { PORTAL_NAV } from "@/lib/portal/nav";
+import { SECTION_LABEL } from "@/lib/portal/nav";
 import { TICKET_STATUS } from "@/lib/portal/format";
 import type { TicketStatus } from "@/lib/portal/notion";
 import { Notice, Submit } from "@/components/portal/FormBits";
 
 /** The director's small forms on /admin; each writes to Notion. */
 
-const LABEL = Object.fromEntries(PORTAL_NAV.map((n) => [n.key, n.label]));
+const LABEL: Record<string, string> = SECTION_LABEL;
 
 function Result({ state }: { state: AdminState }) {
   return <Notice error={state.error} message={state.ok ? state.message : undefined} />;

@@ -176,11 +176,7 @@ export function DeliverablesView({
 
   return (
     <>
-      <PageHead
-        title="التسليمات"
-        lead="كل ما سلّمناه لك: مكتبة المحتوى الإعلاني من الفكرة حتى النسخة النهائية، والمستندات والأدلة الإرشادية والشيتات."
-      />
-      {/* Only the library so far: its own filters are enough. */}
+      {/* The page head and tabs are «التسليمات»'s (./Deliveries.tsx). Only the library so far: its own filters are enough. */}
       {data.deliverables.length || !library.length ? (
         <div className="work-chips">
           <Link href={hrefFor(null)} className="work-chip" aria-current={active ? undefined : "page"}>
@@ -270,13 +266,13 @@ export function ContractsView({ data }: { data: PortalData }) {
 
 /* ---------------------------------------------------------------- soon ---- */
 
-export function ComingSoon({ title }: { title: string }) {
+export function ComingSoon({ title, children }: { title?: string; children?: React.ReactNode }) {
   return (
     <>
-      <PageHead title={title} />
+      {title ? <PageHead title={title} /> : null}
       <div className="card p-card p-soon">
         <span className="p-soon-badge">قريبًا</span>
-        <p>هذا القسم قادم في النسخة القادمة من بوابة العملاء.</p>
+        <p>{children ?? "هذا القسم قادم في النسخة القادمة من بوابة العملاء."}</p>
       </div>
     </>
   );

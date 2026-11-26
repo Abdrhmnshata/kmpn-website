@@ -9,11 +9,11 @@ import {
   TicketsList,
   type Tab,
 } from "@/components/portal/Views";
-import { ComingSoon, ContractsView, DeliverablesView } from "@/components/portal/V1Views";
+import { ComingSoon, ContractsView } from "@/components/portal/V1Views";
+import { Deliveries, deliveryView } from "@/components/portal/Deliveries";
 import { PageHead } from "@/components/portal/Bits";
-import { getEditThreads, type PortalData } from "@/lib/portal/notion";
-import { isSection } from "@/lib/portal/layer";
-import { PortalReport } from "@/components/report/PortalReport";
+import type { PortalData } from "@/lib/portal/notion";
+import { pageOpen } from "@/lib/portal/nav";
 
 /**
  * One client's portal exactly as they see it, read-only (no edit requests,
@@ -27,23 +27,29 @@ type Key = "dashboard" | Tab;
 export async function ClientView({
   data,
   base,
-  tab: rawTab,
+  tab: asked,
+  view,
   sheet,
   type,
+  range,
 }: {
   data: PortalData;
   base: string;
   tab?: string;
+  /** «التسليمات»'s tab: ads, content or library. */
+  view?: string;
   sheet?: string;
   type?: string;
+  range?: string;
 }) {
+  // The ad reports moved into «التسليمات»: old ?tab=reports links land there.
+  const rawTab = asked === "reports" ? "deliverables" : asked;
   const tab = (TABS.some((t) => t.key === rawTab) ? rawTab : "dashboard") as Key;
   const href = (t: Tab) => `${base}?tab=${t}`;
   const company = data.customers.map((c) => c.company).join("، ");
   const label = TABS.find((t) => t.key === tab)?.label ?? "";
-  const closed = isSection(tab) && !data.open.includes(tab);
-  const threads =
-    tab === "deliverables" && !closed ? await getEditThreads(data.deliverables.map((d) => d.id)) : {};
+  const closed = !pageOpen(tab, data.open);
+  const deliveries = `${base}?tab=deliverables`;
 
   return (
     <main className="container portal portal-wide">
@@ -58,23 +64,22 @@ export async function ClientView({
         ) : tab === "projects" ? (
           <ProjectsView data={data} />
         ) : tab === "deliverables" ? (
-          <DeliverablesView
+          <Deliveries
             data={data}
-            threads={threads}
+            view={deliveryView(view ?? (asked === "reports" ? "ads" : undefined), data.open)}
+            href={(v) => `${deliveries}&view=${v}`}
+            sheet={sheet}
+            sheetHref={(title) => `${deliveries}&view=ads&sheet=${encodeURIComponent(title)}`}
             type={type}
-            hrefFor={(t) => (t ? `${base}?tab=deliverables&type=${encodeURIComponent(t)}` : `${base}?tab=deliverables`)}
+            typeHref={(t) => `${deliveries}&view=library${t ? `&type=${encodeURIComponent(t)}` : ""}`}
+            range={range}
+            rangeHref={(r) => `${deliveries}&view=content&range=${r}`}
             canRequest={false}
           />
         ) : tab === "contracts" ? (
           <ContractsView data={data} />
         ) : tab === "invoices" ? (
           <InvoicesView data={data} />
-        ) : tab === "reports" ? (
-          <PortalReport
-            customerIds={data.customers.map((c) => c.id)}
-            tab={sheet}
-            hrefFor={(title) => `${base}?tab=reports&sheet=${encodeURIComponent(title)}`}
-          />
         ) : tab === "resources" ? (
           <ResourcesView data={data} />
         ) : tab === "meetings" ? (
