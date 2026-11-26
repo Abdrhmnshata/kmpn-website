@@ -18,9 +18,17 @@ const ID = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/i
 const notFound = () => new Response("Not found", { status: 404 });
 
 const BASE = '<base target="_blank">';
+// The frame is as tall as the page, so the page itself never scrolls (a
+// scrollbar there was the page a few pixels taller than the body it
+// measured); its own sideways scrollers (timeline, tables) get thin bars.
 const SIZE =
-  "<script>(()=>{const b=document.body,s=()=>parent.postMessage({kmpnReportHeight:Math.ceil(Math.max(b.scrollHeight,b.offsetHeight))},'*');" +
-  "addEventListener('load',s);new ResizeObserver(s).observe(b);s()})()</script>";
+  "<style>html,body{overflow:hidden!important}" +
+  "*{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.22) transparent}" +
+  "::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent}" +
+  "::-webkit-scrollbar-thumb{background:rgba(0,0,0,.22);border-radius:8px;border:2px solid transparent;background-clip:padding-box}</style>" +
+  "<script>(()=>{const d=document.documentElement,b=document.body," +
+  "s=()=>parent.postMessage({kmpnReportHeight:Math.ceil(Math.max(d.scrollHeight,b.scrollHeight,b.offsetHeight,d.getBoundingClientRect().height))},'*');" +
+  "addEventListener('load',s);const o=new ResizeObserver(s);o.observe(d);o.observe(b);s()})()</script>";
 
 function frameable(html: string) {
   const head = /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, (m) => m + BASE) : BASE + html;
