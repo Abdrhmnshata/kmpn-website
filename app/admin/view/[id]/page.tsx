@@ -20,16 +20,25 @@ export default async function ViewAsClient({
   const company = data.customers[0]?.company ?? "";
 
   return (
-    <>
-      <div className="container">
-        <p className="p-preview">
-          إنت شايف البوابة زي ما <strong>{company}</strong> بيشوفها بالظبط (للقراءة بس).{" "}
-          <Link href={`/admin/clients/${id}`} prefetch={false} className="p-link">
-            رجوع لصفحة العميل
-          </Link>
-        </p>
-      </div>
-      <ClientView data={data} base={`/admin/view/${id}`} tab={tab} view={view} sheet={sheet} type={type} range={range} report={report} />
-    </>
+    <ClientView
+      data={data}
+      base={`/admin/view/${id}`}
+      tab={tab}
+      view={view}
+      sheet={sheet}
+      type={type}
+      range={range}
+      report={report}
+      banner={
+        <div className="container">
+          <p className="p-preview">
+            إنت شايف البوابة زي ما <strong>{company}</strong> بيشوفها بالظبط (للقراءة بس).{" "}
+            <Link href={`/admin/clients/${id}`} prefetch={false} className="p-link">
+              رجوع لصفحة العميل
+            </Link>
+          </p>
+        </div>
+      }
+    />
   );
 }

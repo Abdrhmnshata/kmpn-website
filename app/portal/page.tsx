@@ -15,6 +15,7 @@ export default async function Dashboard() {
       data={data}
       verified={client.verified}
       href={(tab) => `/portal/${tab}`}
+      reportHref="/portal/deliverables/content"
     />
   );
 }
