@@ -12,9 +12,9 @@ export default async function ViewAsClient({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ tab?: string; view?: string; sheet?: string; type?: string; range?: string }>;
+  searchParams: Promise<{ tab?: string; view?: string; sheet?: string; type?: string; range?: string; report?: string }>;
 }) {
-  const [{ id }, { tab, view, sheet, type, range }] = await Promise.all([params, searchParams]);
+  const [{ id }, { tab, view, sheet, type, range, report }] = await Promise.all([params, searchParams]);
   const data = await getPortalDataForCustomer(id);
   if (!data.linked) notFound();
   const company = data.customers[0]?.company ?? "";
@@ -29,7 +29,7 @@ export default async function ViewAsClient({
           </Link>
         </p>
       </div>
-      <ClientView data={data} base={`/admin/view/${id}`} tab={tab} view={view} sheet={sheet} type={type} range={range} />
+      <ClientView data={data} base={`/admin/view/${id}`} tab={tab} view={view} sheet={sheet} type={type} range={range} report={report} />
     </>
   );
 }
