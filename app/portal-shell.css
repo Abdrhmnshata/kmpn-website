@@ -745,3 +745,48 @@
     padding: 14px;
   }
 }
+
+/* ---------- scrollbars: thin, rounded, following the theme ---------- */
+
+html:has(.ps-page) {
+  --ps-thumb: rgba(11, 11, 11, 0.22);
+  --ps-thumb-hover: rgba(11, 11, 11, 0.4);
+  scrollbar-width: thin;
+  scrollbar-color: var(--ps-thumb) transparent;
+}
+
+html[data-tw="dark"]:has(.ps-page) {
+  --ps-thumb: rgba(250, 247, 242, 0.22);
+  --ps-thumb-hover: rgba(250, 247, 242, 0.4);
+}
+
+/* Zero specificity: rows that hide their scrollbar (tabs, the rail) keep it hidden. */
+:where(.ps-page *) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ps-thumb) transparent;
+}
+
+/* Browsers without scrollbar-color (older Safari and Chrome). */
+html:has(.ps-page)::-webkit-scrollbar,
+.ps-page ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html:has(.ps-page)::-webkit-scrollbar-track,
+.ps-page ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html:has(.ps-page)::-webkit-scrollbar-thumb,
+.ps-page ::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 10px;
+  background: var(--ps-thumb);
+  background-clip: padding-box;
+}
+
+html:has(.ps-page)::-webkit-scrollbar-thumb:hover,
+.ps-page ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ps-thumb-hover);
+}

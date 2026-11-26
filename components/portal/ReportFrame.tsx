@@ -32,6 +32,7 @@ export function ReportFrame({ src, title }: { src: string; title: string }) {
       title={title}
       className="ops-frame"
       style={{ height }}
+      scrolling="no"
     />
   );
 }
