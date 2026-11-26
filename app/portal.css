@@ -2894,3 +2894,13 @@ li.a-tr:hover {
   color: var(--muted);
   font-size: 13px;
 }
+
+/* ---------- «تقارير التشغيل»: a report page shown as is - */
+
+.ops-frame {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  background: var(--sunk);
+}

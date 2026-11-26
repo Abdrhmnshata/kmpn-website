@@ -1,7 +1,5 @@
-import { getProfile } from "@/lib/supabase/auth";
-import { isAdminEmail } from "@/lib/admin/auth";
-import { getPortalData } from "@/lib/portal/notion";
-import { reportForCustomers } from "@/lib/reports/clients";
+import { mayViewCustomers } from "@/lib/portal/viewer";
+import { reportClient } from "@/lib/reports/clients";
 import { MEDIA_PATH, artifactFileUrl } from "@/lib/reports/creative";
 
 /**
@@ -17,15 +15,7 @@ import { MEDIA_PATH, artifactFileUrl } from "@/lib/reports/creative";
 const CHUNK = 2 * 1024 * 1024;
 const notFound = () => new Response("Not found", { status: 404 });
 
-async function mayView(slug: string) {
-  // The team's local preview (app/preview) has no sign-in; it 404s in production.
-  if (process.env.NODE_ENV !== "production") return true;
-  const profile = await getProfile();
-  if (!profile?.verified) return false;
-  if (isAdminEmail(profile.email)) return true;
-  const data = await getPortalData(profile.email);
-  return reportForCustomers(data.customers.map((c) => c.id))?.slug === slug;
-}
+const mayView = (slug: string) => mayViewCustomers(reportClient(slug)?.customerIds ?? []);
 
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string; path: string[] }> }) {
   const { slug, path } = await params;
